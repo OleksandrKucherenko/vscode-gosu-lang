@@ -131,7 +131,7 @@ This extension provides syntax highlighting and language support for the GOSU pr
 
 ```
 gosu-language-support/
-├── src/                          # TypeScript source files
+├── src/                         # TypeScript source files
 │   ├── extension.ts             # Main extension entry point
 │   ├── extension.test.ts        # Extension tests
 │   └── utils/
@@ -231,6 +231,7 @@ The extension includes example GOSU files in the `examples/` directory:
 - [GOSU Language Grammar](https://gosu-lang.github.io/grammar.html)
 - [GOSU Documentation](https://gosu-lang.github.io/docs.html)
 - [GOSU Language Website](https://gosu-lang.github.io/)
+- [GOSU EBNF Grammar](https://github.com/gosu-lang/gosu-lang/blob/master/gosu-core/src/main/java/gw/internal/gosu/parser/ebnf/Gosu.ebnf)
 
 ## Contributing
 

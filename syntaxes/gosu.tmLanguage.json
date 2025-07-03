@@ -36,6 +36,18 @@
       "include": "#annotations"
     },
     {
+      "include": "#blocks"
+    },
+    {
+      "include": "#enhancements"
+    },
+    {
+      "include": "#delegates"
+    },
+    {
+      "include": "#featureLiterals"
+    },
+    {
       "include": "#identifiers"
     }
   ],
@@ -74,19 +86,31 @@
       "patterns": [
         {
           "name": "keyword.control.gosu",
-          "match": "\\b(if|else|elseif|switch|case|default|while|for|do|break|continue|return|try|catch|finally|throw|using|synchronized)\\b"
+          "match": "\\b(if|else|switch|case|default|while|for|foreach|do|break|continue|return|try|catch|finally|throw|using|assert)\\b"
+        },
+        {
+          "name": "keyword.declaration.gosu",
+          "match": "\\b(class|interface|enum|enhancement|structure|delegate|implements|extends|represents)\\b"
+        },
+        {
+          "name": "keyword.modifier.gosu",
+          "match": "\\b(private|internal|protected|public|static|abstract|override|final|transient|readonly)\\b"
         },
         {
           "name": "keyword.other.gosu",
-          "match": "\\b(class|interface|enum|enhancement|delegate|structure|annotation|implements|extends|abstract|final|static|private|protected|public|internal|override|new|var|readonly|transient|as|isa|typeof|typeis|property|get|set|function|construct|uses|package|import|this|super|outer|represents|where|in|reify|hide|delegate)\\b"
+          "match": "\\b(package|uses|var|function|property|get|set|construct|this|super|new|in|typeis|typeas|typeof|statictypeof)\\b"
         },
         {
-          "name": "keyword.operator.gosu",
-          "match": "\\b(and|or|not|null|true|false)\\b"
+          "name": "keyword.operator.word.gosu",
+          "match": "\\b(and|or|not|as)\\b"
+        },
+        {
+          "name": "constant.language.gosu",
+          "match": "\\b(null|true|false|NaN|Infinity)\\b"
         },
         {
           "name": "storage.type.primitive.gosu",
-          "match": "\\b(void|boolean|byte|char|short|int|long|float|double|String|Object|List|Map|Set|Collection|Type|Class|DateTime|BigDecimal|BigInteger)\\b"
+          "match": "\\b(void|boolean|byte|char|short|int|long|float|double|String|Object|block)\\b"
         }
       ]
     },
@@ -124,19 +148,27 @@
       "patterns": [
         {
           "name": "constant.numeric.hex.gosu",
-          "match": "\\b0[xX][0-9a-fA-F]+[lL]?\\b"
+          "match": "\\b0[xX][0-9a-fA-F]+[sSlL]?\\b"
+        },
+        {
+          "name": "constant.numeric.binary.gosu",
+          "match": "\\b0[bB][01]+[sSlL]?\\b"
         },
         {
           "name": "constant.numeric.octal.gosu",
-          "match": "\\b0[0-7]+[lL]?\\b"
+          "match": "\\b0[0-7]+[sSlL]?\\b"
         },
         {
-          "name": "constant.numeric.decimal.gosu",
-          "match": "\\b([0-9]+\\.?[0-9]*([eE][+-]?[0-9]+)?[fFdD]?|\\.[0-9]+([eE][+-]?[0-9]+)?[fFdD]?)\\b"
+          "name": "constant.numeric.special.gosu",
+          "match": "\\b(NaN|Infinity)\\b"
         },
         {
-          "name": "constant.numeric.integer.gosu",
-          "match": "\\b[0-9]+[lL]?\\b"
+          "name": "constant.numeric.decimal.float.gosu",
+          "match": "\\b([0-9]+\\.[0-9]*([eE][+-]?[0-9]+)?[fFdDbB][dD]?|\\.[0-9]+([eE][+-]?[0-9]+)?[fFdDbB][dD]?)\\b"
+        },
+        {
+          "name": "constant.numeric.decimal.integer.gosu",
+          "match": "\\b[0-9]+([eE][+-]?[0-9]+)?[sSlLbBiI]?\\b"
         }
       ]
     },
@@ -144,11 +176,15 @@
       "patterns": [
         {
           "name": "keyword.operator.arithmetic.gosu",
-          "match": "\\+|\\-|\\*|/|%|\\+\\+|\\-\\-|\\+=|\\-=|\\*=|/=|%="
+          "match": "\\+|\\-|\\*|/|%|\\+\\+|\\-\\-|\\?\\+|\\?\\-|!\\+|!\\-|\\?\\*|!\\*|\\?/|\\?%"
+        },
+        {
+          "name": "keyword.operator.assignment.gosu",
+          "match": "=|\\+=|\\-=|\\*=|/=|%=|&=|\\|=|\\^=|&&=|\\|\\|=|<<=|>>=|>>>="
         },
         {
           "name": "keyword.operator.comparison.gosu",
-          "match": "==|!=|<|>|<=|>=|<>"
+          "match": "==|!=|===|!==|<|>|<=|>="
         },
         {
           "name": "keyword.operator.logical.gosu",
@@ -159,12 +195,16 @@
           "match": "&|\\||\\^|~|<<|>>|>>>"
         },
         {
-          "name": "keyword.operator.assignment.gosu",
-          "match": "="
+          "name": "keyword.operator.interval.gosu",
+          "match": "\\.\\.|\\|\\.\\.|\\.\\.\\||\\|\\.\\.\\.\\|"
+        },
+        {
+          "name": "keyword.operator.nullsafe.gosu",
+          "match": "\\?\\.|\\.\\*|\\?\\[|\\?:"
         },
         {
           "name": "keyword.operator.other.gosu",
-          "match": "\\?|:|\\.|\\->"
+          "match": "\\?|:|\\.|\\->|#|\\\\|"
         }
       ]
     },
@@ -218,10 +258,126 @@
       "patterns": [
         {
           "name": "meta.annotation.gosu",
-          "match": "@[a-zA-Z_][a-zA-Z0-9_]*",
+          "match": "@[a-zA-Z_][a-zA-Z0-9_]*(\\.[a-zA-Z_][a-zA-Z0-9_]*)*",
           "captures": {
             "0": {
               "name": "storage.type.annotation.gosu"
+            }
+          }
+        }
+      ]
+    },
+    "blocks": {
+      "patterns": [
+        {
+          "name": "meta.block.gosu",
+          "begin": "\\\\",
+          "beginCaptures": {
+            "0": {
+              "name": "keyword.operator.block.gosu"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#identifiers"
+            },
+            {
+              "include": "#operators"
+            }
+          ],
+          "end": "->",
+          "endCaptures": {
+            "0": {
+              "name": "keyword.operator.lambda.gosu"
+            }
+          }
+        },
+        {
+          "name": "meta.block.parameters.gosu",
+          "begin": "\\(",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.parameters.begin.gosu"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#identifiers"
+            },
+            {
+              "include": "#types"
+            },
+            {
+              "include": "#operators"
+            }
+          ],
+          "end": "\\)\\s*->",
+          "endCaptures": {
+            "0": {
+              "name": "keyword.operator.lambda.gosu"
+            }
+          }
+        }
+      ]
+    },
+    "enhancements": {
+      "patterns": [
+        {
+          "name": "meta.enhancement.gosu",
+          "begin": "\\b(enhancement)\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s*(:)",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.declaration.enhancement.gosu"
+            },
+            "2": {
+              "name": "entity.name.type.enhancement.gosu"
+            },
+            "3": {
+              "name": "punctuation.separator.gosu"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#types"
+            }
+          ],
+          "end": "\\{"
+        }
+      ]
+    },
+    "delegates": {
+      "patterns": [
+        {
+          "name": "meta.delegate.gosu",
+          "begin": "\\b(delegate)\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s*(:)?",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.declaration.delegate.gosu"
+            },
+            "2": {
+              "name": "entity.name.type.delegate.gosu"
+            },
+            "3": {
+              "name": "punctuation.separator.gosu"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#types"
+            }
+          ],
+          "end": "\\brepresents\\b"
+        }
+      ]
+    },
+    "featureLiterals": {
+      "patterns": [
+        {
+          "name": "meta.feature.literal.gosu",
+          "match": "#([a-zA-Z_][a-zA-Z0-9_]*|construct)",
+          "captures": {
+            "0": {
+              "name": "constant.other.feature.gosu"
             }
           }
         }
