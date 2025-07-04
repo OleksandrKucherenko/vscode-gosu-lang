@@ -20,3 +20,5 @@ biome.jsonc
 vitest.config.js
 vsix/logo-large.png
 **/*.ebnf
+.yarnrc.yml
+.yarn/**

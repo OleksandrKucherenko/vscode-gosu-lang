@@ -8,7 +8,7 @@ import * as path from 'path';
  */
 describe('Gosu TextMate Grammar', () => {
   // Load grammar file
-  const grammarPath = path.resolve(__dirname, '../../syntaxes/gosu.tmLanguage.json');
+  const grammarPath = path.resolve(__dirname, '../../syntaxes/gosu.tmLanguage.full.json');
   const grammar = JSON.parse(fs.readFileSync(grammarPath, 'utf8'));
   
   // Load sample file
@@ -21,11 +21,11 @@ describe('Gosu TextMate Grammar', () => {
     // Convert TextMate pattern to JavaScript regex
     // This is a simplified conversion and may not handle all cases
     let jsPattern = pattern
-      .replace(/\\b/g, '\\b')    // word boundary
+      .replace(/\\b/g, '\\b')     // word boundary
       .replace(/\\s\+/g, '\\s+')  // whitespace
-      .replace(/\\(/g, '\\(')    // literal parentheses
-      .replace(/\\)/g, '\\)')    // literal parentheses
-      .replace(/\\./g, '\\.')    // literal dot
+      .replace(/\\\(/g, '\\(')    // literal parentheses
+      .replace(/\\\)/g, '\\)')    // literal parentheses
+      .replace(/\\./g, '\\.')     // literal dot
       
     try {
       return new RegExp(jsPattern);
