@@ -2,7 +2,7 @@
   "name": "gosu-language-support",
   "displayName": "Gosu Programming Language",
   "description": "Syntax highlighting and language support for GOSU programming language",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "publisher": "OleksandrKucherenko",
   "icon": "./vsix/gosu-lang.png",
   "engines": {
@@ -12,16 +12,32 @@
     "type": "git",
     "url": "git+https://github.com/OleksandrKucherenko/vscode-gosu-lang.git"
   },
-  "categories": ["Programming Languages"],
-  "keywords": ["gosu", "syntax highlighting", "language support"],
+  "categories": [
+    "Programming Languages"
+  ],
+  "keywords": [
+    "gosu",
+    "syntax highlighting",
+    "language support"
+  ],
   "main": "./out/extension.js",
-  "activationEvents": ["onLanguage:gosu"],
+  "activationEvents": [
+    "onLanguage:gosu"
+  ],
   "contributes": {
     "languages": [
       {
         "id": "gosu",
-        "aliases": ["GOSU", "gosu"],
-        "extensions": [".gs", ".gsx", ".gst", ".gsp"],
+        "aliases": [
+          "GOSU",
+          "gosu"
+        ],
+        "extensions": [
+          ".gs",
+          ".gsx",
+          ".gst",
+          ".gsp"
+        ],
         "configuration": "./language-configuration.json"
       }
     ],
