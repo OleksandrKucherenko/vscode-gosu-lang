@@ -2,7 +2,7 @@
   "name": "gosu-language-support",
   "displayName": "Gosu Programming Language",
   "description": "Syntax highlighting and language support for GOSU programming language",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "publisher": "OleksandrKucherenko",
   "icon": "./vsix/gosu-lang.png",
   "engines": {
