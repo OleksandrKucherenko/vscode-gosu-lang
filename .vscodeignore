@@ -9,3 +9,14 @@ vsc-extension-quickstart.md
 **/.eslintrc.json
 **/*.map
 **/*.ts
+**/*.url
+**/*.zip
+**/*.vsix
+**/*.test.*
+.secrets
+.secrets/**
+.github/**
+biome.jsonc
+vitest.config.js
+vsix/logo-large.png
+**/*.ebnf

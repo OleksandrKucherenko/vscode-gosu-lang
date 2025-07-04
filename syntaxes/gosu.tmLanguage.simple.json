@@ -1,0 +1,239 @@
+{
+  "name": "GOSU",
+  "scopeName": "source.gosu",
+  "fileTypes": [
+    "gs",
+    "gsx",
+    "gst",
+    "gsp"
+  ],
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#numbers"
+    },
+    {
+      "include": "#operators"
+    },
+    {
+      "include": "#types"
+    },
+    {
+      "include": "#functions"
+    },
+    {
+      "include": "#properties"
+    },
+    {
+      "include": "#annotations"
+    },
+    {
+      "include": "#identifiers"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.gosu",
+          "begin": "//",
+          "end": "$",
+          "patterns": [
+            {
+              "name": "punctuation.definition.comment.gosu",
+              "match": "//"
+            }
+          ]
+        },
+        {
+          "name": "comment.block.gosu",
+          "begin": "/\\*",
+          "end": "\\*/",
+          "patterns": [
+            {
+              "name": "punctuation.definition.comment.begin.gosu",
+              "match": "/\\*"
+            },
+            {
+              "name": "punctuation.definition.comment.end.gosu",
+              "match": "\\*/"
+            }
+          ]
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.gosu",
+          "match": "\\b(if|else|elseif|switch|case|default|while|for|do|break|continue|return|try|catch|finally|throw|using|synchronized)\\b"
+        },
+        {
+          "name": "keyword.other.gosu",
+          "match": "\\b(class|interface|enum|enhancement|delegate|structure|annotation|implements|extends|abstract|final|static|private|protected|public|internal|override|new|var|readonly|transient|as|isa|typeof|typeis|property|get|set|function|construct|uses|package|import|this|super|outer|represents|where|in|reify|hide|delegate)\\b"
+        },
+        {
+          "name": "keyword.operator.gosu",
+          "match": "\\b(and|or|not|null|true|false)\\b"
+        },
+        {
+          "name": "storage.type.primitive.gosu",
+          "match": "\\b(void|boolean|byte|char|short|int|long|float|double|String|Object|List|Map|Set|Collection|Type|Class|DateTime|BigDecimal|BigInteger)\\b"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.gosu",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "name": "constant.character.escape.gosu",
+              "match": "\\\\."
+            },
+            {
+              "name": "constant.other.placeholder.gosu",
+              "match": "\\$\\{[^}]*\\}"
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.single.gosu",
+          "begin": "'",
+          "end": "'",
+          "patterns": [
+            {
+              "name": "constant.character.escape.gosu",
+              "match": "\\\\."
+            }
+          ]
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.hex.gosu",
+          "match": "\\b0[xX][0-9a-fA-F]+[lL]?\\b"
+        },
+        {
+          "name": "constant.numeric.octal.gosu",
+          "match": "\\b0[0-7]+[lL]?\\b"
+        },
+        {
+          "name": "constant.numeric.decimal.gosu",
+          "match": "\\b([0-9]+\\.?[0-9]*([eE][+-]?[0-9]+)?[fFdD]?|\\.[0-9]+([eE][+-]?[0-9]+)?[fFdD]?)\\b"
+        },
+        {
+          "name": "constant.numeric.integer.gosu",
+          "match": "\\b[0-9]+[lL]?\\b"
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.arithmetic.gosu",
+          "match": "\\+|\\-|\\*|/|%|\\+\\+|\\-\\-|\\+=|\\-=|\\*=|/=|%="
+        },
+        {
+          "name": "keyword.operator.comparison.gosu",
+          "match": "==|!=|<|>|<=|>=|<>"
+        },
+        {
+          "name": "keyword.operator.logical.gosu",
+          "match": "&&|\\|\\||!"
+        },
+        {
+          "name": "keyword.operator.bitwise.gosu",
+          "match": "&|\\||\\^|~|<<|>>|>>>"
+        },
+        {
+          "name": "keyword.operator.assignment.gosu",
+          "match": "="
+        },
+        {
+          "name": "keyword.operator.other.gosu",
+          "match": "\\?|:|\\.|\\->"
+        }
+      ]
+    },
+    "types": {
+      "patterns": [
+        {
+          "name": "storage.type.gosu",
+          "match": "\\b[A-Z][a-zA-Z0-9_]*\\b"
+        },
+        {
+          "name": "storage.type.generic.gosu",
+          "begin": "<",
+          "end": ">",
+          "patterns": [
+            {
+              "include": "#types"
+            }
+          ]
+        }
+      ]
+    },
+    "functions": {
+      "patterns": [
+        {
+          "name": "entity.name.function.gosu",
+          "match": "\\b([a-zA-Z_][a-zA-Z0-9_]*)\\s*(?=\\()"
+        },
+        {
+          "name": "storage.type.function.gosu",
+          "match": "\\bfunction\\b"
+        }
+      ]
+    },
+    "properties": {
+      "patterns": [
+        {
+          "name": "entity.name.property.gosu",
+          "match": "\\b(property)\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\b",
+          "captures": {
+            "1": {
+              "name": "storage.type.property.gosu"
+            },
+            "2": {
+              "name": "entity.name.property.gosu"
+            }
+          }
+        }
+      ]
+    },
+    "annotations": {
+      "patterns": [
+        {
+          "name": "meta.annotation.gosu",
+          "match": "@[a-zA-Z_][a-zA-Z0-9_]*",
+          "captures": {
+            "0": {
+              "name": "storage.type.annotation.gosu"
+            }
+          }
+        }
+      ]
+    },
+    "identifiers": {
+      "patterns": [
+        {
+          "name": "variable.other.gosu",
+          "match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b"
+        }
+      ]
+    }
+  }
+}

@@ -4,6 +4,7 @@
   "description": "Syntax highlighting and language support for GOSU programming language",
   "version": "1.0.1",
   "publisher": "OleksandrKucherenko",
+  "icon": "./vsix/gosu-lang.png",
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -11,32 +12,16 @@
     "type": "git",
     "url": "git+https://github.com/OleksandrKucherenko/vscode-gosu-lang.git"
   },
-  "categories": [
-    "Programming Languages"
-  ],
-  "keywords": [
-    "gosu",
-    "syntax highlighting",
-    "language support"
-  ],
+  "categories": ["Programming Languages"],
+  "keywords": ["gosu", "syntax highlighting", "language support"],
   "main": "./out/extension.js",
-  "activationEvents": [
-    "onLanguage:gosu"
-  ],
+  "activationEvents": ["onLanguage:gosu"],
   "contributes": {
     "languages": [
       {
         "id": "gosu",
-        "aliases": [
-          "GOSU",
-          "gosu"
-        ],
-        "extensions": [
-          ".gs",
-          ".gsx",
-          ".gst",
-          ".gsp"
-        ],
+        "aliases": ["GOSU", "gosu"],
+        "extensions": [".gs", ".gsx", ".gst", ".gsp"],
         "configuration": "./language-configuration.json"
       }
     ],
@@ -44,7 +29,7 @@
       {
         "language": "gosu",
         "scopeName": "source.gosu",
-        "path": "./syntaxes/gosu.tmLanguage.json"
+        "path": "./syntaxes/gosu.tmLanguage.simple.json"
       }
     ]
   },
@@ -60,18 +45,19 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@types/vscode": "^1.74.0",
     "@types/node": "^20.0.0",
-    "eslint": "^8.50.0",
+    "@types/vscode": "^1.74.0",
     "@typescript-eslint/eslint-plugin": "^6.7.3",
     "@typescript-eslint/parser": "^6.7.3",
+    "@vitest/coverage-v8": "^1.0.0",
+    "@vscode/vsce": "^2.15.0",
+    "eslint": "^8.50.0",
+    "oniguruma": "^7.2.3",
     "typescript": "^4.9.4",
     "vitest": "^1.0.0",
-    "@vitest/coverage-v8": "^1.0.0",
-    "@vscode/vsce": "^2.15.0"
+    "vscode-textmate": "^9.2.0"
   },
   "volta": {
-    "node": "20.11.1",
-    "npm": "10.2.4"
+    "node": "20.19.3"
   }
 }

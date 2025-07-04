@@ -3,3 +3,6 @@ node_modules
 
 # secrets of the project
 .secrets
+
+# prepared for publishing
+*.vsix
