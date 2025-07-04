@@ -1,11 +1,20 @@
-import { describe, test, expect } from 'vitest';
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import { describe, expect, test } from 'vitest';
 
 /**
  * This test validates the TextMate grammar patterns in gosu.tmLanguage.json
  * against the sample Gosu code file.
  */
+
+// Type definitions for TextMate grammar patterns
+interface GrammarPattern {
+  name?: string;
+  match?: string;
+  begin?: string;
+  end?: string;
+  patterns?: GrammarPattern[];
+}
 describe('Gosu TextMate Grammar', () => {
   // Load grammar file
   const grammarPath = path.resolve(__dirname, '../../syntaxes/gosu.tmLanguage.full.json');
@@ -17,10 +26,10 @@ describe('Gosu TextMate Grammar', () => {
   const sampleLines = sampleCode.split('\n');
   
   // Convert TextMate pattern to JavaScript regex
-  function tmPatternToRegex(pattern: string): RegExp {
+  function _tmPatternToRegex(pattern: string): RegExp {
     // Convert TextMate pattern to JavaScript regex
     // This is a simplified conversion and may not handle all cases
-    let jsPattern = pattern
+    const jsPattern = pattern
       .replace(/\\b/g, '\\b')     // word boundary
       .replace(/\\s\+/g, '\\s+')  // whitespace
       .replace(/\\\(/g, '\\(')    // literal parentheses
@@ -47,7 +56,7 @@ describe('Gosu TextMate Grammar', () => {
       }
       console.error(`✗ ${name} does not match any line in the sample`);  
       return false;
-    } catch (e) {
+    } catch (_e) {
       console.error(`✗ ${name} has invalid regex: ${regexStr}`);  
       return false;
     }
@@ -79,7 +88,7 @@ describe('Gosu TextMate Grammar', () => {
     const comments = grammar.repository.comments.patterns;
     
     // Line comment pattern
-    const lineCommentPattern = comments.find((p: any) => 
+    const lineCommentPattern = comments.find((p: GrammarPattern) => 
       p.name === 'comment.line.double-slash.gosu')?.begin;
     
     if (lineCommentPattern) {
@@ -89,7 +98,7 @@ describe('Gosu TextMate Grammar', () => {
     }
     
     // Block comment pattern
-    const blockCommentBegin = comments.find((p: any) => 
+    const blockCommentBegin = comments.find((p: GrammarPattern) => 
       p.name === 'comment.block.gosu')?.begin;
     
     if (blockCommentBegin) {
@@ -100,7 +109,7 @@ describe('Gosu TextMate Grammar', () => {
   });
 
   test('keyword patterns match the sample code', () => {
-    const keywordPatterns = grammar.repository.keywords.patterns;
+    const _keywordPatterns = grammar.repository.keywords.patterns;
     let matched = 0;
     
     // Test just a few key patterns
@@ -139,14 +148,14 @@ describe('Gosu TextMate Grammar', () => {
     const propertyPatterns = grammar.repository.properties.patterns;
     
     // Get property getter pattern
-    const getterPattern = propertyPatterns.find((p: any) => 
+    const getterPattern = propertyPatterns.find((p: GrammarPattern) => 
       p.name === 'meta.property.getter.gosu')?.match;
       
     if (getterPattern) {
       expect(testPatternAgainstSample('Property getter', getterPattern)).toBe(true);
     } else {
       // Try to find another property pattern if specific one not found
-      const anyPropertyPattern = propertyPatterns.find((p: any) => p.match)?.match;
+      const anyPropertyPattern = propertyPatterns.find((p: GrammarPattern) => p.match)?.match;
       if (anyPropertyPattern) {
         expect(testPatternAgainstSample('Any property', anyPropertyPattern)).toBe(true);
       } else {
@@ -159,7 +168,7 @@ describe('Gosu TextMate Grammar', () => {
     const functionPatterns = grammar.repository.functions.patterns;
     
     // Try to find a function declaration pattern
-    const functionPattern = functionPatterns.find((p: any) => p.match)?.match;
+    const functionPattern = functionPatterns.find((p: GrammarPattern) => p.match)?.match;
     
     if (functionPattern) {
       expect(testPatternAgainstSample('Function declaration', functionPattern)).toBe(true);

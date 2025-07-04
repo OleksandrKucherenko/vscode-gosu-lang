@@ -221,10 +221,9 @@ To publish to the VSCode Marketplace:
 
 ## Examples
 
-The extension includes example GOSU files in the `examples/` directory:
-- `HelloWorld.gs` - Basic class and property examples
-- `Enhancement.gsx` - GOSU enhancement features
-- `Interface.gs` - Interface and inheritance examples
+The extension includes example GOSU files in the `test-workspace/` directory:
+- `sample.gs` - Basic class and property examples
+- `gosu-syntax-full-sample.gsx` - GOSU enhancement features
 
 ## GOSU Language Resources
 

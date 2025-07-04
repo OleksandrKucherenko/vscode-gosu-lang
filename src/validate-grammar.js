@@ -45,7 +45,7 @@ function detectDuplicateKeywords() {
   
   // Find all patterns with match property that might contain keywords
   const patterns = [];
-  function findMatchPatterns(obj, category) {
+  function findMatchPatterns(obj, _category) {
     if (!obj) return;
     
     if (obj.match && typeof obj.match === 'string' && obj.name) {
