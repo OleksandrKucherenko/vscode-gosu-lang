@@ -29,7 +29,7 @@ jobs:
       - name: Setup Github Actions # allow use of `git push`
         run: | # shell
           git config --global user.name "Oleksandr K."
-          git config --global user.email "kucherenko.alex@gmail.com"
+          git config --global user.email "${{ secrets.AUTHOR_EMAIL }}"
           git add .
           git diff-index --quiet HEAD || git commit -m "Sync Github Actions"
 
