@@ -57,23 +57,67 @@ jobs:
           git add .
           git diff-index --quiet HEAD || git commit -m "Build changes for pre-release"
 
-      - name: Publish to Marketplace
+      - name: Check Current Version and Publish to Marketplace
+        id: publish_step
         run: |
+          # Get current version
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "Current version: $CURRENT_VERSION"
+          
           # Use the version increment type from input, default to patch
           VERSION_TYPE="${{ github.event.inputs.version_type || 'patch' }}"
-          npx vsce publish $VERSION_TYPE --pre-release --no-yarn
+          echo "Version increment type: $VERSION_TYPE"
+          
+          # Try to publish, capture output and handle version conflicts
+          if npx vsce publish $VERSION_TYPE --pre-release --no-yarn 2>&1 | tee publish_output.log; then
+            echo "publish_success=true" >> $GITHUB_OUTPUT
+            echo "✅ Successfully published to marketplace"
+          else
+            # Check if the error is due to version already existing
+            if grep -q "already exists" publish_output.log; then
+              echo "publish_success=false" >> $GITHUB_OUTPUT
+              echo "version_exists=true" >> $GITHUB_OUTPUT
+              echo "⚠️ Version already exists in marketplace"
+              
+              # Provide helpful guidance
+              echo ""
+              echo "📋 TO PUBLISH A NEW VERSION, run one of these commands locally:"
+              echo ""
+              echo "For PATCH version (1.0.3 → 1.0.4):"
+              echo "  npm version patch && git push --follow-tags"
+              echo ""
+              echo "For MINOR version (1.0.3 → 1.1.0):"
+              echo "  npm version minor && git push --follow-tags"
+              echo ""
+              echo "For MAJOR version (1.0.3 → 2.0.0):"
+              echo "  npm version major && git push --follow-tags"
+              echo ""
+              echo "Then re-run this workflow to publish the new version."
+              echo ""
+            else
+              echo "publish_success=false" >> $GITHUB_OUTPUT
+              echo "version_exists=false" >> $GITHUB_OUTPUT
+              echo "❌ Publishing failed for other reasons"
+              exit 1
+            fi
+          fi
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
       - name: Get Updated Version and Build VSIX
         id: get_updated_version
         run: |
-          # Get the updated version after publishing
+          # Get the version (updated if published, or current if skipped)
           NEW_VERSION=$(node -p "require('./package.json').version")
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
-          echo "Updated version: $NEW_VERSION"
           
-          # Build VSIX with the updated version
+          if [[ "${{ steps.publish_step.outputs.publish_success }}" == "true" ]]; then
+            echo "📦 Building VSIX with newly published version: $NEW_VERSION"
+          else
+            echo "📦 Building VSIX with current version: $NEW_VERSION (publishing was skipped)"
+          fi
+          
+          # Build VSIX
           vsce package --pre-release --no-yarn
           
           # Get the VSIX filename
@@ -84,21 +128,36 @@ jobs:
       - name: Create Git Tag and Push
         run: |
           NEW_VERSION="${{ steps.get_updated_version.outputs.new_version }}"
-          # Commit any remaining changes (like updated package.json)
-          git add .
-          git diff-index --quiet HEAD || git commit -m "Version bump to $NEW_VERSION for pre-release"
+          
+          if [[ "${{ steps.publish_step.outputs.publish_success }}" == "true" ]]; then
+            echo "🏷️ Processing Git operations for newly published version $NEW_VERSION"
+            # Commit any remaining changes (like updated package.json)
+            git add .
+            git diff-index --quiet HEAD || git commit -m "Version bump to $NEW_VERSION for pre-release"
+          else
+            echo "🏷️ Processing Git operations for existing version $NEW_VERSION (publishing was skipped)"
+            # Still commit any build changes
+            git add .
+            git diff-index --quiet HEAD || git commit -m "Build artifacts for version $NEW_VERSION"
+          fi
           
           # Create tag only if it doesn't exist
           if ! git rev-parse "v$NEW_VERSION" >/dev/null 2>&1; then
             echo "Creating new tag v$NEW_VERSION"
             git tag "v$NEW_VERSION"
+            TAG_CREATED=true
           else
             echo "Tag v$NEW_VERSION already exists, skipping tag creation"
+            TAG_CREATED=false
           fi
           
           # Push changes and tags
           git push origin main
-          git push origin "v$NEW_VERSION" || echo "Tag v$NEW_VERSION already exists on remote, continuing..."
+          if [[ "$TAG_CREATED" == "true" ]]; then
+            git push origin "v$NEW_VERSION"
+          else
+            echo "Skipping tag push since tag already exists"
+          fi
 
       - name: Create GitHub Pre-release
         uses: marvinpinto/action-automatic-releases@latest
