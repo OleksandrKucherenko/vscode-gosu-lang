@@ -1,0 +1,36 @@
+Executing prepublish script 'npm run vscode:prepublish'...
+
+> gosu-language-support@1.0.2 vscode:prepublish
+> npm run compile
+
+
+> gosu-language-support@1.0.2 compile
+> tsc -p ./
+
+v1.0.3
+Files included in the VSIX:
+tmp-3653-fwfOizlF7nHd
+├─ [Content_Types].xml 
+├─ extension.vsixmanifest 
+└─ extension/
+   ├─ LICENSE.txt [1.05 KB]
+   ├─ index.js [0.09 KB]
+   ├─ language-configuration.json [0.67 KB]
+   ├─ package.json [2.2 KB]
+   ├─ publish_output.log [0.18 KB]
+   ├─ readme.md 
+   ├─ out/
+   │  ├─ extension.js [0.82 KB]
+   │  └─ utils/
+   │     └─ gosuUtils.js [1.66 KB]
+   ├─ syntaxes/
+   │  ├─ gosu.tmLanguage.full.json [6.31 KB]
+   │  └─ gosu.tmLanguage.simple.json [5.69 KB]
+   ├─ test-workspace/
+   │  ├─ gosu-syntax-full-sample.gs [6.89 KB]
+   │  └─ sample.gs [0.72 KB]
+   └─ vsix/
+      └─ gosu-lang.png [6.39 KB]
+
+Publishing 'OleksandrKucherenko.gosu-language-support v1.0.3'...
+::error::OleksandrKucherenko.gosu-language-support v1.0.3 already exists.
