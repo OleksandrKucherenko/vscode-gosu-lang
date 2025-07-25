@@ -21,6 +21,7 @@ on:
       - '**.tmLanguage.full.json'
       - '**.language-configuration.json'
       - '**.ts'
+      - '.vscodeignore'
 
 jobs:
   release:

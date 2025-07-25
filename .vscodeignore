@@ -19,6 +19,11 @@ vsc-extension-quickstart.md
 biome.jsonc
 vitest.config.js
 vsix/logo-large.png
-**/*.ebnf
 .yarnrc.yml
 .yarn/**
+syntaxes/grammar/**
+**/.antlr/**
+!**/*.ebnf
+!**/*.g4
+
+**/*.log
