@@ -21,7 +21,7 @@ describe('Gosu TextMate Grammar', () => {
   const grammar = JSON.parse(fs.readFileSync(grammarPath, 'utf8'));
   
   // Load sample file
-  const samplePath = path.resolve(__dirname, '../../test-workspace/gosu-syntax-full-sample.gs');
+  const samplePath = path.resolve(__dirname, '../../gosu/gosu-syntax-full-sample.gs');
   const sampleCode = fs.readFileSync(samplePath, 'utf8');
   const sampleLines = sampleCode.split('\n');
   
