@@ -1,12 +1,13 @@
 const fs = require('node:fs');
 const path = require('node:path');
+const debug = require('debug')('gosu:test');
 
 // Load the grammar file
-const grammarPath = path.resolve(__dirname, '../syntaxes/gosu.tmLanguage.json');
+const grammarPath = path.resolve(__dirname, '../syntaxes/gosu.tmLanguage.full.json');
 const grammar = JSON.parse(fs.readFileSync(grammarPath, 'utf8'));
 
 // Load the sample file
-const samplePath = path.resolve(__dirname, '../test-workspace/gosu-syntax-full-sample.gs');
+const samplePath = path.resolve(__dirname, '../gosu/gosu-syntax-full-sample.gs');
 const sampleCode = fs.readFileSync(samplePath, 'utf8');
 const sampleLines = sampleCode.split('\n');
 
@@ -16,14 +17,14 @@ function testPattern(name, pattern) {
     const regex = new RegExp(pattern);
     for (const line of sampleLines) {
       if (regex.test(line)) {
-        console.log(`✓ ${name} matches: "${line.trim()}"`);  
+        debug(`✓ ${name} matches: "${line.trim()}"`);
         return true;
       }
     }
-    console.error(`✗ ${name} does not match any line in the sample`);
+    debug(`✗ ${name} does not match any line in the sample`);
     return false;
   } catch (e) {
-    console.error(`✗ ${name} has invalid regex: ${pattern}`, e);
+    debug(`✗ ${name} has invalid regex: ${pattern}`, e);
     return false;
   }
 }
@@ -89,52 +90,52 @@ function detectDuplicateKeywords() {
   }
   
   // Report duplicates
-  console.log('\n=== Checking for Duplicate Keywords ===\n');
+  debug('\n=== Checking for Duplicate Keywords ===\n');
   const duplicateKeywords = Object.entries(duplicates)
     .filter(([_, categories]) => categories.length > 1);
   
   if (duplicateKeywords.length === 0) {
-    console.log('✓ No duplicate keywords found across pattern categories');
+    debug('✓ No duplicate keywords found across pattern categories');
   } else {
-    console.log(`⚠️ Found ${duplicateKeywords.length} keywords defined in multiple pattern categories:\n`);
+    debug(`⚠️ Found ${duplicateKeywords.length} keywords defined in multiple pattern categories:\n`);
     
     for (const [keyword, categories] of duplicateKeywords) {
-      console.log(`'${keyword}' appears in: ${categories.join(', ')}`);
+      debug(`'${keyword}' appears in: ${categories.join(', ')}`);
     }
   }
 }
 
 // Start the validation process
-console.log('\n=== Testing Gosu Grammar Patterns ===\n');
+debug('\n=== Testing Gosu Grammar Patterns ===\n');
 
 // Validate basic grammar structure
-console.log(`Grammar name: ${grammar.name}`);
-console.log(`Grammar scope: ${grammar.scopeName}`);
+debug(`Grammar name: ${grammar.name}`);
+debug(`Grammar scope: ${grammar.scopeName}`);
 const fileTypes = grammar.fileTypes.join(', ');
-console.log(`File types: ${fileTypes}`);
+debug(`File types: ${fileTypes}`);
 
 // Check critical repositories
-console.log('\n=== Checking Required Repositories ===\n');
+debug('\n=== Checking Required Repositories ===\n');
 const requiredRepos = ['comments', 'keywords', 'strings', 'annotations', 'properties', 'functions'];
 let allReposPresent = true;
 
 for (const repo of requiredRepos) {
   if (grammar.repository?.[repo]) {
-    console.log(`✓ Found repository: ${repo}`);
+    debug(`✓ Found repository: ${repo}`);
   } else {
-    console.log(`✗ Missing repository: ${repo}`);
+    debug(`✗ Missing repository: ${repo}`);
     allReposPresent = false;
   }
 }
 
 if (allReposPresent) {
-  console.log('\n✓ All critical repositories present.');
+  debug('\n✓ All critical repositories present.');
 } else {
-  console.log('\n✗ Some critical repositories are missing.');
+  debug('\n✗ Some critical repositories are missing.');
 }
 
 // Test critical patterns
-console.log('\n=== Testing Critical Patterns ===\n');
+debug('\n=== Testing Critical Patterns ===\n');
 
 // Line comment
 testPattern("Line comment", "//.*");
@@ -159,16 +160,16 @@ testPattern("property get pattern", "property\\s+get");
 testPattern("property set pattern", "property\\s+set");
 
 // Print all keyword patterns from the grammar
-console.log('\n=== Keyword Patterns in Grammar ===\n');
+debug('\n=== Keyword Patterns in Grammar ===\n');
 
 if (grammar.repository?.keywords?.patterns) {
   for (const pattern of grammar.repository.keywords.patterns) {
-    console.log(`Pattern: ${pattern.name || 'unnamed'}`);
-    console.log(`  Match: ${pattern.match || 'N/A'}`);
+    debug(`Pattern: ${pattern.name || 'unnamed'}`);
+    debug(`  Match: ${pattern.match || 'N/A'}`);
   }
 }
 
 // Run the duplicate keyword detector
 detectDuplicateKeywords();
 
-console.log('\n=== Grammar Validation Complete ===');
+debug('\n=== Grammar Validation Complete ===');

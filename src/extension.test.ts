@@ -1,49 +1,6 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { mockVscode } from './test/mock.types';
 
-// Mock vscode module since we're testing outside of VSCode environment
-interface MockWorkspaceState {
-  get: (key: string) => unknown;
-  update: (key: string, value: unknown) => Promise<void>;
-}
-
-interface MockGlobalState {
-  get: (key: string) => unknown;
-  update: (key: string, value: unknown) => Promise<void>;
-}
-
-interface MockExtensionContext {
-  subscriptions: { dispose(): unknown }[];
-  workspaceState: MockWorkspaceState;
-  globalState: MockGlobalState;
-  extensionPath: string;
-  storagePath?: string;
-  globalStoragePath: string;
-  logPath: string;
-}
-
-const mockVscode = {
-  ExtensionContext: class implements MockExtensionContext {
-    subscriptions: { dispose(): unknown }[] = [];
-    workspaceState: MockWorkspaceState = {
-      get: () => undefined,
-      update: async () => {}
-    };
-    globalState: MockGlobalState = {
-      get: () => undefined,
-      update: async () => {}
-    };
-    extensionPath = '';
-    globalStoragePath = '';
-    logPath = '';
-  },
-  window: {
-    showInformationMessage: vi.fn()
-  },
-  languages: {
-    registerCompletionItemProvider: vi.fn(),
-    registerHoverProvider: vi.fn()
-  }
-};
 
 vi.mock('vscode', () => mockVscode);
 
@@ -51,6 +8,15 @@ vi.mock('vscode', () => mockVscode);
 import { activate, deactivate } from './extension';
 
 describe('Extension', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.resetModules();
+    vi.restoreAllMocks();
+  });
+
   it('should activate without errors', () => {
     const mockContext = new mockVscode.ExtensionContext();
     
@@ -65,14 +31,20 @@ describe('Extension', () => {
     }).not.toThrow();
   });
 
-  it('should log activation message', () => {
-    const consoleSpy = vi.spyOn(console, 'log');
+  it('should log activation message', async () => {
+    // Mock the debug module
+    const loggerSpy = vi.fn();
+    vi.doMock('debug', () => ({
+      default: () => loggerSpy
+    }));
+    
+    // Re-import the module with mocked debug
+    const { activate } = await import('./extension');
+    
     const mockContext = new mockVscode.ExtensionContext();
     
     activate(mockContext as unknown as import('vscode').ExtensionContext);
     
-    expect(consoleSpy).toHaveBeenCalledWith('GOSU Language Support extension is now active!');
-    
-    consoleSpy.mockRestore();
+    expect(loggerSpy).toHaveBeenCalledWith('GOSU Language Support extension is now active!');
   });
 });
