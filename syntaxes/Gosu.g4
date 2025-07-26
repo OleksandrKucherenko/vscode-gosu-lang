@@ -38,7 +38,9 @@ parameters: '(' parameterDeclarationList? ')' ;
 functionDefn: 'function' id typeVariableDefs parameters (':' typeLiteral)? ;
 constructorDefn: 'construct' parameters (':' typeLiteral)? ;
 modifiers: (annotation | 'private' | 'internal' | 'protected' | 'public' | 'static' | 'abstract' | 'override' | 'final' | 'transient')* ;
-statement: ((ifStatement | tryCatchFinallyStatement | throwStatement | 'continue' | 'break' | returnStatement | forEachStatement | whileStatement | doWhileStatement | switchStatement | usingStatement | assertStatement | 'final' localVarStatement | localVarStatement | evalExpr | assignmentOrMethodCall | statementBlock) (';')?) | ';' ;
+statement: ((ifStatement | tryCatchFinallyStatement | throwStatement | 'continue' | 'break' | returnStatement | forEachStatement | whileStatement | doWhileStatement | switchStatement | usingStatement | assertStatement | 'final' localVarStatement | localVarStatement | evalExpr | assignmentOrMethodCall | incrementDecrementStatement | statementBlock) (';')?) | ';' ;
+
+incrementDecrementStatement: (primaryExpr indirectMemberAccess)? incrementOp ;
 ifStatement: 'if' '(' expression ')' statement (';')? ('else' statement)? ;
 tryCatchFinallyStatement: 'try' statementBlock (catchClause+ ('finally' statementBlock)? | 'finally' statementBlock) ;
 catchClause: 'catch' '(' 'var'? id (':' typeLiteral)? ')' statementBlock ;
@@ -56,7 +58,7 @@ indexRest: indexVar iteratorVar | iteratorVar indexVar | indexVar | iteratorVar 
 indexVar: 'index' id ;
 iteratorVar: 'iterator' id ;
 thisSuperExpr: 'this' | 'super' ;
-assignmentOrMethodCall: ((newExpr | thisSuperExpr | typeLiteralExpr | parenthExpr | StringLiteral) indirectMemberAccess) (incrementOp | assignmentOp expression)? ;
+assignmentOrMethodCall: ((newExpr | thisSuperExpr | typeLiteralExpr | parenthExpr | StringLiteral | literal) indirectMemberAccess) (incrementOp | assignmentOp expression)? ;
 statementBlock: statementBlockBody ;
 statementBlockBody: '{' statement* '}' ;
 blockTypeLiteral: blockLiteral ;
@@ -85,7 +87,9 @@ additiveExpr: multiplicativeExpr (additiveOp multiplicativeExpr)* ;
 multiplicativeExpr: typeAsExpr (multiplicativeOp typeAsExpr)* ;
 typeAsExpr: unaryExpr (typeAsOp typeLiteral)* ;
 unaryExpr: ('+' | '-' | '!-') unaryExprNotPlusMinus | unaryExprNotPlusMinus ;
-unaryExprNotPlusMinus: unaryOp unaryExpr | '\\' blockExpr | evalExpr | primaryExpr ;
+unaryExprNotPlusMinus: unaryOp unaryExpr | blockExprWrap | evalExpr | primaryExpr ;
+
+blockExprWrap: BACKSLASH blockExpr ;
 blockExpr: parameterDeclarationList? '->' (expression | statementBlock) ;
 parameterDeclarationList: parameterDeclaration (',' parameterDeclaration)* ;
 parameterDeclaration: annotation* 'final'? id ((':' typeLiteral ('=' expression)?) | blockTypeLiteral | '=' expression)? ;
@@ -97,7 +101,7 @@ namedArgumentExpression: ':' id '=' expression ;
 evalExpr: 'eval' '(' expression ')' ;
 featureLiteral: '#' (id | 'construct') typeArguments optionalArguments ;
 standAloneDataStructureInitialization: '{' initializerExpression? '}' ;
-primaryExpr: (newExpr | thisSuperExpr | literal | typeLiteralExpr | parenthExpr | standAloneDataStructureInitialization) indirectMemberAccess ;
+primaryExpr: (newExpr | thisSuperExpr | literal | typeLiteralExpr | parenthExpr | standAloneDataStructureInitialization | blockExprWrap) indirectMemberAccess ;
 parenthExpr: '(' expression ')' ;
 newExpr: 'new' classOrInterfaceType? ((arguments ('{' (initializer | anonymousInnerClass) '}')?) | ('[' ((']' ('[' ']')* arrayInitializer) | (expression ']' ('[' expression ']')* ('[' ']')*)))) ;
 anonymousInnerClass: classMembers ;
@@ -113,9 +117,9 @@ literal: NumberLiteral | featureLiteral | StringLiteral | CharLiteral | 'true' |
 orOp: '||' | 'or' ;
 andOp: '&&' | 'and' ;
 assignmentOp: '=' | '+=' | '-=' | '*=' | '/=' | '&=' | '&&=' | '|=' | '||=' | '^=' | '%=' | '<<=' | '>>>=' | '>>=' ;
-incrementOp: '++' | '--' ;
+incrementOp: INCREMENT | DECREMENT ;
 equalityOp: '===' | '!==' | '==' | '!=' ;
-intervalOp: '..' | '|..' | '..|' | '|..|' ;
+intervalOp: RANGE_INCLUSIVE | RANGE_EXCLUSIVE_LEFT | RANGE_EXCLUSIVE_RIGHT | RANGE_EXCLUSIVE_BOTH ;
 relOp: '<=' | '>=' | '<' | '>' ;
 bitshiftOp: '<<' | '>>>' | '>>' ;
 additiveOp: '+' | '-' | '?+' | '?-' | '!+' | '!-' ;
@@ -127,6 +131,15 @@ idclassOrInterfaceType: Ident | 'true' | 'false' | 'NaN' | 'Infinity' | 'null' |
 idAll: id | 'and' | 'or' | 'not' | 'in' | 'var' | 'delegate' | 'represents' | 'typeof' | 'statictypeof' | 'typeis' | 'typeas' | 'package' | 'uses' | 'if' | 'else' | 'unless' | 'foreach' | 'for' | 'while' | 'do' | 'continue' | 'break' | 'return' | 'construct' | 'function' | 'property' | 'try' | 'catch' | 'finally' | 'throw' | 'new' | 'switch' | 'case' | 'default' | 'eval' | 'override' | 'extends' | 'transient' | 'implements' | 'class' | 'interface' | 'structure' | 'enum' | 'using' ;
 
 // LEXER RULES
+// Multi-character operators must be defined first for proper precedence
+RANGE_EXCLUSIVE_BOTH: '|..|' ;
+RANGE_EXCLUSIVE_RIGHT: '..|' ;
+RANGE_EXCLUSIVE_LEFT: '|..' ;
+RANGE_INCLUSIVE: '..' ;
+INCREMENT: '++' ;
+DECREMENT: '--' ;
+BACKSLASH: '\\' ;
+
 Ident: Letter (Digit | Letter)* ;
 NumberLiteral: 'NaN' | 'Infinity' | HexLiteral | BinLiteral | IntOrFloatPointLiteral ;
 BinLiteral: ('0b' | '0B') ('0' | '1') ('0' | '1')* IntegerTypeSuffix? ;
@@ -141,7 +154,9 @@ IntOrFloatPointLiteral:
     )?
 ;
 CharLiteral: '\'' (EscapeSequence | ~[\r\n'\\]) '\'' ;
-StringLiteral: '"' (EscapeSequence | ~[\r\n"\\])* '"' | '\'' (EscapeSequence | ~[\r\n'\\])* '\'' ;
+StringLiteral: 
+    '"' (EscapeSequence | ~[\\"$\r\n] | '$' ('{' ~[}]* '}' | ~[{"\r\n]))* ('"' | '$"')
+    | '\'' (EscapeSequence | ~[\\'$\r\n] | '$' ('{' ~[}]* '}' | ~[{"\r\n]))* ('\'' | '$\'') ;
 
 fragment HexDigit: Digit | [a-fA-F] ;
 fragment IntegerTypeSuffix: ('l' | 'L' | 's' | 'S' | 'bi' | 'BI' | 'b' | 'B') ;
@@ -151,7 +166,7 @@ fragment NonZeroDigit: [1-9] ;
 fragment ZeroToSeven: [0-7] ;
 fragment Exponent: ('e' | 'E') ('+' | '-')? Digit+ ;
 fragment FloatTypeSuffix: ('f' | 'F' | 'd' | 'D' | 'bd' | 'BD') ;
-fragment EscapeSequence: '\\' ([vabt\\nfr"'$<] | UnicodeEscape | OctalEscape) ;
+fragment EscapeSequence: '\\' ('v' | 'a' | 'b' | 't' | 'n' | 'f' | 'r' | '"' | '\'' | '\\' | '$' | '<') | UnicodeEscape | OctalEscape ;
 fragment OctalEscape: ('\\' [0-3] ZeroToSeven ZeroToSeven) | ('\\' ZeroToSeven ZeroToSeven) | ('\\' ZeroToSeven) ;
 fragment UnicodeEscape: '\\u' HexDigit HexDigit HexDigit HexDigit ;
 

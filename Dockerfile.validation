@@ -1,0 +1,42 @@
+# Gosu Language Validation Environment
+FROM openjdk:11-jdk-slim
+
+# Install required tools
+RUN apt-get update && apt-get install -y \
+    wget \
+    curl \
+    git \
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up Gosu environment
+ENV GOSU_HOME=/opt/gosu
+ENV PATH=$GOSU_HOME/bin:$PATH
+
+# Create directories
+RUN mkdir -p $GOSU_HOME/bin $GOSU_HOME/lib $GOSU_HOME/samples
+
+# Create a simple Gosu project structure
+WORKDIR /workspace
+
+# Copy validation files
+COPY scripts/validate-gosu-syntax.sh /workspace/
+COPY test-workspace/gosu-syntax-full-sample.gs /workspace/samples/
+COPY syntaxes/Gosu.ebnf /workspace/grammar/
+COPY syntaxes/Gosu.g4 /workspace/grammar/
+
+# Create validation script
+RUN chmod +x /workspace/validate-gosu-syntax.sh
+
+# Create a simple validation entrypoint
+RUN echo '#!/bin/bash' > /workspace/validate.sh && \
+    echo 'echo "=== Gosu Syntax Validation Environment ==="' >> /workspace/validate.sh && \
+    echo 'echo "Validating Gosu syntax..."' >> /workspace/validate.sh && \
+    echo '/workspace/validate-gosu-syntax.sh' >> /workspace/validate.sh && \
+    chmod +x /workspace/validate.sh
+
+# Set up for validation
+WORKDIR /workspace
+
+# Default command
+CMD ["/workspace/validate.sh"]

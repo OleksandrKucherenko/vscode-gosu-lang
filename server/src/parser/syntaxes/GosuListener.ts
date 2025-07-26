@@ -37,6 +37,7 @@ import { FunctionDefnContext } from "./GosuParser";
 import { ConstructorDefnContext } from "./GosuParser";
 import { ModifiersContext } from "./GosuParser";
 import { StatementContext } from "./GosuParser";
+import { IncrementDecrementStatementContext } from "./GosuParser";
 import { IfStatementContext } from "./GosuParser";
 import { TryCatchFinallyStatementContext } from "./GosuParser";
 import { CatchClauseContext } from "./GosuParser";
@@ -84,6 +85,7 @@ import { MultiplicativeExprContext } from "./GosuParser";
 import { TypeAsExprContext } from "./GosuParser";
 import { UnaryExprContext } from "./GosuParser";
 import { UnaryExprNotPlusMinusContext } from "./GosuParser";
+import { BlockExprWrapContext } from "./GosuParser";
 import { BlockExprContext } from "./GosuParser";
 import { ParameterDeclarationListContext } from "./GosuParser";
 import { ParameterDeclarationContext } from "./GosuParser";
@@ -503,6 +505,17 @@ export interface GosuListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitStatement?: (ctx: StatementContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `GosuParser.incrementDecrementStatement`.
+	 * @param ctx the parse tree
+	 */
+	enterIncrementDecrementStatement?: (ctx: IncrementDecrementStatementContext) => void;
+	/**
+	 * Exit a parse tree produced by `GosuParser.incrementDecrementStatement`.
+	 * @param ctx the parse tree
+	 */
+	exitIncrementDecrementStatement?: (ctx: IncrementDecrementStatementContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `GosuParser.ifStatement`.
@@ -1020,6 +1033,17 @@ export interface GosuListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitUnaryExprNotPlusMinus?: (ctx: UnaryExprNotPlusMinusContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `GosuParser.blockExprWrap`.
+	 * @param ctx the parse tree
+	 */
+	enterBlockExprWrap?: (ctx: BlockExprWrapContext) => void;
+	/**
+	 * Exit a parse tree produced by `GosuParser.blockExprWrap`.
+	 * @param ctx the parse tree
+	 */
+	exitBlockExprWrap?: (ctx: BlockExprWrapContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `GosuParser.blockExpr`.

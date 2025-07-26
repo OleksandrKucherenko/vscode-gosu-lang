@@ -118,17 +118,26 @@ describe('Gosu Parser Tests', () => {
       console.log(`sample.gs parsed successfully: ${result.nodeCount} nodes`);
     });
 
-    it.only('should parse gosu-syntax-full-sample.gs without errors', () => {
+    it('should parse gosu-syntax-full-sample.gs without errors', () => {
       const sourceCode = readTestFile('gosu-syntax-full-sample.gs');
       const result = parseGosuCode(sourceCode);
       
       // Verify no lexer errors
+      if (result.lexerErrors.length > 0) {
+        console.error('Lexer Errors:', result.lexerErrors);
+      }
       expect(result.lexerErrors).toHaveLength(0);
       
       // Verify no parser errors
+      if (result.errors.length > 0) {
+        console.error('Parser Errors:', result.errors);
+      }
       expect(result.errors).toHaveLength(0);
       
       // Verify no error nodes in parse tree
+      if (result.errorNodeCount > 0) {
+        console.error('Error Nodes in Parse Tree:', result.errorNodeCount);
+      }
       expect(result.errorNodeCount).toBe(0);
       
       // Verify parse tree was created

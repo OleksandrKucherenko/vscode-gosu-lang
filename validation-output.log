@@ -1,0 +1,93 @@
+
+> gosu-language-support@1.0.3 test:watch
+> vitest --watch
+
+
+ DEV  v3.2.4 /mnt/wsl/workspace/vscode-gosu-lang
+
+stdout | src/test/grammar.test.ts > Gosu TextMate Grammar > comment patterns match the sample code
+✓ Line comment matches: "// Field definitions with various syntax patterns"
+✓ Block comment begin matches: "/**"
+
+stdout | src/test/grammar.test.ts > Gosu TextMate Grammar > keyword patterns match the sample code
+✓ class declaration found in sample
+✓ package declaration found in sample
+✓ uses statement found in sample
+✓ property found in sample
+✓ constructor found in sample
+✓ function found in sample
+
+stdout | src/test/grammar.test.ts > Gosu TextMate Grammar > annotation pattern matches the sample code
+✓ Annotation matches: "@Deprecated("Sample reason")"
+
+stdout | src/test/grammar.test.ts > Gosu TextMate Grammar > property patterns match the sample code
+✓ Property getter matches: "property get IntValue() : int {"
+
+stdout | src/test/grammar.test.ts > Gosu TextMate Grammar > function patterns match the sample code
+✓ Function declaration matches: "@Deprecated("Sample reason")"
+
+ ✓ src/test/grammar.test.ts (7 tests) 6ms
+stdout | src/extension.test.ts > Extension > should activate without errors
+GOSU Language Support extension is now active!
+
+stdout | src/extension.test.ts > Extension > should log activation message
+GOSU Language Support extension is now active!
+
+ ✓ src/utils/gosuUtils.test.ts (18 tests) 7ms
+ ✓ src/extension.test.ts (3 tests) 5ms
+stdout | server/src/parser/parser.test.ts > Gosu Parser Tests > Sample File Parsing > should parse sample.gs without errors
+sample.gs parsed successfully: 309 nodes
+
+stderr | server/src/parser/parser.test.ts > Gosu Parser Tests > Sample File Parsing > should parse gosu-syntax-full-sample.gs without errors
+Parser Errors: [
+  [32m"Line 175:16 - extraneous input '.5' expecting {')', 'index', 'iterator'}"[39m,
+  [32m"Line 179:17 - mismatched input '|' expecting {'package', 'class', 'extends', 'implements', 'interface', 'structure', 'enum', 'enhancement', 'delegate', 'represents', 'var', 'as', 'readonly', 'property', 'get', 'set', 'uses', 'function', 'construct', 'private', 'internal', 'protected', 'public', 'static', 'abstract', 'override', 'final', 'transient', 'continue', 'break', 'if', 'else', 'try', 'finally', 'catch', 'assert', 'using', 'return', 'while', 'do', 'switch', 'case', 'default', 'throw', 'foreach', 'for', 'in', 'index', 'iterator', 'block', 'typeis', 'eval', 'new', 'true', 'false', 'null', 'or', 'and', 'typeas', 'not', 'typeof', 'statictypeof', 'NaN', 'Infinity', 'length', 'exists', 'startswith', 'contains', 'where', 'find', 'except', 'hide', 'outer', 'execution', 'request', 'session', 'application', 'void', 'classpath', 'typeloader', 'unless', Ident}"[39m,
+  [32m"Line 207:18 - mismatched input '|' expecting {'package', 'class', 'extends', 'implements', 'interface', 'structure', 'enum', 'enhancement', 'delegate', 'represents', 'var', 'as', 'readonly', 'property', 'get', 'set', 'uses', 'function', 'construct', 'private', 'internal', 'protected', 'public', 'static', 'abstract', 'override', 'final', 'transient', 'continue', 'break', 'if', 'else', 'try', 'finally', 'catch', 'assert', 'using', 'return', 'while', 'do', 'switch', 'case', 'default', 'throw', 'foreach', 'for', 'in', 'index', 'iterator', 'block', 'typeis', 'eval', 'new', 'true', 'false', 'null', 'or', 'and', 'typeas', 'not', 'typeof', 'statictypeof', 'NaN', 'Infinity', 'length', 'exists', 'startswith', 'contains', 'where', 'find', 'except', 'hide', 'outer', 'execution', 'request', 'session', 'application', 'void', 'classpath', 'typeloader', 'unless', Ident}"[39m,
+  [32m"Line 266:13 - extraneous input '--' expecting {'enhancement', '{', 'as', 'readonly', 'get', 'set', '(', 'private', 'internal', 'protected', 'public', 'static', 'abstract', 'final', 'assert', 'index', 'iterator', 'this', 'super', 'block', '+', '-', '!-', 'eval', '#', 'new', 'true', 'false', 'null', '~', '!', 'not', 'typeof', 'statictypeof', 'NaN', 'Infinity', 'length', 'exists', 'startswith', 'contains', 'where', 'find', 'except', 'hide', 'outer', 'execution', 'request', 'session', 'application', 'void', 'classpath', 'typeloader', '\\', Ident, NumberLiteral, CharLiteral, StringLiteral}"[39m,
+  [32m"Line 320:20 - mismatched input '|' expecting {'package', 'class', 'extends', 'implements', 'interface', 'structure', 'enum', 'enhancement', 'delegate', 'represents', 'var', 'as', 'readonly', 'property', 'get', 'set', 'uses', 'function', 'construct', 'private', 'internal', 'protected', 'public', 'static', 'abstract', 'override', 'final', 'transient', 'continue', 'break', 'if', 'else', 'try', 'finally', 'catch', 'assert', 'using', 'return', 'while', 'do', 'switch', 'case', 'default', 'throw', 'foreach', 'for', 'in', 'index', 'iterator', 'block', 'typeis', 'eval', 'new', 'true', 'false', 'null', 'or', 'and', 'typeas', 'not', 'typeof', 'statictypeof', 'NaN', 'Infinity', 'length', 'exists', 'startswith', 'contains', 'where', 'find', 'except', 'hide', 'outer', 'execution', 'request', 'session', 'application', 'void', 'classpath', 'typeloader', 'unless', Ident}"[39m,
+  [32m"Line 442:15 - extraneous input '*' expecting {'enhancement', '{', 'as', 'readonly', 'get', 'set', '(', 'private', 'internal', 'protected', 'public', 'static', 'abstract', 'final', 'assert', 'index', 'iterator', 'this', 'super', 'block', '+', '-', '!-', 'eval', '#', 'new', 'true', 'false', 'null', '~', '!', 'not', 'typeof', 'statictypeof', 'NaN', 'Infinity', 'length', 'exists', 'startswith', 'contains', 'where', 'find', 'except', 'hide', 'outer', 'execution', 'request', 'session', 'application', 'void', 'classpath', 'typeloader', '\\', Ident, NumberLiteral, CharLiteral, StringLiteral}"[39m,
+  [32m"Line 449:27 - extraneous input '>' expecting {'enhancement', '{', 'as', 'readonly', 'get', 'set', '(', 'private', 'internal', 'protected', 'public', 'static', 'abstract', 'final', 'assert', 'index', 'iterator', 'this', 'super', 'block', '+', '-', '!-', 'eval', '#', 'new', 'true', 'false', 'null', '~', '!', 'not', 'typeof', 'statictypeof', 'NaN', 'Infinity', 'length', 'exists', 'startswith', 'contains', 'where', 'find', 'except', 'hide', 'outer', 'execution', 'request', 'session', 'application', 'void', 'classpath', 'typeloader', '\\', Ident, NumberLiteral, CharLiteral, StringLiteral}"[39m,
+  [32m"Line 454:2 - mismatched input 'counter' expecting {'@', '.', 'class', 'interface', 'structure', 'enum', 'enhancement', '[', '}', ';', 'delegate', 'var', 'as', 'property', '*', '<', '>', '(', 'function', 'construct', 'private', 'internal', 'protected', 'public', 'static', 'abstract', 'override', 'final', 'transient', '&', '?', '?:', '|', '^', 'typeis', '+', '-', '!-', '#', '?.', '*.', '?[', '||', 'or', '&&', 'and', '===', '!==', '==', '!=', '<=', '>=', '<<', '>>>', '>>', '?+', '?-', '!+', '/', '%', '?*', '!*', '?/', '?%', 'typeas', '|..|', '..|', '|..', '..'}"[39m
+]
+
+ ❯ server/src/parser/parser.test.ts (9 tests | 1 failed) 414ms
+   ✓ Gosu Parser Tests > Sample File Parsing > should parse sample.gs without errors 94ms
+   × Gosu Parser Tests > Sample File Parsing > should parse gosu-syntax-full-sample.gs without errors 214ms
+     → expected [ …(8) ] to have a length of +0 but got 8
+   ✓ Gosu Parser Tests > Parse Tree Structure > should create valid parse tree structure for sample.gs 5ms
+   ✓ Gosu Parser Tests > Parse Tree Structure > should handle complex syntax in full sample 99ms
+   ✓ Gosu Parser Tests > Error Handling > should handle empty input gracefully 0ms
+   ✓ Gosu Parser Tests > Error Handling > should handle whitespace-only input 0ms
+   ✓ Gosu Parser Tests > Error Handling > should handle comments-only input 0ms
+   ✓ Gosu Parser Tests > Lexer Token Tests > should tokenize keywords correctly 0ms
+   ✓ Gosu Parser Tests > Lexer Token Tests > should tokenize identifiers and literals 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/src/parser/parser.test.ts > Gosu Parser Tests > Sample File Parsing > should parse gosu-syntax-full-sample.gs without errors
+AssertionError: expected [ …(8) ] to have a length of +0 but got 8
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 0[39m
+[31m+ 8[39m
+
+ ❯ server/src/parser/parser.test.ts:135:29
+    133|         console.error('Parser Errors:', result.errors);
+    134|       }
+    135|       expect(result.errors).toHaveLength(0);
+       |                             ^
+    136|       
+    137|       // Verify no error nodes in parse tree
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  1 failed | 36 passed (37)
+   Start at  16:52:21
+   Duration  1.05s (transform 336ms, setup 0ms, collect 550ms, tests 432ms, environment 1ms, prepare 251ms)
+
+ FAIL  Tests failed. Watching for file changes...
+       press h to show help, press q to quit

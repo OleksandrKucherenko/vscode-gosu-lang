@@ -1,0 +1,38 @@
+plugins {
+    id 'org.gosu-lang.gosu' version '2.2.0'
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.gosu-lang.gosu:gosu-core-api:2.2.0'
+    implementation 'org.gosu-lang.gosu:gosu-core:2.2.0'
+    implementation 'systems.manifold:manifold:2025.1.22'
+}
+
+// Configure source sets for Gosu compilation
+sourceSets {
+    main {
+        gosu {
+            srcDirs = ['../test-workspace']
+        }
+    }
+}
+
+// Task to compile and validate Gosu syntax
+tasks.register('validateGosuSyntax') {
+    group = 'verification'
+    description = 'Validate Gosu syntax using official compiler'
+    
+    doLast {
+        println "=== Official Gosu Compiler Validation ==="
+        println "Validating: ../test-workspace/gosu-syntax-full-sample.gs"
+        println "Compiler: Official Gosu via gradle-gosu-plugin"
+    }
+}
+
+// Ensure compilation happens
+tasks.compileGosu.dependsOn validateGosuSyntax
