@@ -7,9 +7,20 @@
         "-i",
         "--rm",
         "--mount",
-        "type=bind,src=/home/developer/workspace/,dst=/projects",
+        "type=bind,src=/home/developer/workspace/vscode-gosu-lang/,dst=/projects",
         "mcp/filesystem",
         "/projects"
+      ]
+    },
+    "git": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "--mount",
+        "type=bind,src=/home/developer/workspace/vscode-gosu-lang,dst=/workspace",
+        "mcp/git"
       ]
     }
   }
