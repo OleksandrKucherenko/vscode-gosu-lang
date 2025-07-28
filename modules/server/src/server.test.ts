@@ -2,6 +2,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createConnection, TextDocuments, InitializeParams, InitializeResult } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { createServer, GosuLanguageServer } from './server';
+import Debug from 'debug';
+
+// Create debug logger for tests
+const debugTest = Debug('gosu:lsp:test:server');
 
 // Mock the connection
 vi.mock('vscode-languageserver/node', async () => {
@@ -25,10 +29,11 @@ describe('GosuLanguageServer', () => {
   let server: GosuLanguageServer;
 
   beforeEach(() => {
-    // Reset mocks
+    // Given: Clean test environment
     vi.clearAllMocks();
+    debugTest('Setting up test environment');
 
-    // Setup mock connection
+    // Given: Mock LSP connection with all required handlers
     mockConnection = {
       onInitialize: vi.fn(),
       onInitialized: vi.fn(),
@@ -41,7 +46,7 @@ describe('GosuLanguageServer', () => {
       }
     };
 
-    // Setup mock documents
+    // Given: Mock text document manager
     mockDocuments = {
       onDidOpen: vi.fn(),
       onDidChangeContent: vi.fn(),
@@ -49,49 +54,95 @@ describe('GosuLanguageServer', () => {
       listen: vi.fn()
     };
 
-    // Mock implementations
+    // Given: Mocked constructor functions return our test doubles
     (createConnection as any).mockReturnValue(mockConnection);
     (TextDocuments as any).mockReturnValue(mockDocuments);
 
+    // When: Create server instance for testing
     server = createServer();
+    debugTest('Created server instance for testing');
   });
 
   describe('initialization', () => {
     it('should create server with connection and documents', () => {
+      // Given: Server has been created in beforeEach
+      debugTest('Testing server creation with proper components');
+      
+      // When: Server instance is validated
+      // (action already completed in beforeEach)
+      
+      // Then: LSP connection and documents should be initialized
       expect(createConnection).toHaveBeenCalled();
       expect(TextDocuments).toHaveBeenCalled();
+      // And: Server should be properly constructed
       expect(server).toBeDefined();
       expect(server.connection).toBe(mockConnection);
       expect(server.documents).toBe(mockDocuments);
+      
+      debugTest('Server creation validation completed');
     });
 
     it('should register onInitialize handler', () => {
+      // Given: Server has been created
+      debugTest('Testing onInitialize handler registration');
+      
+      // When: Server registration is checked
+      // (registration happened during server creation)
+      
+      // Then: onInitialize should be registered with a function
       expect(mockConnection.onInitialize).toHaveBeenCalledWith(expect.any(Function));
+      
+      debugTest('onInitialize handler registration verified');
     });
 
     it('should register onInitialized handler', () => {
+      // Given: Server has been created
+      debugTest('Testing onInitialized handler registration');
+      
+      // When: Server registration is checked
+      // (registration happened during server creation)
+      
+      // Then: onInitialized should be registered with a function
       expect(mockConnection.onInitialized).toHaveBeenCalledWith(expect.any(Function));
+      
+      debugTest('onInitialized handler registration verified');
     });
 
     it('should register document event handlers', () => {
+      // Given: Server has been created
+      debugTest('Testing document event handlers registration');
+      
+      // When: Document handler registration is checked
+      // (registration happened during server creation)
+      
+      // Then: All document lifecycle handlers should be registered
       expect(mockDocuments.onDidOpen).toHaveBeenCalledWith(expect.any(Function));
+      // And: Change content handler should be registered
       expect(mockDocuments.onDidChangeContent).toHaveBeenCalledWith(expect.any(Function));
+      // And: Close handler should be registered
       expect(mockDocuments.onDidClose).toHaveBeenCalledWith(expect.any(Function));
+      
+      debugTest('Document event handlers registration verified');
     });
   });
 
   describe('initialize request', () => {
     it('should return correct capabilities', () => {
+      // Given: Initialize handler has been registered
       const initializeHandler = mockConnection.onInitialize.mock.calls[0][0];
-      
+      // And: Client initialization parameters
       const params: InitializeParams = {
         processId: 1234,
         capabilities: {},
         rootUri: 'file:///test/workspace'
       };
+      debugTest('Testing LSP capabilities response');
 
+      // When: Initialize handler is called with client parameters
       const result: InitializeResult = initializeHandler(params);
+      debugTest('Initialize handler called with test parameters');
 
+      // Then: Server should return comprehensive LSP capabilities
       expect(result).toEqual({
         capabilities: {
           textDocumentSync: 1, // TextDocumentSyncKind.Full
@@ -143,11 +194,13 @@ describe('GosuLanguageServer', () => {
           version: '1.0.0'
         }
       });
+      debugTest('LSP capabilities validation completed');
     });
 
     it('should log initialization with workspace info', () => {
+      // Given: Initialize handler has been registered
       const initializeHandler = mockConnection.onInitialize.mock.calls[0][0];
-      
+      // And: Client parameters with workspace information
       const params: InitializeParams = {
         processId: 1234,
         capabilities: {},
@@ -156,32 +209,57 @@ describe('GosuLanguageServer', () => {
           { uri: 'file:///test/workspace', name: 'test-workspace' }
         ]
       };
+      debugTest('Testing initialization logging with workspace info');
 
+      // When: Initialize handler is called with workspace parameters
       initializeHandler(params);
+      debugTest('Initialize handler called with workspace parameters');
 
+      // Then: Server should log initialization and workspace information
       expect(mockConnection.console.log).toHaveBeenCalledWith(
         expect.stringContaining('Gosu Language Server initialized')
       );
+      // And: Workspace information should be logged
       expect(mockConnection.console.log).toHaveBeenCalledWith(
         expect.stringContaining('Workspace: file:///test/workspace')
       );
+      
+      debugTest('Initialization logging validation completed');
     });
   });
 
   describe('start method', () => {
     it('should start connection and documents listening', () => {
+      // Given: Server has been created
+      debugTest('Testing server start method');
+      
+      // When: Server start method is called
       server.start();
+      debugTest('Server start method invoked');
 
+      // Then: Documents should listen on the connection
       expect(mockDocuments.listen).toHaveBeenCalledWith(mockConnection);
+      // And: Connection should start listening
       expect(mockConnection.listen).toHaveBeenCalled();
+      
+      debugTest('Server start method validation completed');
     });
   });
 
   describe('logging', () => {
     it('should have debug logging enabled', () => {
-      // The server should create debug loggers for different namespaces
+      // Given: Server has been created with debug logging
+      debugTest('Testing debug logging functionality');
+      
+      // When: Debug logger is validated
+      // (logger created during server initialization)
+      
+      // Then: Server should have debug logger available
       expect(server.debugLog).toBeDefined();
+      // And: Debug logger should be a function
       expect(typeof server.debugLog).toBe('function');
+      
+      debugTest('Debug logging validation completed');
     });
   });
 });
