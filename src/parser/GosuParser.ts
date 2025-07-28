@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/style/noNonNullAssertion: auto-generated code */
 import * as antlr from "antlr4ng"
 
 import type { GosuListener } from "./GosuListener.js"
@@ -5,6 +6,7 @@ import type { GosuVisitor } from "./GosuVisitor.js"
 
 // for running tests with parameters, TODO: discuss strategy for typed parameters in CI
 // eslint-disable-next-line no-unused-vars
+// biome-ignore lint/correctness/noUnusedVariables: auto-generated code
 type int = number
 
 export class GosuParser extends antlr.Parser {
