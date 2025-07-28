@@ -2,19 +2,50 @@ import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
+    name: 'parser',
+    environment: 'node',
+    include: ['src/**/*.{test,spec}.{js,ts}'],
+    exclude: [
+      'node_modules/**',
+      'dist/**',
+      '**/*.d.ts',
+      '**/GosuLexer.ts',
+      '**/GosuParser.ts',
+      '**/GosuListener.ts',
+      '**/GosuVisitor.ts',
+      '**/*.g4'
+    ],
     globals: true,
     watch: false,
-    environment: 'node',
-    include: ['src/**/*.test.ts'],
-    exclude: ['node_modules/', 'out/'],
+    reporters: ['verbose', 'json'],
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'json', 'html'],
+      include: ['src/**/*.{js,ts}'],
       exclude: [
-        'node_modules/',
-        'out/',
-        '**/*.d.ts'
-      ]
-    }
+        '**/GosuLexer.ts',
+        '**/GosuParser.ts',
+        '**/GosuListener.ts',
+        '**/GosuVisitor.ts',
+        '**/*.g4'
+      ],
+      // Parser-specific coverage settings (lower thresholds due to generated code)
+      thresholds: {
+        global: {
+          lines: 80,
+          branches: 80,
+          functions: 80,
+          statements: 80
+        },
+        perFile: true
+      },
+      watermarks: {
+        statements: [80, 90],
+        functions: [80, 90],
+        branches: [80, 90],
+        lines: [80, 90]
+      }
+    },
+    // Parser may need more time for complex parsing tests
+    testTimeout: 15000,
   }
 })

@@ -5,12 +5,17 @@
   "main": "dist/server.js",
   "types": "dist/server.d.ts",
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc --watch",
+    "build": "tsc --build",
     "clean": "rimraf dist",
-    "test": "vitest",
+    "lint": "biome check --write --unsafe --no-errors-on-unmatched src/**/*",
+    "test": "vitest run",
+    "package": "echo 'No package target for server module'",
+    "types:watch": "tsc --watch",
     "test:watch": "vitest --watch",
-    "start": "node dist/server.js"
+    "test:coverage": "vitest --coverage",
+    "pretest": "npm run build",
+    "start": "node dist/server.js",
+    "dev": "tsc --watch & node --watch dist/server.js"
   },
   "keywords": [
     "gosu",
@@ -23,7 +28,7 @@
   "devDependencies": {
     "typescript": "^5.8.3",
     "vitest": "^3.2.4",
-    "rimraf": "^3.0.2",
+    "rimraf": "^6.0.0",
     "@types/debug": "^4.1.12",
     "@types/node": "^24.1.0"
   },
@@ -31,6 +36,7 @@
     "vscode-languageserver": "^9.0.1",
     "vscode-languageserver-textdocument": "^1.0.12",
     "debug": "^4.4.1",
-    "@vscode-gosu-lang/parser": "*"
+    "@gosu-lsp/parser": "*",
+    "@gosu-lsp/shared": "*"
   }
 }

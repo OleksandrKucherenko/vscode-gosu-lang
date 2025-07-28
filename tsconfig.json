@@ -9,7 +9,18 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "composite": true
+    "composite": true,
+    "baseUrl": ".",
+    "paths": {
+      "@gosu-lsp/shared": ["./modules/shared/src"],
+      "@gosu-lsp/shared/*": ["./modules/shared/src/*"],
+      "@gosu-lsp/parser": ["./modules/parser/src"],
+      "@gosu-lsp/parser/*": ["./modules/parser/src/*"],
+      "@gosu-lsp/server": ["./modules/server/src"],
+      "@gosu-lsp/server/*": ["./modules/server/src/*"],
+      "@gosu-lsp/client": ["./modules/client/src"],
+      "@gosu-lsp/client/*": ["./modules/client/src/*"]
+    }
   },
   "references": [
     {

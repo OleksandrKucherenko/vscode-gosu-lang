@@ -1,14 +1,19 @@
 {
-  "name": "@vscode-gosu-lang/parser",
+  "name": "@gosu-lsp/parser",
   "version": "1.0.0",
   "description": "Gosu language parser using ANTLR4",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --build",
     "clean": "rimraf dist",
-    "test": "vitest",
-    "test:watch": "vitest --watch"
+    "lint": "biome check --write --unsafe --no-errors-on-unmatched src/**/*",
+    "test": "vitest run",
+    "package": "echo 'No package target for parser module'",
+    "types:watch": "tsc --watch",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest --coverage",
+    "pretest": "npm run build"
   },
   "dependencies": {
     "antlr4ng": "^3.0.4",
@@ -17,7 +22,8 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.12",
-    "typescript": "^5.0.0",
-    "vitest": "^1.0.0"
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4",
+    "rimraf": "^6.0.0"
   }
 }

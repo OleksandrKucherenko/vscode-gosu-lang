@@ -78,7 +78,7 @@ export function createServer(): GosuLanguageServer {
         // Completion provider
         completionProvider: {
           resolveProvider: true,
-          triggerCharacters: ['.', ':']
+          triggerCharacters: ['.', ':', ' ', 'u', 'U', 'i', 'I']
         },
         // Hover provider
         hoverProvider: true,
@@ -194,7 +194,7 @@ export function createServer(): GosuLanguageServer {
 
 
   // Completion handler
-  connection.onCompletion((params: CompletionParams): CompletionItem[] => {
+  connection.onCompletion(async (params: CompletionParams): Promise<CompletionItem[]> => {
     debugCompletion(`Completion requested at ${params.position.line}:${params.position.character} in ${params.textDocument.uri}`);
     
     try {
@@ -205,8 +205,8 @@ export function createServer(): GosuLanguageServer {
         return [];
       }
       
-      // Get completions from the completion provider
-      const completions = server.completionProvider.getCompletions(document, params.position);
+      // Get completions from the completion provider (now async)
+      const completions = await server.completionProvider.getCompletions(document, params.position);
       
       debugCompletion(`Returning ${completions.length} completions`);
       return completions;

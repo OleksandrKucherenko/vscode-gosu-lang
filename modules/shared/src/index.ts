@@ -2,5 +2,6 @@
  * Shared module exports for the Gosu Language Server
  */
 
-export * from './types.js';
-export * from './keywords.js';
+export * from './types';
+export * from './keywords';
+export * from './symbols';

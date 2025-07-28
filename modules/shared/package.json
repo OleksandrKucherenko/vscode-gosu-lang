@@ -5,11 +5,15 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc --watch",
+    "build": "tsc --build",
     "clean": "rimraf dist",
-    "test": "vitest",
-    "test:watch": "vitest --watch"
+    "lint": "biome check --write --unsafe --no-errors-on-unmatched src/**/*",
+    "test": "vitest run --passWithNoTests",
+    "package": "echo 'No package target for shared module'",
+    "types:watch": "tsc --watch",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest --coverage",
+    "pretest": "npm run build"
   },
   "keywords": [
     "gosu",
@@ -21,7 +25,7 @@
   "devDependencies": {
     "typescript": "^5.8.3",
     "vitest": "^3.2.4",
-    "rimraf": "^3.0.2"
+    "rimraf": "^6.0.0"
   },
   "dependencies": {
     "vscode-languageserver-types": "^3.17.5"

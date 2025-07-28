@@ -1,13 +1,14 @@
 import Debug from 'debug'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import { Position, CompletionItem, CompletionItemKind, InsertTextFormat } from 'vscode-languageserver/node'
-import { 
-  GosuKeywordInfo, 
-  GosuKeywordCategory, 
-  getAllGosuKeywords, 
+import {
+  GosuKeywordInfo,
+  GosuKeywordCategory,
+  getAllGosuKeywords,
   findKeywordsByPrefix,
-  getKeywordsByCategory 
+  getKeywordsByCategory
 } from '@gosu-lsp/shared'
+import { GosuASTCompletionProvider } from './ast-completion'
 
 const debug = Debug('gosu:lsp:completion')
 
@@ -32,14 +33,35 @@ interface CompletionContext {
  */
 export class GosuCompletionProvider {
   private readonly debug = Debug('gosu:lsp:completion:provider')
+  private astCompletionProvider: GosuASTCompletionProvider
+
+  constructor() {
+    this.astCompletionProvider = new GosuASTCompletionProvider()
+    this.debug('Initialized GosuCompletionProvider with AST support')
+  }
 
   /**
    * Get completion items for the given document position
    */
-  getCompletions(document: TextDocument, position: Position): CompletionItem[] {
-    this.debug(`Getting completions at ${position.line}:${position.character}`)
+  async getCompletions(document: TextDocument, position: Position, triggerCharacter?: string): Promise<CompletionItem[]> {
+    this.debug(`Getting completions at ${position.line}:${position.character} (trigger: ${triggerCharacter})`)
     
     try {
+      const allCompletions: CompletionItem[] = []
+
+      // Get AST-based completions (symbols, members, imports)
+      try {
+        const astCompletions = await this.astCompletionProvider.getCompletions(
+          document,
+          position,
+          triggerCharacter
+        )
+        allCompletions.push(...astCompletions)
+        this.debug(`Added ${astCompletions.length} AST-based completions`)
+      } catch (error) {
+        this.debug('Error getting AST completions:', error)
+      }
+
       // Analyze the context at the cursor position
       const context = this.analyzeContext(document, position)
       
@@ -71,12 +93,14 @@ export class GosuCompletionProvider {
       }
       
       // Convert keywords to completion items
-      const completions = relevantKeywords.map(keyword =>
+      const keywordCompletions = relevantKeywords.map(keyword =>
         this.createCompletionItem(keyword)
       )
+      allCompletions.push(...keywordCompletions)
+      this.debug(`Added ${keywordCompletions.length} keyword completions`)
       
-      this.debug(`Returning ${completions.length} completions`)
-      return completions
+      this.debug(`Returning ${allCompletions.length} total completions`)
+      return allCompletions
       
     } catch (error) {
       this.debug('Error getting completions:', error)
@@ -288,5 +312,28 @@ export class GosuCompletionProvider {
     }
     
     return priority[keyword.keyword] || `1000_${keyword.keyword}`
+  }
+
+  /**
+   * Get trigger characters for completion
+   */
+  getTriggerCharacters(): string[] {
+    return ['.', ':', ' ']
+  }
+
+  /**
+   * Handle document change to clear AST cache
+   */
+  onDocumentChange(document: TextDocument): void {
+    this.astCompletionProvider.clearDocumentCache(document.uri)
+    this.debug(`Cleared AST cache for document: ${document.uri}`)
+  }
+
+  /**
+   * Clear all AST caches
+   */
+  clearAllCaches(): void {
+    this.astCompletionProvider.clearAllCaches()
+    this.debug('Cleared all AST caches')
   }
 }

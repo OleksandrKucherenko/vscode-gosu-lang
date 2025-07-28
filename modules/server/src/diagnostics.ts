@@ -1,8 +1,8 @@
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import { Diagnostic, DiagnosticSeverity, Range, Position } from 'vscode-languageserver'
 import Debug from 'debug'
-import { GosuParser } from '@vscode-gosu-lang/parser'
-import type { GosuSyntaxError } from '@vscode-gosu-lang/parser'
+import { GosuParser } from '@gosu-lsp/parser'
+import type { GosuSyntaxError } from '@gosu-lsp/parser'
 
 const debug = Debug('gosu:lsp:diagnostics')
 
