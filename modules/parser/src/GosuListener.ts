@@ -123,7 +123,7 @@ import type {
   UsesStatementListContext,
   UsingStatementContext,
   WhileStatementContext,
-} from "./GosuParser.js"
+} from "./GosuParser"
 
 /**
  * This interface defines a complete listener for a parse tree produced by

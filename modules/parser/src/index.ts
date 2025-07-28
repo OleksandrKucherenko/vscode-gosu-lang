@@ -1,19 +1,19 @@
 /**
- * Parser module exports for the Gosu Language Server
- * This module will wrap the existing ANTLR-generated parser
+ * Gosu Language Parser Module
+ * 
+ * This module provides ANTLR4-based parsing capabilities for Gosu language files.
+ * It wraps the generated ANTLR parser with a user-friendly interface and error handling.
  */
 
-// For now, just export a placeholder
-// In Step 2, we'll move the existing ANTLR parser here
-export interface GosuParseResult {
-  success: boolean;
-  errors: string[];
-}
+export { GosuParser } from './parser'
+export { GosuErrorListener } from './error-listener'
+export { GosuLexer } from './GosuLexer'
+export { GosuParser as AntlrGosuParser } from './GosuParser'
+export { GosuListener } from './GosuListener'
+export { GosuVisitor } from './GosuVisitor'
 
-export function parseGosuFile(content: string): GosuParseResult {
-  // Placeholder implementation - will be replaced with ANTLR parser
-  return {
-    success: true,
-    errors: [],
-  };
-}
+export type {
+  GosuParseResult,
+  GosuSyntaxError,
+  GosuParserConfig
+} from './types'
