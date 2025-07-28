@@ -3,34 +3,24 @@
     "target": "ES2020",
     "module": "commonjs",
     "lib": ["ES2020"],
-    "outDir": "out",
-    "sourceMap": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "incremental": true,
     "composite": true
   },
-  "references": [
-    {
-      "path": "./modules/shared"
-    },
-    {
-      "path": "./modules/parser"
-    },
-    {
-      "path": "./modules/server"
-    },
-    {
-      "path": "./modules/client"
-    }
-  ],
   "include": [
     "src/**/*"
   ],
   "exclude": [
     "node_modules",
-    "out",
-    "modules/*/node_modules"
+    "dist",
+    "**/*.test.ts"
   ]
 }

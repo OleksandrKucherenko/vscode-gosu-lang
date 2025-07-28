@@ -1,0 +1,29 @@
+{
+  "name": "@gosu-lsp/shared",
+  "version": "1.0.0",
+  "description": "Shared types and utilities for Gosu LSP",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "clean": "rimraf dist",
+    "test": "vitest",
+    "test:watch": "vitest --watch"
+  },
+  "keywords": [
+    "gosu",
+    "lsp",
+    "shared"
+  ],
+  "author": "OleksandrKucherenko",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4",
+    "rimraf": "^3.0.2"
+  },
+  "dependencies": {
+    "vscode-languageserver-types": "^3.17.5"
+  }
+}
