@@ -77,14 +77,19 @@
     "test": "vitest",
     "test:watch": "vitest --watch",
     "test:coverage": "vitest --coverage",
-    "package": "vsce package --no-yarn"
+    "package": "vsce package --no-yarn",
+    "check:updates": "npx npm-check-updates --interactive",
+    "prepare": "husky"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.0.6",
-    "@types/node": "^24.0.10",
-    "@types/vscode": "^1.74.0",
+    "@biomejs/biome": "^2.1.2",
+    "@types/node": "^24.1.0",
+    "@types/vscode": "^1.102.0",
     "@vitest/coverage-v8": "^3.2.4",
     "@vscode/vsce": "^3.6.0",
+    "antlr-ng": "^1.0.10",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.2",
     "oniguruma": "^7.2.3",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4",
@@ -93,5 +98,13 @@
   "volta": {
     "node": "20.19.3",
     "yarn": "4.9.2"
+  },
+  "dependencies": {
+    "antlr4ng": "^3.0.16"
+  },
+  "lint-staged": {
+    "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}": [
+      "biome check --write --unsafe --no-errors-on-unmatched"
+    ]
   }
 }
