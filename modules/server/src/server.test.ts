@@ -4,19 +4,14 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import { createServer, GosuLanguageServer } from './server';
 
 // Mock the connection
-vi.mock('vscode-languageserver/node', () => ({
-  createConnection: vi.fn(),
-  TextDocuments: vi.fn(),
-  TextDocumentSyncKind: {
-    Incremental: 2
-  },
-  DiagnosticSeverity: {
-    Error: 1,
-    Warning: 2,
-    Information: 3,
-    Hint: 4
-  }
-}));
+vi.mock('vscode-languageserver/node', async () => {
+  const actual = await vi.importActual('vscode-languageserver/node');
+  return {
+    ...actual,
+    createConnection: vi.fn(),
+    TextDocuments: vi.fn(),
+  };
+});
 
 vi.mock('vscode-languageserver-textdocument', () => ({
   TextDocument: {
@@ -99,9 +94,9 @@ describe('GosuLanguageServer', () => {
 
       expect(result).toEqual({
         capabilities: {
-          textDocumentSync: 2, // TextDocumentSyncKind.Incremental
+          textDocumentSync: 1, // TextDocumentSyncKind.Full
           completionProvider: {
-            resolveProvider: false,
+            resolveProvider: true,
             triggerCharacters: ['.', ':']
           },
           hoverProvider: true,

@@ -58,10 +58,10 @@ export function createServer(): GosuLanguageServer {
 
     return {
       capabilities: {
-        textDocumentSync: TextDocumentSyncKind.Incremental,
+        textDocumentSync: TextDocumentSyncKind.Full,
         // Completion provider
         completionProvider: {
-          resolveProvider: false,
+          resolveProvider: true,
           triggerCharacters: ['.', ':']
         },
         // Hover provider
@@ -130,7 +130,7 @@ export function createServer(): GosuLanguageServer {
     connection.console.log('Gosu Language Server ready');
   });
 
-  // Document event handlers
+  // Document event handlers (using both documents and connection for compatibility)
   documents.onDidOpen((event) => {
     debugDocs(`Document opened: ${event.document.uri}`);
     connection.console.log(`Opened ${event.document.uri}`);
@@ -143,6 +143,7 @@ export function createServer(): GosuLanguageServer {
   documents.onDidClose((event) => {
     debugDocs(`Document closed: ${event.document.uri}`);
   });
+
 
   // Configuration change handler
   connection.onDidChangeConfiguration((change) => {
