@@ -44,6 +44,9 @@ describe('Gosu Language Server Integration', () => {
       onInitialized: vi.fn(() => mockDisposable),
       onDidChangeConfiguration: vi.fn(() => mockDisposable),
       onDidChangeWatchedFiles: vi.fn(() => mockDisposable),
+      onCompletion: vi.fn(() => mockDisposable),
+      onCompletionResolve: vi.fn(() => mockDisposable),
+      sendDiagnostics: vi.fn(),
       // Document handler mocks needed by documents.listen()
       onDidOpenTextDocument: vi.fn(() => mockDisposable),
       onDidChangeTextDocument: vi.fn(() => mockDisposable),

@@ -39,6 +39,9 @@ describe('GosuLanguageServer', () => {
       onInitialized: vi.fn(),
       onDidChangeConfiguration: vi.fn(),
       onDidChangeWatchedFiles: vi.fn(),
+      onCompletion: vi.fn(),
+      onCompletionResolve: vi.fn(),
+      sendDiagnostics: vi.fn(),
       listen: vi.fn(),
       console: {
         log: vi.fn(),

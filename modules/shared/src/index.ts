@@ -3,3 +3,4 @@
  */
 
 export * from './types.js';
+export * from './keywords.js';
