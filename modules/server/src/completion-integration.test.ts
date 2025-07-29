@@ -106,14 +106,14 @@ enhancement StringEnhancement : String {
 
   describe('Given real Gosu class files', () => {
     describe('When requesting completions at file start', () => {
-      test('Then it should suggest package and imports for empty file', () => {
+      test('Then it should suggest package and imports for empty file', async () => {
         // Given: An empty Gosu file
         const document = TextDocument.create('file:///test.gs', 'gosu', 1, '')
         const position: Position = { line: 0, character: 0 }
         logContext('Empty file completion', position, '')
         
         // When: Requesting completions
-        const completions = completionProvider.getCompletions(document, position)
+        const completions = await completionProvider.getCompletions(document, position)
         logCompletions(completions, 'Empty file')
         
         // Then: Should suggest file-level keywords
@@ -125,7 +125,7 @@ enhancement StringEnhancement : String {
         expect(keywords).toContain('public')
       })
 
-      test('And it should suggest class keywords after package declaration', () => {
+      test('And it should suggest class keywords after package declaration', async () => {
         // Given: A file with package declaration
         const content = 'package com.example.test\n\n'
         const document = TextDocument.create('file:///test.gs', 'gosu', 1, content)
@@ -133,7 +133,7 @@ enhancement StringEnhancement : String {
         logContext('After package completion', position, content)
         
         // When: Requesting completions
-        const completions = completionProvider.getCompletions(document, position)
+        const completions = await completionProvider.getCompletions(document, position)
         logCompletions(completions, 'After package')
         
         // Then: Should suggest class declaration keywords
@@ -147,14 +147,14 @@ enhancement StringEnhancement : String {
     })
 
     describe('When requesting completions inside class body', () => {
-      test('Then it should suggest class member keywords', () => {
+      test('Then it should suggest class member keywords', async () => {
         // Given: Real Gosu class with cursor in class body
         const document = TextDocument.create('file:///TestClass.gs', 'gosu', 1, REAL_GOSU_CLASS)
         const position: Position = { line: 10, character: 2 } // After opening brace of class
         logContext('Class body completion', position, REAL_GOSU_CLASS)
         
         // When: Requesting completions
-        const completions = completionProvider.getCompletions(document, position)
+        const completions = await completionProvider.getCompletions(document, position)
         logCompletions(completions, 'Class body')
         
         // Then: Should suggest class member keywords
@@ -168,7 +168,7 @@ enhancement StringEnhancement : String {
         expect(keywords).toContain('static')
       })
 
-      test('And it should suggest appropriate keywords with prefix', () => {
+      test('And it should suggest appropriate keywords with prefix', async () => {
         // Given: Real Gosu class with 'pr' prefix in class body
         const content = REAL_GOSU_CLASS.replace('  private var _name : String', '  pr')
         const document = TextDocument.create('file:///TestClass.gs', 'gosu', 1, content)
@@ -176,7 +176,7 @@ enhancement StringEnhancement : String {
         logContext('Class body with prefix', position, content)
         
         // When: Requesting completions
-        const completions = completionProvider.getCompletions(document, position)
+        const completions = await completionProvider.getCompletions(document, position)
         logCompletions(completions, 'Class body with prefix')
         
         // Then: Should suggest keywords starting with 'pr'
@@ -194,14 +194,14 @@ enhancement StringEnhancement : String {
     })
 
     describe('When requesting completions inside function body', () => {
-      test('Then it should suggest control flow and literal keywords', () => {
+      test('Then it should suggest control flow and literal keywords', async () => {
         // Given: Real Gosu class with cursor inside function body (empty line)
         const document = TextDocument.create('file:///TestClass.gs', 'gosu', 1, REAL_GOSU_CLASS)
         const position: Position = { line: 30, character: 4 } // Inside testMethod function body (empty line)
         logContext('Function body completion', position, REAL_GOSU_CLASS)
         
         // When: Requesting completions
-        const completions = completionProvider.getCompletions(document, position)
+        const completions = await completionProvider.getCompletions(document, position)
         logCompletions(completions, 'Function body')
         
         // Then: Should suggest control flow keywords
@@ -218,13 +218,13 @@ enhancement StringEnhancement : String {
         expect(keywords).toContain('this')
       })
 
-      test('And it should provide correct completion items with metadata', () => {
+      test('And it should provide correct completion items with metadata', async () => {
         // Given: Real Gosu class with cursor inside function body
         const document = TextDocument.create('file:///TestClass.gs', 'gosu', 1, REAL_GOSU_CLASS)
         const position: Position = { line: 30, character: 4 } // Inside function body
         
         // When: Requesting completions
-        const completions = completionProvider.getCompletions(document, position)
+        const completions = await completionProvider.getCompletions(document, position)
         
         // Then: Should have some completions
         expect(completions.length).toBeGreaterThan(0)
@@ -254,14 +254,14 @@ enhancement StringEnhancement : String {
     })
 
     describe('When working with different Gosu file types', () => {
-      test('Then it should work with interface files', () => {
+      test('Then it should work with interface files', async () => {
         // Given: Real Gosu interface file
         const document = TextDocument.create('file:///ITestInterface.gs', 'gosu', 1, REAL_GOSU_INTERFACE)
         const position: Position = { line: 7, character: 2 } // Inside interface body
         logContext('Interface body completion', position, REAL_GOSU_INTERFACE)
         
         // When: Requesting completions
-        const completions = completionProvider.getCompletions(document, position)
+        const completions = await completionProvider.getCompletions(document, position)
         logCompletions(completions, 'Interface body')
         
         // Then: Should suggest interface member keywords
@@ -271,14 +271,14 @@ enhancement StringEnhancement : String {
         expect(keywords).toContain('public') // interfaces can have visibility modifiers
       })
 
-      test('And it should work with enhancement files', () => {
+      test('And it should work with enhancement files', async () => {
         // Given: Real Gosu enhancement file
         const document = TextDocument.create('file:///StringEnhancement.gsx', 'gosu', 1, REAL_GOSU_ENHANCEMENT)
         const position: Position = { line: 10, character: 2 } // Inside enhancement body (before function)
         logContext('Enhancement completion', position, REAL_GOSU_ENHANCEMENT)
         
         // When: Requesting completions
-        const completions = completionProvider.getCompletions(document, position)
+        const completions = await completionProvider.getCompletions(document, position)
         logCompletions(completions, 'Enhancement')
         
         // Then: Should provide reasonable completions
@@ -295,7 +295,7 @@ enhancement StringEnhancement : String {
     })
 
     describe('When testing edge cases', () => {
-      test('Then it should handle malformed Gosu files gracefully', () => {
+      test('Then it should handle malformed Gosu files gracefully', async () => {
         // Given: Malformed Gosu file
         const malformedContent = `package com.test
         
@@ -309,7 +309,7 @@ enhancement StringEnhancement : String {
         logContext('Malformed file completion', position, malformedContent)
         
         // When: Requesting completions
-        const completions = completionProvider.getCompletions(document, position)
+        const completions = await completionProvider.getCompletions(document, position)
         logCompletions(completions, 'Malformed file')
         
         // Then: Should still provide reasonable completions
@@ -319,7 +319,7 @@ enhancement StringEnhancement : String {
         expect(keywords).toContain('if')
       })
 
-      test('And it should handle very large files efficiently', () => {
+      test('And it should handle very large files efficiently', async () => {
         // Given: Large Gosu file (simulate by repeating content)
         let largeContent = REAL_GOSU_CLASS
         for (let i = 0; i < 10; i++) {
@@ -330,7 +330,7 @@ enhancement StringEnhancement : String {
         
         // When: Requesting completions (should be fast)
         const startTime = Date.now()
-        const completions = completionProvider.getCompletions(document, position)
+        const completions = await completionProvider.getCompletions(document, position)
         const endTime = Date.now()
         
         // Then: Should complete quickly (under 100ms for this size)

@@ -2,20 +2,17 @@
   "name": "@gosu-lsp/server",
   "version": "1.0.0",
   "description": "Language Server Protocol server for Gosu language",
-  "main": "dist/server.js",
-  "types": "dist/server.d.ts",
+  "main": "src/server.ts",
+  "types": "src/server.ts",
   "scripts": {
-    "build": "tsc --build",
     "clean": "rimraf dist",
-    "lint": "biome check --write --unsafe --no-errors-on-unmatched src/**/*",
-    "test": "vitest run",
-    "package": "echo 'No package target for server module'",
-    "types:watch": "tsc --watch",
-    "test:watch": "vitest --watch",
+    "lint": "biome check --write --unsafe --no-errors-on-unmatched",
+    "test": "vitest",
+    "test:watch": "vitest --watch --coverage --ui",
     "test:coverage": "vitest --coverage",
-    "pretest": "npm run build",
-    "start": "node dist/server.js",
-    "dev": "tsc --watch & node --watch dist/server.js"
+    "package": "echo 'No package target for server module'",
+    "start": "tsx src/server.ts",
+    "dev": "tsx --watch src/server.ts"
   },
   "keywords": [
     "gosu",

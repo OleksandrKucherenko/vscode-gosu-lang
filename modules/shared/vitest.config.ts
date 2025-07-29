@@ -4,7 +4,7 @@ export default defineConfig({
   test: {
     name: 'shared',
     environment: 'node',
-    include: ['src/**/*.{test,spec}.{js,ts}'],
+    include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     exclude: [
       'node_modules/**',
       'dist/**',
@@ -15,6 +15,8 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/**/*.{js,ts}'],
+      reporter: ['text', 'text-summary', 'html', 'json-summary', 'lcov'],
+      reportOnFailure: true,
       // Shared module requires higher coverage (foundation code)
       thresholds: {
         global: {

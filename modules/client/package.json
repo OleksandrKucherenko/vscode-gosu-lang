@@ -2,18 +2,15 @@
   "name": "@gosu-lsp/client",
   "version": "1.0.0",
   "description": "VS Code extension client for Gosu LSP",
-  "main": "dist/extension.js",
-  "types": "dist/extension.d.ts",
+  "main": "src/extension.ts",
+  "types": "src/extension.ts",
   "scripts": {
-    "build": "tsc --build",
     "clean": "rimraf dist",
-    "lint": "biome check --write --unsafe --no-errors-on-unmatched src/**/*",
-    "test": "vitest run --passWithNoTests",
-    "package": "echo 'No package target for client module'",
-    "types:watch": "tsc --watch",
-    "test:watch": "vitest --watch",
+    "lint": "biome check --write --unsafe --no-errors-on-unmatched",
+    "test": "vitest",
+    "test:watch": "vitest --watch --coverage --ui",
     "test:coverage": "vitest --coverage",
-    "pretest": "npm run build"
+    "package": "echo 'No package target for client module'"
   },
   "keywords": [
     "gosu",

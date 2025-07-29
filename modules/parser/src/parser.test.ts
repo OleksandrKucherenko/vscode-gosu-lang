@@ -4,6 +4,7 @@ import { GosuParser } from './parser'
 import { GosuParseResult, GosuSyntaxError } from './types'
 
 const debug = Debug('gosu:lsp:test:parser')
+const log = Debug('gosu:lsp:test')
 
 describe('GosuParser', () => {
   describe('Given a GosuParser instance', () => {
@@ -67,7 +68,7 @@ All Names: <% for( name in names ) { %>
         
         const result = parser.parseText(templateCode, 'AllNames.gst')
         
-        console.log('Template parse result:', {
+        log('Template parse result:', {
           isValid: result.isValid,
           errorCount: result.syntaxErrors.length,
           errors: result.syntaxErrors.map(e => ({ line: e.line, column: e.column, message: e.message }))
@@ -96,7 +97,7 @@ public class InvalidClass {
         
         const result = parser.parseText(invalidCode, 'InvalidClass.gs')
         
-        console.log('Missing braces parse result:', {
+        log('Missing braces parse result:', {
           isValid: result.isValid,
           errorCount: result.syntaxErrors.length,
           errors: result.syntaxErrors.map((e: any) => ({ line: e.line, column: e.column, message: e.message }))

@@ -27,12 +27,16 @@ export default defineConfig({
     
     // Projects configuration for monorepo
     projects: [
-      './modules/shared/vitest.config.ts',
-      './modules/parser/vitest.config.ts',
-      './modules/server/vitest.config.ts',
-      './modules/client/vitest.config.ts'
+      './modules/*',
+      {
+        extends: true,
+        test: {
+          name: { label: 'gosu', color: 'magenta' },
+          include: [ 'src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}' ],
+        }
+      }
     ],
-    
+
     // Coverage configuration - basic settings
     coverage: {
       provider: 'v8',
@@ -68,7 +72,7 @@ export default defineConfig({
     watch: false,
     
     // Reporter settings
-    reporters: ['verbose', 'json'],
+    reporters: ['verbose'],
     
     // Mock settings
     clearMocks: true,

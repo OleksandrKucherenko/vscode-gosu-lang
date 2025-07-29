@@ -55,14 +55,14 @@ public class TestClass {
 
   describe('Given a GosuCompletionProvider instance', () => {
     describe('When requesting completions at the beginning of a file', () => {
-      test('Then it should suggest package-related keywords', () => {
+      test('Then it should suggest package-related keywords', async () => {
         // Given: A document with a single character prefix 'p'
         const document = TextDocument.create('file:///test.gs', 'gosu', 1, SIMPLE_PREFIX_DOCUMENT)
         const position: Position = { line: 0, character: 1 }
         logContext('Package keywords test', position, 'p')
         
         // When: Requesting completions
-        const completions = completionProvider.getCompletions(document, position)
+        const completions = await completionProvider.getCompletions(document, position)
         logCompletions(completions, 'Package keywords')
         
         // Then: Should return valid completions array
@@ -76,14 +76,14 @@ public class TestClass {
         expect(packageCompletion?.detail).toContain('package declaration')
       })
 
-      test('And it should suggest class-related keywords for empty lines', () => {
+      test('And it should suggest class-related keywords for empty lines', async () => {
         // Given: A document with package declaration and empty line with 'p' prefix
         const document = TextDocument.create('file:///test.gs', 'gosu', 1, 'package test\n\np')
         const position: Position = { line: 2, character: 1 }
         logContext('Class keywords test', position, 'p')
         
         // When: Requesting completions
-        const completions = completionProvider.getCompletions(document, position)
+        const completions = await completionProvider.getCompletions(document, position)
         logCompletions(completions, 'Class keywords')
         
         // Then: Should suggest class declaration keywords
@@ -97,7 +97,7 @@ public class TestClass {
     })
 
     describe('When requesting completions inside a class body', () => {
-      test('Then it should suggest class member keywords', () => {
+      test('Then it should suggest class member keywords', async () => {
         // Given: A document with class body and 'v' prefix
         const document = TextDocument.create('file:///test.gs', 'gosu', 1, `package test
 
@@ -108,7 +108,7 @@ public class TestClass {
         logContext('Class member keywords test', position, 'v')
         
         // When: Requesting completions
-        const completions = completionProvider.getCompletions(document, position)
+        const completions = await completionProvider.getCompletions(document, position)
         logCompletions(completions, 'Class member keywords')
         
         // Then: Should suggest function declaration
@@ -124,14 +124,14 @@ public class TestClass {
         expect(propertyCompletion).toBeUndefined() // property doesn't start with 'v'
       })
 
-      test('And it should suggest visibility modifiers', () => {
+      test('And it should suggest visibility modifiers', async () => {
         // Given: A document with class body and 'pr' prefix
         const document = TextDocument.create('file:///test.gs', 'gosu', 1, VISIBILITY_MODIFIER_DOCUMENT)
         const position: Position = { line: 3, character: 4 }
         logContext('Visibility modifiers test', position, 'pr')
         
         // When: Requesting completions
-        const completions = completionProvider.getCompletions(document, position)
+        const completions = await completionProvider.getCompletions(document, position)
         logCompletions(completions, 'Visibility modifiers')
         
         // Then: Should suggest private visibility
@@ -145,7 +145,7 @@ public class TestClass {
     })
 
     describe('When requesting completions inside a function body', () => {
-      test('Then it should suggest control flow keywords', () => {
+      test('Then it should suggest control flow keywords', async () => {
         // Given: A document with function body and 'r' prefix
         const document = TextDocument.create('file:///test.gs', 'gosu', 1, `package test
 
@@ -158,7 +158,7 @@ public class TestClass {
         logContext('Control flow keywords test', position, 'r')
         
         // When: Requesting completions
-        const completions = completionProvider.getCompletions(document, position)
+        const completions = await completionProvider.getCompletions(document, position)
         logCompletions(completions, 'Control flow keywords')
         
         // Then: Should suggest if statement (not starting with 'r')
@@ -174,14 +174,14 @@ public class TestClass {
         expect(forCompletion).toBeUndefined() // for doesn't start with 'r'
       })
 
-      test('And it should suggest literal keywords', () => {
+      test('And it should suggest literal keywords', async () => {
         // Given: A document with function body and assignment with 't' prefix
         const document = TextDocument.create('file:///test.gs', 'gosu', 1, LITERAL_CONTEXT_DOCUMENT)
         const position: Position = { line: 4, character: 18 }
         logContext('Literal keywords test', position, 't')
         
         // When: Requesting completions
-        const completions = completionProvider.getCompletions(document, position)
+        const completions = await completionProvider.getCompletions(document, position)
         logCompletions(completions, 'Literal keywords')
         
         // Then: Should suggest true literal
@@ -196,14 +196,14 @@ public class TestClass {
     })
 
     describe('When filtering completions by prefix', () => {
-      test('Then it should only return keywords matching the prefix', () => {
+      test('Then it should only return keywords matching the prefix', async () => {
         // Given: A document with 'pub' prefix
         const document = TextDocument.create('file:///test.gs', 'gosu', 1, PREFIX_FILTER_DOCUMENT)
         const position: Position = { line: 0, character: 3 }
         logContext('Prefix filtering test', position, 'pub')
         
         // When: Requesting completions
-        const completions = completionProvider.getCompletions(document, position)
+        const completions = await completionProvider.getCompletions(document, position)
         logCompletions(completions, 'Prefix filtering')
         
         // Then: Should only return completions starting with 'pub'
@@ -219,14 +219,14 @@ public class TestClass {
         expect(classCompletion).toBeUndefined()
       })
 
-      test('And it should be case-insensitive', () => {
+      test('And it should be case-insensitive', async () => {
         // Given: A document with uppercase 'PUB' prefix
         const document = TextDocument.create('file:///test.gs', 'gosu', 1, CASE_INSENSITIVE_DOCUMENT)
         const position: Position = { line: 0, character: 3 }
         logContext('Case insensitive test', position, 'PUB')
         
         // When: Requesting completions
-        const completions = completionProvider.getCompletions(document, position)
+        const completions = await completionProvider.getCompletions(document, position)
         logCompletions(completions, 'Case insensitive')
         
         // Then: Should still return 'public' for uppercase prefix
@@ -236,14 +236,14 @@ public class TestClass {
     })
 
     describe('When requesting completions with no prefix', () => {
-      test('Then it should return all relevant keywords for the context', () => {
+      test('Then it should return all relevant keywords for the context', async () => {
         // Given: A document with package declaration and empty line
         const document = TextDocument.create('file:///test.gs', 'gosu', 1, NO_PREFIX_DOCUMENT)
         const position: Position = { line: 2, character: 0 }
         logContext('No prefix test', position)
         
         // When: Requesting completions
-        const completions = completionProvider.getCompletions(document, position)
+        const completions = await completionProvider.getCompletions(document, position)
         logCompletions(completions, 'No prefix')
         
         // Then: Should return multiple keywords

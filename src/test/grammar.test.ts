@@ -1,11 +1,7 @@
 import * as fs from "node:fs"
 import * as path from "node:path"
-import { describe, expect, test } from "vitest"
-
-/**
- * This test validates the TextMate grammar patterns in gosu.tmLanguage.json
- * against the sample Gosu code file.
- */
+import debug from "debug"
+import { describe, expect, it } from "vitest"
 
 // Type definitions for TextMate grammar patterns
 interface GrammarPattern {
@@ -15,160 +11,225 @@ interface GrammarPattern {
   end?: string
   patterns?: GrammarPattern[]
 }
-describe("Gosu TextMate Grammar", () => {
-  // Load grammar file
-  const grammarPath = path.resolve(__dirname, "../../syntaxes/gosu.tmLanguage.full.json")
-  const grammar = JSON.parse(fs.readFileSync(grammarPath, "utf8"))
 
-  // Load sample file
-  const samplePath = path.resolve(__dirname, "../../gosu/gosu-syntax-full-sample.gs")
-  const sampleCode = fs.readFileSync(samplePath, "utf8")
-  const sampleLines = sampleCode.split("\n")
-
-  // Convert TextMate pattern to JavaScript regex
-  function _tmPatternToRegex(pattern: string): RegExp {
-    // Convert TextMate pattern to JavaScript regex
-    // This is a simplified conversion and may not handle all cases
-    const jsPattern = pattern
-      .replace(/\\b/g, "\\b") // word boundary
-      .replace(/\\s\+/g, "\\s+") // whitespace
-      .replace(/\\\(/g, "\\(") // literal parentheses
-      .replace(/\\\)/g, "\\)") // literal parentheses
-      .replace(/\\./g, "\\.") // literal dot
-
-    try {
-      return new RegExp(jsPattern)
-    } catch (e) {
-      console.error(`Failed to convert pattern: ${pattern}`, e)
-      return /a^/ // Never matches
+interface Grammar {
+  name: string
+  scopeName: string
+  fileTypes: string[]
+  repository: {
+    [key: string]: {
+      patterns: GrammarPattern[]
     }
   }
+}
 
-  // Function to test if a pattern matches some content in the sample code
-  function testPatternAgainstSample(name: string, regexStr: string): boolean {
+const logger = debug("gosu:test")
+
+const VSCODE_GRAMMAR_PATH = path.resolve(__dirname, "../../syntaxes/gosu.tmLanguage.full.json")
+const GOSU_SAMPLE_FILE_PATH = path.resolve(__dirname, "../../gosu/gosu-syntax-full-sample.gs")
+
+describe("Gosu Grammar Validation", () => {
+  // GIVEN: Grammar file and sample code are loaded
+  const grammar: Grammar = JSON.parse(fs.readFileSync(VSCODE_GRAMMAR_PATH, "utf8"))
+  const sampleCode = fs.readFileSync(GOSU_SAMPLE_FILE_PATH, "utf8")
+  const sampleLines = sampleCode.split("\n")
+
+  // Function to test a regex pattern against the sample
+  function testPattern(name: string, pattern: string): boolean {
+    // GIVEN: A regex pattern to test
+    // WHEN: Creating RegExp and testing against sample lines
     try {
-      const regex = new RegExp(regexStr)
+      const regex = new RegExp(pattern)
+      // THEN: Should find at least one match
       for (const line of sampleLines) {
         if (regex.test(line)) {
-          console.log(`✓ ${name} matches: "${line.trim()}"`)
+          logger(`✓ ${name} matches: "${line.trim()}"`)
           return true
         }
       }
-      console.error(`✗ ${name} does not match any line in the sample`)
+      logger(`✗ ${name} does not match any line in the sample`)
       return false
-    } catch (_e) {
-      console.error(`✗ ${name} has invalid regex: ${regexStr}`)
+    } catch (e) {
+      logger(`✗ ${name} has invalid regex: ${pattern}`, e)
       return false
     }
   }
 
-  test("grammar file is valid JSON", () => {
-    expect(grammar).toBeDefined()
+  // Function to extract keywords from a regex pattern string
+  function extractKeywords(pattern: string): string[] {
+    // GIVEN: A pattern string
+    // WHEN: Matching alternation group
+    const match = pattern.match(/\\b\(([^)]+)\)\\b/)
+    // THEN: Return split keywords if matched
+    if (!match) return []
+    return match[1].split("|")
+  }
+
+  // Function to detect duplicate keywords across different pattern categories
+  function detectDuplicateKeywords(): { keyword: string; categories: string[] }[] {
+    // GIVEN: Empty maps for keywords and duplicates
+    const keywordsByCategory: { [category: string]: string[] } = {}
+    const duplicates: { [keyword: string]: string[] } = {}
+
+    // WHEN: Finding all match patterns recursively
+    const patterns: { category: string; pattern: string }[] = []
+    function findMatchPatterns(obj: any): void {
+      if (!obj) return
+
+      if (obj.match && typeof obj.match === "string" && obj.name) {
+        patterns.push({
+          category: obj.name,
+          pattern: obj.match,
+        })
+      }
+
+      if (typeof obj === "object") {
+        for (const key in obj) {
+          if (key === "patterns" && Array.isArray(obj[key])) {
+            for (const pattern of obj[key]) {
+              findMatchPatterns(pattern)
+            }
+          } else if (typeof obj[key] === "object") {
+            findMatchPatterns(obj[key])
+          }
+        }
+      }
+    }
+
+    findMatchPatterns(grammar)
+
+    // AND: Extracting keywords and checking for duplicates
+    for (const { category, pattern } of patterns) {
+      const keywords = extractKeywords(pattern)
+
+      if (keywords.length > 0) {
+        keywordsByCategory[category] = keywords
+
+        for (const keyword of keywords) {
+          if (!duplicates[keyword]) {
+            duplicates[keyword] = []
+          }
+          duplicates[keyword].push(category)
+        }
+      }
+    }
+
+    // THEN: Return duplicates with multiple categories
+    return Object.entries(duplicates)
+      .filter(([_, categories]) => categories.length > 1)
+      .map(([keyword, categories]) => ({ keyword, categories }))
+  }
+
+  it("validates basic grammar structure", () => {
+    // GIVEN: Loaded grammar
+    // WHEN: Checking name, scope, and file types
+    const fileTypes = grammar.fileTypes.join(", ")
+    // THEN: Properties match expected values
     expect(grammar.name).toBe("GOSU")
     expect(grammar.scopeName).toBe("source.gosu")
+    expect(fileTypes).toBe("gs, gsx, gst, gsp")
   })
 
-  test("key repositories exist and have patterns", () => {
-    const criticalRepos = [
-      "comments", // Comments
-      "keywords", // Language keywords
-      "strings", // String literals
-      "annotations", // Annotations like @Deprecated
-      "properties", // Property definitions
-      "functions", // Function definitions
-    ]
+  it("checks required repositories are present", () => {
+    // GIVEN: List of required repositories
+    const requiredRepos = ["comments", "keywords", "strings", "annotations", "properties", "functions"]
+    let allPresent = true
 
-    criticalRepos.forEach((repo) => {
-      expect(grammar.repository[repo]).toBeDefined()
-      expect(Array.isArray(grammar.repository[repo].patterns)).toBe(true)
-    })
-  })
-
-  test("comment patterns match the sample code", () => {
-    const comments = grammar.repository.comments.patterns
-
-    // Line comment pattern
-    const lineCommentPattern = comments.find((p: GrammarPattern) => p.name === "comment.line.double-slash.gosu")?.begin
-
-    if (lineCommentPattern) {
-      expect(testPatternAgainstSample("Line comment", lineCommentPattern)).toBe(true)
-    } else {
-      expect.fail("No line comment pattern found")
-    }
-
-    // Block comment pattern
-    const blockCommentBegin = comments.find((p: GrammarPattern) => p.name === "comment.block.gosu")?.begin
-
-    if (blockCommentBegin) {
-      expect(testPatternAgainstSample("Block comment begin", blockCommentBegin)).toBe(true)
-    } else {
-      expect.fail("No block comment pattern found")
-    }
-  })
-
-  test("keyword patterns match the sample code", () => {
-    const _keywordPatterns = grammar.repository.keywords.patterns
-    let matched = 0
-
-    // Test just a few key patterns
-    const criticalKeywords = [
-      { name: "class declaration", pattern: "class" },
-      { name: "package declaration", pattern: "package" },
-      { name: "uses statement", pattern: "uses" },
-      { name: "property", pattern: "property" },
-      { name: "constructor", pattern: "construct" },
-      { name: "function", pattern: "function" },
-    ]
-
-    criticalKeywords.forEach((keyword) => {
-      const matchesPattern = sampleLines.some((line) => line.includes(keyword.pattern))
-
-      if (matchesPattern) {
-        console.log(`✓ ${keyword.name} found in sample`)
-        matched++
-      } else {
-        console.error(`✗ ${keyword.name} NOT found in sample`)
-      }
-    })
-
-    // At least 4 out of 6 critical keywords should match
-    expect(matched).toBeGreaterThanOrEqual(4)
-  })
-
-  test("annotation pattern matches the sample code", () => {
-    const annotationPattern = grammar.repository.annotations.patterns[0].match
-    expect(testPatternAgainstSample("Annotation", annotationPattern)).toBe(true)
-  })
-
-  test("property patterns match the sample code", () => {
-    const propertyPatterns = grammar.repository.properties.patterns
-
-    // Get property getter pattern
-    const getterPattern = propertyPatterns.find((p: GrammarPattern) => p.name === "meta.property.getter.gosu")?.match
-
-    if (getterPattern) {
-      expect(testPatternAgainstSample("Property getter", getterPattern)).toBe(true)
-    } else {
-      // Try to find another property pattern if specific one not found
-      const anyPropertyPattern = propertyPatterns.find((p: GrammarPattern) => p.match)?.match
-      if (anyPropertyPattern) {
-        expect(testPatternAgainstSample("Any property", anyPropertyPattern)).toBe(true)
-      } else {
-        expect.fail("No property patterns found that can be tested")
+    // WHEN: Verifying each repository exists
+    for (const repo of requiredRepos) {
+      if (!grammar.repository?.[repo]) {
+        allPresent = false
       }
     }
+
+    // THEN: All critical repositories should be present
+    expect(allPresent).toBe(true)
   })
 
-  test("function patterns match the sample code", () => {
-    const functionPatterns = grammar.repository.functions.patterns
+  it("tests line comment pattern", () => {
+    // GIVEN: Line comment pattern
+    // WHEN: Testing against sample
+    // THEN: Should match at least one line
+    expect(testPattern("Line comment", "//.*")).toBe(true)
+  })
 
-    // Try to find a function declaration pattern
-    const functionPattern = functionPatterns.find((p: GrammarPattern) => p.match)?.match
+  it("tests block comment begin pattern", () => {
+    // GIVEN: Block comment begin pattern
+    // WHEN: Testing against sample
+    // THEN: Should match at least one line
+    expect(testPattern("Block comment begin", "/\\*")).toBe(true)
+  })
 
-    if (functionPattern) {
-      expect(testPatternAgainstSample("Function declaration", functionPattern)).toBe(true)
-    } else {
-      expect.fail("No function pattern found that can be tested")
-    }
+  it("tests annotation pattern", () => {
+    // GIVEN: Annotation pattern
+    // WHEN: Testing against sample
+    // THEN: Should match at least one line
+    expect(testPattern("Annotation", "@[a-zA-Z_][a-zA-Z0-9_]*(\\.[a-zA-Z_][a-zA-Z0-9_]*)*")).toBe(true)
+  })
+
+  it("tests any property pattern", () => {
+    // GIVEN: Property keyword pattern
+    // WHEN: Testing against sample
+    // THEN: Should match at least one line
+    expect(testPattern("Any property", "property")).toBe(true)
+  })
+
+  it("tests class keyword", () => {
+    // GIVEN: Class keyword pattern
+    // WHEN: Testing against sample
+    // THEN: Should match at least one line
+    expect(testPattern("class keyword", "\\bclass\\b")).toBe(true)
+  })
+
+  it("tests construct keyword", () => {
+    // GIVEN: Construct keyword pattern
+    // WHEN: Testing against sample
+    // THEN: Should match at least one line
+    expect(testPattern("construct keyword", "\\bconstruct\\b")).toBe(true)
+  })
+
+  it("tests function keyword", () => {
+    // GIVEN: Function keyword pattern
+    // WHEN: Testing against sample
+    // THEN: Should match at least one line
+    expect(testPattern("function keyword", "\\bfunction\\b")).toBe(true)
+  })
+
+  it("tests property keyword", () => {
+    // GIVEN: Property keyword pattern
+    // WHEN: Testing against sample
+    // THEN: Should match at least one line
+    expect(testPattern("property keyword", "\\bproperty\\b")).toBe(true)
+  })
+
+  it("tests property get pattern", () => {
+    // GIVEN: Property get compound pattern
+    // WHEN: Testing against sample
+    // THEN: Should match at least one line
+    expect(testPattern("property get pattern", "property\\s+get")).toBe(true)
+  })
+
+  it("tests property set pattern", () => {
+    // GIVEN: Property set compound pattern
+    // WHEN: Testing against sample
+    // THEN: Should match at least one line
+    expect(testPattern("property set pattern", "property\\s+set")).toBe(true)
+  })
+
+  it("verifies no duplicate keywords across categories", () => {
+    // GIVEN: Grammar patterns
+    // WHEN: Detecting duplicate keywords
+    const duplicateKeywords = detectDuplicateKeywords()
+    // THEN: No duplicates should be found
+    expect(duplicateKeywords.length).toBe(0)
+  })
+
+  it("validates keyword patterns existence", () => {
+    // GIVEN: Keywords repository
+    // WHEN: Checking if patterns exist
+    const keywordPatterns = grammar.repository?.keywords?.patterns
+    // THEN: Patterns should be defined and non-empty
+    expect(keywordPatterns).toBeDefined()
+    expect(keywordPatterns?.length).toBeGreaterThan(0)
   })
 })

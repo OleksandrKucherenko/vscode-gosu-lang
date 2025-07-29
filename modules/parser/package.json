@@ -2,18 +2,15 @@
   "name": "@gosu-lsp/parser",
   "version": "1.0.0",
   "description": "Gosu language parser using ANTLR4",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "scripts": {
-    "build": "tsc --build",
     "clean": "rimraf dist",
-    "lint": "biome check --write --unsafe --no-errors-on-unmatched src/**/*",
-    "test": "vitest run",
-    "package": "echo 'No package target for parser module'",
-    "types:watch": "tsc --watch",
-    "test:watch": "vitest --watch",
+    "lint": "biome check --write --unsafe --no-errors-on-unmatched",
+    "test": "vitest",
+    "test:watch": "vitest --watch --coverage --ui",
     "test:coverage": "vitest --coverage",
-    "pretest": "npm run build"
+    "package": "echo 'No package target for parser module'"
   },
   "dependencies": {
     "antlr4ng": "^3.0.4",
