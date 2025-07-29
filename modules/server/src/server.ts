@@ -8,12 +8,15 @@ import {
   Connection,
   CompletionItem,
   CompletionParams,
-  TextDocumentPositionParams
+  TextDocumentPositionParams,
+  SemanticTokensParams,
+  SemanticTokensRangeParams
 } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import Debug from 'debug';
 import { createDiagnosticsProvider, GosuDiagnosticsProvider } from './diagnostics';
 import { GosuCompletionProvider } from './completion';
+import { GosuSemanticHighlightingProvider } from './semantic-highlighting';
 
 // Create debug loggers for different namespaces
 const debugLog = Debug('gosu:lsp:server');
@@ -26,6 +29,7 @@ export interface GosuLanguageServer {
   documents: TextDocuments<TextDocument>;
   diagnosticsProvider: GosuDiagnosticsProvider;
   completionProvider: GosuCompletionProvider;
+  semanticHighlightingProvider: GosuSemanticHighlightingProvider;
   debugLog: Debug.Debugger;
   start(): void;
 }
@@ -42,6 +46,9 @@ export function createServer(): GosuLanguageServer {
   
   // Create completion provider
   const completionProvider = new GosuCompletionProvider();
+  
+  // Create semantic highlighting provider
+  const semanticHighlightingProvider = new GosuSemanticHighlightingProvider();
 
   // Server instance
   const server: GosuLanguageServer = {
@@ -49,6 +56,7 @@ export function createServer(): GosuLanguageServer {
     documents,
     diagnosticsProvider,
     completionProvider,
+    semanticHighlightingProvider,
     debugLog,
     start() {
       // Listen on the connection
@@ -158,6 +166,9 @@ export function createServer(): GosuLanguageServer {
   documents.onDidChangeContent((change) => {
     debugDocs(`Document changed: ${change.document.uri}`);
     
+    // Invalidate semantic highlighting cache for changed document
+    server.semanticHighlightingProvider.onDocumentChange(change.document);
+    
     // Validate and send diagnostics for changed document
     validateTextDocument(change.document);
   });
@@ -170,6 +181,9 @@ export function createServer(): GosuLanguageServer {
     
     // Clear cache for closed document
     server.diagnosticsProvider.clearCache(event.document.uri);
+    
+    // Clear semantic highlighting cache for closed document
+    server.semanticHighlightingProvider.onDocumentChange(event.document);
   });
 
   // Validation function
@@ -225,6 +239,53 @@ export function createServer(): GosuLanguageServer {
     // Later we can add more detailed documentation, import statements, etc.
     return item;
   });
+
+  // Semantic tokens handlers (only if connection supports them)
+  if (typeof connection.onRequest === 'function') {
+    // Semantic tokens handler (full document)
+    connection.onRequest('textDocument/semanticTokens/full', async (params: SemanticTokensParams) => {
+      debugLog(`Semantic tokens requested for ${params.textDocument.uri}`);
+      
+      try {
+        const document = documents.get(params.textDocument.uri);
+        if (!document) {
+          debugLog(`Document not found: ${params.textDocument.uri}`);
+          return { data: [] };
+        }
+        
+        const tokens = await server.semanticHighlightingProvider.getSemanticTokens(document);
+        debugLog(`Returning ${tokens.data.length / 5} semantic tokens`);
+        return tokens;
+        
+      } catch (error) {
+        debugLog('Error getting semantic tokens:', error);
+        return { data: [] };
+      }
+    });
+
+    // Semantic tokens handler (range)
+    connection.onRequest('textDocument/semanticTokens/range', async (params: SemanticTokensRangeParams) => {
+      debugLog(`Semantic tokens range requested for ${params.textDocument.uri}`);
+      
+      try {
+        const document = documents.get(params.textDocument.uri);
+        if (!document) {
+          debugLog(`Document not found: ${params.textDocument.uri}`);
+          return { data: [] };
+        }
+        
+        const tokens = await server.semanticHighlightingProvider.getSemanticTokensRange(document, params.range);
+        debugLog(`Returning ${tokens.data.length / 5} semantic tokens for range`);
+        return tokens;
+        
+      } catch (error) {
+        debugLog('Error getting semantic tokens range:', error);
+        return { data: [] };
+      }
+    });
+  } else {
+    debugLog('Connection does not support onRequest method - skipping semantic tokens handlers');
+  }
 
   // Configuration change handler
   connection.onDidChangeConfiguration((change) => {
