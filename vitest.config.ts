@@ -25,46 +25,12 @@ export default defineConfig({
     // Global test configuration
     globals: true,
     
-    // Projects configuration for monorepo
+    // Projects configuration for monorepo - coverage handled at module level
     projects: [
-      './modules/*',
-      {
-        extends: true,
-        test: {
-          name: { label: 'gosu', color: 'magenta' },
-          include: [ 'src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}' ],
-        }
-      }
+      './modules/*'
     ],
 
-    // Coverage configuration - basic settings
-    coverage: {
-      provider: 'v8',
-      reporter: ['text', 'text-summary', 'html', 'json-summary', 'lcov'],
-      exclude: [
-        'node_modules/**',
-        'out/**',
-        'dist/**',
-        '**/*.d.ts',
-        '**/*.test.{js,ts}',
-        '**/*.spec.{js,ts}',
-        '**/test/**',
-        '**/tests/**',
-        '**/__tests__/**',
-        '**/GosuLexer.ts',
-        '**/GosuParser.ts',
-        '**/GosuListener.ts',
-        '**/GosuVisitor.ts',
-        '**/*.g4',
-        '**/vitest.config.ts',
-        '**/vite.config.ts',
-        '**/coverage/**'
-      ],
-      all: true,
-      clean: true,
-      cleanOnRerun: true,
-      reportOnFailure: true
-    },
+    // No coverage at root level to avoid duplicates - modules handle their own coverage
     
     // Test execution settings
     testTimeout: 10000,

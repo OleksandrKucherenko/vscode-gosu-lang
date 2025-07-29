@@ -176,19 +176,22 @@ export class GosuASTCompletionProvider {
         label: 'toString',
         kind: CompletionItemKind.Method,
         detail: '() : String',
-        documentation: 'Returns a string representation of the object'
+        documentation: 'Returns a string representation of the object',
+        sortText: '3000_toString'
       },
       {
         label: 'equals',
         kind: CompletionItemKind.Method,
         detail: '(obj : Object) : boolean',
-        documentation: 'Indicates whether some other object is "equal to" this one'
+        documentation: 'Indicates whether some other object is "equal to" this one',
+        sortText: '3001_equals'
       },
       {
         label: 'hashCode',
         kind: CompletionItemKind.Method,
         detail: '() : int',
-        documentation: 'Returns a hash code value for the object'
+        documentation: 'Returns a hash code value for the object',
+        sortText: '3002_hashCode'
       }
     ]
 
@@ -212,7 +215,8 @@ export class GosuASTCompletionProvider {
           label: imp.name,
           kind: CompletionItemKind.Class,
           detail: imp.path,
-          documentation: `Imported from ${imp.path}`
+          documentation: `Imported from ${imp.path}`,
+          sortText: `4000_${imp.name}`
         })
       }
     }
@@ -227,7 +231,8 @@ export class GosuASTCompletionProvider {
         label: symbol.name,
         kind: this.getCompletionItemKind(symbol.type),
         detail: `${symbol.type} ${symbol.name}`,
-        documentation: symbol.documentation || `${symbol.visibility || 'internal'} ${symbol.type}`
+        documentation: symbol.documentation || `${symbol.visibility || 'internal'} ${symbol.type}`,
+        sortText: `4010_${symbol.name}`
       })
     }
 
@@ -239,7 +244,8 @@ export class GosuASTCompletionProvider {
           label: type,
           kind: CompletionItemKind.Keyword,
           detail: `primitive type`,
-          documentation: `Built-in primitive type: ${type}`
+          documentation: `Built-in primitive type: ${type}`,
+          sortText: `4020_${type}`
         })
       }
     }
@@ -275,7 +281,8 @@ export class GosuASTCompletionProvider {
         label: imp,
         kind: CompletionItemKind.Module,
         detail: 'import',
-        documentation: `Import ${imp}`
+        documentation: `Import ${imp}`,
+        sortText: `5000_${imp}`
       }))
   }
 
@@ -329,7 +336,8 @@ export class GosuASTCompletionProvider {
       label: symbol.name,
       kind: this.getCompletionItemKind(symbol.type),
       detail: this.getSymbolDetail(symbol),
-      documentation: symbol.documentation || this.getSymbolDescription(symbol)
+      documentation: symbol.documentation || this.getSymbolDescription(symbol),
+      sortText: this.getSortText(symbol)
     }
 
     // Add function signature for methods and constructors
@@ -340,6 +348,25 @@ export class GosuASTCompletionProvider {
     }
 
     return item
+  }
+
+  /**
+   * Get sort text for AST symbols
+   */
+  private getSortText(symbol: GosuASTSymbol): string {
+    // Prioritize symbols by type
+    const priority: Record<string, string> = {
+      'class': '2000',
+      'interface': '2001',
+      'function': '2010',
+      'constructor': '2011',
+      'property': '2020',
+      'field': '2021',
+      'variable': '2030',
+      'parameter': '2031'
+    }
+    
+    return priority[symbol.type] || `2999_${symbol.name}`
   }
 
   /**

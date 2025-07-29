@@ -78,7 +78,7 @@ export function createServer(): GosuLanguageServer {
         // Completion provider
         completionProvider: {
           resolveProvider: true,
-          triggerCharacters: ['.', ':', ' ', 'u', 'U', 'i', 'I']
+          triggerCharacters: ['.', ':']
         },
         // Hover provider
         hoverProvider: true,
