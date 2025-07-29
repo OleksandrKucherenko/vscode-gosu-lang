@@ -10,13 +10,15 @@ import {
   CompletionParams,
   TextDocumentPositionParams,
   SemanticTokensParams,
-  SemanticTokensRangeParams
+  SemanticTokensRangeParams,
+  DefinitionParams
 } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import Debug from 'debug';
 import { createDiagnosticsProvider, GosuDiagnosticsProvider } from './diagnostics';
 import { GosuCompletionProvider } from './completion';
 import { GosuSemanticHighlightingProvider } from './semantic-highlighting';
+import { GosuDefinitionProvider } from './definition-provider';
 
 // Create debug loggers for different namespaces
 const debugLog = Debug('gosu:lsp:server');
@@ -30,6 +32,7 @@ export interface GosuLanguageServer {
   diagnosticsProvider: GosuDiagnosticsProvider;
   completionProvider: GosuCompletionProvider;
   semanticHighlightingProvider: GosuSemanticHighlightingProvider;
+  definitionProvider: GosuDefinitionProvider;
   debugLog: Debug.Debugger;
   start(): void;
 }
@@ -49,6 +52,9 @@ export function createServer(): GosuLanguageServer {
   
   // Create semantic highlighting provider
   const semanticHighlightingProvider = new GosuSemanticHighlightingProvider();
+  
+  // Create definition provider
+  const definitionProvider = new GosuDefinitionProvider();
 
   // Server instance
   const server: GosuLanguageServer = {
@@ -57,6 +63,7 @@ export function createServer(): GosuLanguageServer {
     diagnosticsProvider,
     completionProvider,
     semanticHighlightingProvider,
+    definitionProvider,
     debugLog,
     start() {
       // Listen on the connection
@@ -169,6 +176,9 @@ export function createServer(): GosuLanguageServer {
     // Invalidate semantic highlighting cache for changed document
     server.semanticHighlightingProvider.onDocumentChange(change.document);
     
+    // Invalidate definition provider cache for changed document
+    server.definitionProvider.onDocumentChange(change.document);
+    
     // Validate and send diagnostics for changed document
     validateTextDocument(change.document);
   });
@@ -184,6 +194,9 @@ export function createServer(): GosuLanguageServer {
     
     // Clear semantic highlighting cache for closed document
     server.semanticHighlightingProvider.onDocumentChange(event.document);
+    
+    // Clear definition provider cache for closed document
+    server.definitionProvider.onDocumentChange(event.document);
   });
 
   // Validation function
@@ -238,6 +251,27 @@ export function createServer(): GosuLanguageServer {
     // For now, just return the item as-is
     // Later we can add more detailed documentation, import statements, etc.
     return item;
+  });
+
+  // Definition handler
+  connection.onDefinition(async (params: DefinitionParams) => {
+    debugLog(`Definition requested at ${params.position.line}:${params.position.character} in ${params.textDocument.uri}`);
+    
+    try {
+      const document = documents.get(params.textDocument.uri);
+      if (!document) {
+        debugLog(`Document not found: ${params.textDocument.uri}`);
+        return null;
+      }
+      
+      const definition = await server.definitionProvider.getDefinition(document, params.position);
+      debugLog(`Returning definition: ${definition ? 'found' : 'not found'}`);
+      return definition;
+      
+    } catch (error) {
+      debugLog('Error getting definition:', error);
+      return null;
+    }
   });
 
   // Semantic tokens handlers (only if connection supports them)

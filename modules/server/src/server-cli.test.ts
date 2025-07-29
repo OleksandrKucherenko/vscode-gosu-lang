@@ -13,6 +13,7 @@ vi.mock('vscode-languageserver/node', () => ({
     onInitialized: vi.fn(),
     onCompletion: vi.fn(),
     onCompletionResolve: vi.fn(),
+    onDefinition: vi.fn(),
     onDidChangeConfiguration: vi.fn(),
     onDidChangeWatchedFiles: vi.fn(),
     console: {
