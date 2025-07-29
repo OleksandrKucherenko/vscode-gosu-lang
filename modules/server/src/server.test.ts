@@ -42,6 +42,8 @@ describe('GosuLanguageServer', () => {
       onCompletion: vi.fn(),
       onCompletionResolve: vi.fn(),
       onDefinition: vi.fn(),
+      onHover: vi.fn(),
+      onRequest: vi.fn(),
       sendDiagnostics: vi.fn(),
       listen: vi.fn(),
       console: {

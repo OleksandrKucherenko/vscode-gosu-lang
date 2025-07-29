@@ -14,8 +14,10 @@ vi.mock('vscode-languageserver/node', () => ({
     onCompletion: vi.fn(),
     onCompletionResolve: vi.fn(),
     onDefinition: vi.fn(),
+    onHover: vi.fn(),
     onDidChangeConfiguration: vi.fn(),
     onDidChangeWatchedFiles: vi.fn(),
+    onRequest: vi.fn(),
     console: {
       log: vi.fn()
     },
@@ -47,6 +49,30 @@ vi.mock('./diagnostics', () => ({
 vi.mock('./completion', () => ({
   GosuCompletionProvider: vi.fn(() => ({
     getCompletions: vi.fn(() => Promise.resolve([]))
+  }))
+}));
+
+vi.mock('./semantic-highlighting', () => ({
+  GosuSemanticHighlightingProvider: vi.fn(() => ({
+    getSemanticTokens: vi.fn(() => Promise.resolve({ data: [] })),
+    getSemanticTokensRange: vi.fn(() => Promise.resolve({ data: [] })),
+    onDocumentChange: vi.fn()
+  }))
+}));
+
+vi.mock('./definition-provider', () => ({
+  GosuDefinitionProvider: vi.fn(() => ({
+    getDefinition: vi.fn(() => Promise.resolve(null)),
+    onDocumentChange: vi.fn(),
+    clearAllCaches: vi.fn()
+  }))
+}));
+
+vi.mock('./hover-provider', () => ({
+  GosuHoverProvider: vi.fn(() => ({
+    getHover: vi.fn(() => Promise.resolve(null)),
+    onDocumentChange: vi.fn(),
+    clearAllCaches: vi.fn()
   }))
 }));
 

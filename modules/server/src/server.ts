@@ -11,7 +11,8 @@ import {
   TextDocumentPositionParams,
   SemanticTokensParams,
   SemanticTokensRangeParams,
-  DefinitionParams
+  DefinitionParams,
+  HoverParams
 } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import Debug from 'debug';
@@ -19,6 +20,7 @@ import { createDiagnosticsProvider, GosuDiagnosticsProvider } from './diagnostic
 import { GosuCompletionProvider } from './completion';
 import { GosuSemanticHighlightingProvider } from './semantic-highlighting';
 import { GosuDefinitionProvider } from './definition-provider';
+import { GosuHoverProvider } from './hover-provider';
 
 // Create debug loggers for different namespaces
 const debugLog = Debug('gosu:lsp:server');
@@ -33,6 +35,7 @@ export interface GosuLanguageServer {
   completionProvider: GosuCompletionProvider;
   semanticHighlightingProvider: GosuSemanticHighlightingProvider;
   definitionProvider: GosuDefinitionProvider;
+  hoverProvider: GosuHoverProvider;
   debugLog: Debug.Debugger;
   start(): void;
 }
@@ -55,6 +58,9 @@ export function createServer(): GosuLanguageServer {
   
   // Create definition provider
   const definitionProvider = new GosuDefinitionProvider();
+  
+  // Create hover provider
+  const hoverProvider = new GosuHoverProvider();
 
   // Server instance
   const server: GosuLanguageServer = {
@@ -64,6 +70,7 @@ export function createServer(): GosuLanguageServer {
     completionProvider,
     semanticHighlightingProvider,
     definitionProvider,
+    hoverProvider,
     debugLog,
     start() {
       // Listen on the connection
@@ -179,6 +186,9 @@ export function createServer(): GosuLanguageServer {
     // Invalidate definition provider cache for changed document
     server.definitionProvider.onDocumentChange(change.document);
     
+    // Invalidate hover provider cache for changed document
+    server.hoverProvider.onDocumentChange(change.document);
+    
     // Validate and send diagnostics for changed document
     validateTextDocument(change.document);
   });
@@ -197,6 +207,9 @@ export function createServer(): GosuLanguageServer {
     
     // Clear definition provider cache for closed document
     server.definitionProvider.onDocumentChange(event.document);
+    
+    // Clear hover provider cache for closed document
+    server.hoverProvider.onDocumentChange(event.document);
   });
 
   // Validation function
@@ -270,6 +283,27 @@ export function createServer(): GosuLanguageServer {
       
     } catch (error) {
       debugLog('Error getting definition:', error);
+      return null;
+    }
+  });
+
+  // Hover handler
+  connection.onHover(async (params: HoverParams) => {
+    debugLog(`Hover requested at ${params.position.line}:${params.position.character} in ${params.textDocument.uri}`);
+    
+    try {
+      const document = documents.get(params.textDocument.uri);
+      if (!document) {
+        debugLog(`Document not found: ${params.textDocument.uri}`);
+        return null;
+      }
+      
+      const hover = await server.hoverProvider.getHover(document, params.position);
+      debugLog(`Returning hover: ${hover ? 'found' : 'not found'}`);
+      return hover;
+      
+    } catch (error) {
+      debugLog('Error getting hover:', error);
       return null;
     }
   });
