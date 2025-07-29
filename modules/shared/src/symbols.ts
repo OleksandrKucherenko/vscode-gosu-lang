@@ -67,6 +67,114 @@ export interface GosuImport {
 }
 
 /**
+ * Java-specific symbol information for cross-language navigation
+ */
+export interface JavaSymbolInfo {
+  /** Fully qualified class name (e.g., 'java.util.List') */
+  fullyQualifiedName: string
+  /** Simple class name (e.g., 'List') */
+  className: string
+  /** Package name (e.g., 'java.util') */
+  packageName: string
+  /** Whether this is an interface */
+  isInterface?: boolean
+  /** Whether this is an abstract class */
+  isAbstract?: boolean
+  /** Whether this is an enum */
+  isEnum?: boolean
+  /** Whether this is from Java standard library */
+  isJavaStandardLibrary?: boolean
+  /** Whether this class is final */
+  isFinal?: boolean
+  /** Whether this type supports generics */
+  isGeneric?: boolean
+  /** Generic parameter names (e.g., ['T', 'K', 'V']) */
+  genericParameters?: string[]
+  /** Source file path (if available) */
+  sourceFilePath?: string
+  /** Methods available on this type */
+  methods?: JavaMethodInfo[]
+  /** Fields available on this type */
+  fields?: JavaFieldInfo[]
+  /** Superclass information */
+  superclass?: string
+  /** Implemented interfaces */
+  interfaces?: string[]
+}
+
+/**
+ * Java method information
+ */
+export interface JavaMethodInfo {
+  /** Method name */
+  name: string
+  /** Return type */
+  returnType: string
+  /** Method parameters */
+  parameters: JavaParameter[]
+  /** Method visibility */
+  visibility: 'public' | 'private' | 'protected' | 'package'
+  /** Whether method is static */
+  isStatic?: boolean
+  /** Whether method is final */
+  isFinal?: boolean
+  /** Whether method is abstract */
+  isAbstract?: boolean
+  /** Method documentation */
+  documentation?: string
+}
+
+/**
+ * Java field information
+ */
+export interface JavaFieldInfo {
+  /** Field name */
+  name: string
+  /** Field type */
+  type: string
+  /** Field visibility */
+  visibility: 'public' | 'private' | 'protected' | 'package'
+  /** Whether field is static */
+  isStatic?: boolean
+  /** Whether field is final */
+  isFinal?: boolean
+  /** Field documentation */
+  documentation?: string
+}
+
+/**
+ * Java method parameter
+ */
+export interface JavaParameter {
+  /** Parameter name */
+  name: string
+  /** Parameter type */
+  type: string
+  /** Whether parameter accepts varargs */
+  isVarArgs?: boolean
+}
+
+/**
+ * Parameterized type information (e.g., List<String>)
+ */
+export interface ParameterizedTypeInfo {
+  /** Base type name (e.g., 'List') */
+  baseType: string
+  /** Type parameters (e.g., ['String']) */
+  typeParameters: string[]
+}
+
+/**
+ * Java symbol resolver configuration
+ */
+export interface JavaResolverConfig {
+  /** Java source paths for cross-language navigation */
+  sourcePaths: string[]
+  /** Java classpath for type resolution */
+  classpath: string[]
+}
+
+/**
  * Symbol table containing all symbols found in a document
  */
 export interface GosuSymbolTable {
