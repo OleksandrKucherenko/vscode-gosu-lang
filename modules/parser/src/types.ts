@@ -1,5 +1,5 @@
-import type { GosuFileType } from '@gosu-lsp/shared'
-import type { ParseTree } from 'antlr4ng'
+import type { GosuFileType } from "@gosu-lsp/shared"
+import type { ParseTree } from "antlr4ng"
 
 /**
  * Represents a syntax error found during parsing
@@ -12,7 +12,7 @@ export interface GosuSyntaxError {
   /** Column number (0-based) */
   column: number
   /** Error severity */
-  severity: 'error' | 'warning'
+  severity: "error" | "warning"
   /** Length of the error span */
   length?: number
   /** Error code */

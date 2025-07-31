@@ -9,7 +9,7 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["src/**", "tests/**"]
+    "includes": ["**/src/**", "**/tests/**"]
   },
   "formatter": {
     "enabled": true,
@@ -19,7 +19,7 @@
   },
   "linter": {
     "enabled": true,
-    "includes": ["src/**", "tests/**"],
+    "includes": ["**/src/**", "**/tests/**"],
     "rules": {
       "recommended": true,
       "style": {

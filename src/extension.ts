@@ -3,4 +3,4 @@
  * This file serves as the main entry point for the VS Code extension.
  */
 
-export { activate, deactivate } from "../modules/client/src/extension.js"
+export { activate, deactivate } from "@gosu-lsp/client"

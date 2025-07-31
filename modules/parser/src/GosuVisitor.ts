@@ -48,6 +48,7 @@ import type {
   FieldDefnContext,
   FinallyClauseContext,
   ForEachStatementContext,
+  FullPropertyDefnContext,
   FunctionBodyContext,
   FunctionDefnContext,
   GClassContext,
@@ -90,7 +91,10 @@ import type {
   ParametersContext,
   ParenthExprContext,
   PrimaryExprContext,
+  PropertyAccessorContext,
+  PropertyBodyContext,
   PropertyDefnContext,
+  PropertyTypeSuffixContext,
   RelationalExprContext,
   RelOpContext,
   ReturnStatementContext,
@@ -324,6 +328,30 @@ export class GosuVisitor<Result> extends AbstractParseTreeVisitor<Result> {
    * @return the visitor result
    */
   visitConstructorDefn?: (ctx: ConstructorDefnContext) => Result
+  /**
+   * Visit a parse tree produced by `GosuParser.fullPropertyDefn`.
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  visitFullPropertyDefn?: (ctx: FullPropertyDefnContext) => Result
+  /**
+   * Visit a parse tree produced by `GosuParser.propertyTypeSuffix`.
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  visitPropertyTypeSuffix?: (ctx: PropertyTypeSuffixContext) => Result
+  /**
+   * Visit a parse tree produced by `GosuParser.propertyBody`.
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  visitPropertyBody?: (ctx: PropertyBodyContext) => Result
+  /**
+   * Visit a parse tree produced by `GosuParser.propertyAccessor`.
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  visitPropertyAccessor?: (ctx: PropertyAccessorContext) => Result
   /**
    * Visit a parse tree produced by `GosuParser.modifiers`.
    * @param ctx the parse tree

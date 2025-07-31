@@ -2,27 +2,14 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src",
-    "declaration": true,
-    "declarationMap": true,
-    "incremental": true,
-    "composite": true,
-    "baseUrl": "../../",
-    "paths": {
-      "@gosu-lsp/shared": ["./modules/shared/src"],
-      "@gosu-lsp/shared/*": ["./modules/shared/src/*"]
-    }
+    "rootDir": "./src"
   },
   "include": [
     "src/**/*"
   ],
   "exclude": [
     "dist",
-    "node_modules"
-  ],
-  "references": [
-    {
-      "path": "../shared"
-    }
+    "node_modules",
+    "**/*.test.ts"
   ]
 }

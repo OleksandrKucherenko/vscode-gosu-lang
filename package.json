@@ -81,16 +81,18 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "turbo run build",
-    "build": "turbo run build",
+    "vscode:prepublish": "npm run build",
+    "build": "turbo run build && npm run build:root",
+    "build:root": "tsc --project ./tsconfig.json",
     "clean": "turbo run clean && rimraf out dist coverage .nyc_output",
     "lint": "turbo run lint",
-    "package": "npm run package -ws && vsce package --no-yarn",
+    "package": "vsce package --no-yarn --tree",
     "watch": "turbo run watch",
     "test": "vitest",
     "test:watch": "vitest --watch --ui",
     "test:coverage": "vitest --coverage",
     "check:updates": "npx npm-check-updates --interactive",
+    "generate:parser": "antlr-ng syntaxes/Gosu.g4 -o ./modules/parser/src -l -v -Dlanguage=TypeScript",
     "prepare": "husky"
   },
   "dependencies": {
@@ -105,7 +107,7 @@
     "@biomejs/biome": "^2.1.2",
     "@types/debug": "^4.1.12",
     "@types/node": "^24.1.0",
-    "@types/vscode": "^1.102.0",
+    "@types/vscode": "^1.74.0",
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4",
     "@vscode/vsce": "^3.6.0",

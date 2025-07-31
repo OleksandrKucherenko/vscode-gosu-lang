@@ -10,7 +10,8 @@
     "test": "vitest",
     "test:watch": "vitest --watch --coverage --ui",
     "test:coverage": "vitest --coverage",
-    "package": "echo 'No package target for client module'"
+    "package": "echo 'No package target for client module'",
+    "build": "echo 'Client module build handled by root'"
   },
   "keywords": [
     "gosu",

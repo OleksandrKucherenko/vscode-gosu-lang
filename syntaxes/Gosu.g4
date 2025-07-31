@@ -58,19 +58,19 @@ enumConstant
 
 interfaceMembers
     : (modifiers (functionDefn | propertyDefn | fieldDefn | gClass | gInterfaceOrStructure | gEnum) ';'?)*
-    ;
+;
 
 classMembers
     : declaration*
-    ;
+;
 
 declaration
-    : modifiers (functionDefn functionBody? | constructorDefn functionBody | propertyDefn functionBody? | fieldDefn | delegateDefn | gClass | gInterfaceOrStructure | gEnum) ';'?
+    : modifiers (functionDefn functionBody? | constructorDefn functionBody | fullPropertyDefn | propertyDefn functionBody | fieldDefn | delegateDefn | gClass | gInterfaceOrStructure | gEnum) ';'?
     ;
 
 enhancementMembers
-    : (modifiers (functionDefn functionBody | propertyDefn functionBody) ';'?)*
-    ;
+    : (modifiers (functionDefn functionBody | fullPropertyDefn | propertyDefn functionBody) ';'?)*
+;
 
 delegateDefn
     : DELEGATE id delegateStatement
@@ -90,7 +90,7 @@ fieldDefn
 
 propertyDefn
     : PROPERTY (GET | SET) id parameters (':' typeLiteral)?
-    ;
+;
 
 dotPathWord
     : idAll ('.' idAll)*
@@ -130,6 +130,28 @@ functionDefn
 
 constructorDefn
     : CONSTRUCT parameters (':' typeLiteral)?
+;
+
+// New: Defines a property declaration (field-like with optional get/set blocks)
+fullPropertyDefn
+    : PROPERTY id typeVariableDefs? (
+          propertyTypeSuffix propertyBody? // e.g., 'property Foo : String { get {} }' or 'property Foo : String'
+        | propertyBody                    // e.g., 'property Foo { get {} }'
+    )
+    ;
+
+propertyTypeSuffix
+    : ':' typeLiteral // e.g., ': String'
+    ;
+
+// New: Defines the block for a property with explicit get/set accessors
+propertyBody
+    : '{' propertyAccessor* '}'
+    ;
+
+// New: Defines a single get or set accessor within a property block
+propertyAccessor
+    : modifiers (GET | SET) parameters (':' typeLiteral)? functionBody
     ;
 
 modifiers
@@ -491,7 +513,7 @@ idclassOrInterfaceType
 
 idAll
     : id | AND | OR | NOT | IN | VAR | DELEGATE | REPRESENTS | TYPEOF | STATICTYPEOF | TYPEIS | TYPEAS | PACKAGE | USES | IF | ELSE | UNLESS | FOREACH | FOR | WHILE | DO | CONTINUE | BREAK | RETURN | CONSTRUCT | FUNCTION | PROPERTY | TRY | CATCH | FINALLY | THROW | NEW | SWITCH | CASE | DEFAULT | EVAL | OVERRIDE | EXTENDS | TRANSIENT | IMPLEMENTS | CLASS | INTERFACE | STRUCTURE | ENUM | USING
-    ;
+;
 
 // Lexer rules
 

@@ -1,8 +1,8 @@
-import { BaseErrorListener, RecognitionException, Recognizer, Token } from 'antlr4ng'
-import Debug from 'debug'
-import { GosuSyntaxError } from './types'
+import { BaseErrorListener, type RecognitionException, type Recognizer, type Token } from "antlr4ng"
+import Debug from "debug"
+import type { GosuSyntaxError } from "./types"
 
-const debug = Debug('gosu:lsp:parser:errors')
+const debug = Debug("gosu:lsp:parser:errors")
 
 /**
  * Custom error listener that collects syntax errors during parsing
@@ -20,15 +20,16 @@ export class GosuErrorListener extends BaseErrorListener {
    * Called when a syntax error is encountered
    */
   override syntaxError(
-    recognizer: Recognizer<any>,
+    // biome-ignore lint/suspicious/noExplicitAny: unused argument
+    _recognizer: Recognizer<any>,
     offendingSymbol: Token | null,
     line: number,
     charPositionInLine: number,
     message: string,
-    exception: RecognitionException | null
+    exception: RecognitionException | null,
   ): void {
     if (this.errors.length >= this.maxErrors) {
-      debug('Maximum error count reached, ignoring additional errors')
+      debug("Maximum error count reached, ignoring additional errors")
       return
     }
 
@@ -36,12 +37,12 @@ export class GosuErrorListener extends BaseErrorListener {
       message: this.cleanErrorMessage(message),
       line: line,
       column: charPositionInLine,
-      severity: 'error',
+      severity: "error",
       length: offendingSymbol?.text?.length || 1,
-      code: exception?.constructor.name || 'SYNTAX_ERROR'
+      code: exception?.constructor.name || "SYNTAX_ERROR",
     }
 
-    debug('Syntax error at %d:%d - %s', line, charPositionInLine, message)
+    debug("Syntax error at %d:%d - %s", line, charPositionInLine, message)
     this.errors.push(error)
   }
 
@@ -72,8 +73,8 @@ export class GosuErrorListener extends BaseErrorListener {
   private cleanErrorMessage(message: string): string {
     // Remove ANTLR-specific noise from error messages
     return message
-      .replace(/^line \d+:\d+ /, '') // Remove line:column prefix
-      .replace(/\s+/g, ' ')          // Normalize whitespace
+      .replace(/^line \d+:\d+ /, "") // Remove line:column prefix
+      .replace(/\s+/g, " ") // Normalize whitespace
       .trim()
   }
 }

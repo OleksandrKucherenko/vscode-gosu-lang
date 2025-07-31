@@ -2,15 +2,16 @@
   "name": "@gosu-lsp/shared",
   "version": "1.0.0",
   "description": "Shared types and utilities for Gosu LSP",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "clean": "rimraf dist",
     "lint": "biome check --write --unsafe --no-errors-on-unmatched",
     "test": "vitest",
     "test:watch": "vitest --watch --coverage --ui",
     "test:coverage": "vitest --coverage",
-    "package": "echo 'No package target for shared module'"
+    "package": "echo 'No package target for shared module'",
+    "build": "echo 'Shared module build handled by root'"
   },
   "keywords": [
     "gosu",

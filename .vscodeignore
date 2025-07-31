@@ -27,3 +27,14 @@ syntaxes/grammar/**
 !**/*.g4
 
 **/*.log
+
+**/tsconfig.tsbuildinfo
+.husky/**
+coverage/**
+.turbo/**
+test/**
+scripts/**
+node_modules/**
+modules/**
+!modules/**/dist/**
+!modules/**/package.json

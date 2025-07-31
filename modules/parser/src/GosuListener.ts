@@ -1,5 +1,4 @@
 import type { ErrorNode, ParserRuleContext, ParseTreeListener, TerminalNode } from "antlr4ng"
-
 import type {
   AdditiveExprContext,
   AdditiveOpContext,
@@ -49,6 +48,7 @@ import type {
   FieldDefnContext,
   FinallyClauseContext,
   ForEachStatementContext,
+  FullPropertyDefnContext,
   FunctionBodyContext,
   FunctionDefnContext,
   GClassContext,
@@ -91,7 +91,10 @@ import type {
   ParametersContext,
   ParenthExprContext,
   PrimaryExprContext,
+  PropertyAccessorContext,
+  PropertyBodyContext,
   PropertyDefnContext,
+  PropertyTypeSuffixContext,
   RelationalExprContext,
   RelOpContext,
   ReturnStatementContext,
@@ -123,7 +126,7 @@ import type {
   UsesStatementListContext,
   UsingStatementContext,
   WhileStatementContext,
-} from "./GosuParser"
+} from "./GosuParser.js"
 
 /**
  * This interface defines a complete listener for a parse tree produced by
@@ -450,6 +453,46 @@ export class GosuListener implements ParseTreeListener {
    * @param ctx the parse tree
    */
   exitConstructorDefn?: (ctx: ConstructorDefnContext) => void
+  /**
+   * Enter a parse tree produced by `GosuParser.fullPropertyDefn`.
+   * @param ctx the parse tree
+   */
+  enterFullPropertyDefn?: (ctx: FullPropertyDefnContext) => void
+  /**
+   * Exit a parse tree produced by `GosuParser.fullPropertyDefn`.
+   * @param ctx the parse tree
+   */
+  exitFullPropertyDefn?: (ctx: FullPropertyDefnContext) => void
+  /**
+   * Enter a parse tree produced by `GosuParser.propertyTypeSuffix`.
+   * @param ctx the parse tree
+   */
+  enterPropertyTypeSuffix?: (ctx: PropertyTypeSuffixContext) => void
+  /**
+   * Exit a parse tree produced by `GosuParser.propertyTypeSuffix`.
+   * @param ctx the parse tree
+   */
+  exitPropertyTypeSuffix?: (ctx: PropertyTypeSuffixContext) => void
+  /**
+   * Enter a parse tree produced by `GosuParser.propertyBody`.
+   * @param ctx the parse tree
+   */
+  enterPropertyBody?: (ctx: PropertyBodyContext) => void
+  /**
+   * Exit a parse tree produced by `GosuParser.propertyBody`.
+   * @param ctx the parse tree
+   */
+  exitPropertyBody?: (ctx: PropertyBodyContext) => void
+  /**
+   * Enter a parse tree produced by `GosuParser.propertyAccessor`.
+   * @param ctx the parse tree
+   */
+  enterPropertyAccessor?: (ctx: PropertyAccessorContext) => void
+  /**
+   * Exit a parse tree produced by `GosuParser.propertyAccessor`.
+   * @param ctx the parse tree
+   */
+  exitPropertyAccessor?: (ctx: PropertyAccessorContext) => void
   /**
    * Enter a parse tree produced by `GosuParser.modifiers`.
    * @param ctx the parse tree

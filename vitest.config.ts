@@ -27,7 +27,13 @@ export default defineConfig({
     
     // Projects configuration for monorepo - coverage handled at module level
     projects: [
-      './modules/*'
+      './modules/*',
+      {
+        extends: true,
+        test: {
+          name: {label: 'syntax', color: 'magenta' }
+        }
+      }
     ],
 
     // No coverage at root level to avoid duplicates - modules handle their own coverage

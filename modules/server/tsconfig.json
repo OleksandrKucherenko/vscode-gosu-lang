@@ -3,27 +3,8 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "types": ["node"],
-    "declaration": true,
-    "declarationMap": true,
-    "incremental": true,
-    "composite": true,
-    "baseUrl": "../../",
-    "paths": {
-      "@gosu-lsp/shared": ["./modules/shared/src"],
-      "@gosu-lsp/shared/*": ["./modules/shared/src/*"],
-      "@gosu-lsp/parser": ["./modules/parser/src"],
-      "@gosu-lsp/parser/*": ["./modules/parser/src/*"]
-    }
+    "types": ["node"]
   },
-  "references": [
-    {
-      "path": "../shared"
-    },
-    {
-      "path": "../parser"
-    }
-  ],
   "include": [
     "src/**/*"
   ],

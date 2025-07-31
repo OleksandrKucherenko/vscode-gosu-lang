@@ -12,7 +12,8 @@
     "test:coverage": "vitest --coverage",
     "package": "echo 'No package target for server module'",
     "start": "tsx src/server.ts",
-    "dev": "tsx --watch src/server.ts"
+    "dev": "tsx --watch src/server.ts",
+    "build": "echo 'Server module build handled by root'"
   },
   "keywords": [
     "gosu",
