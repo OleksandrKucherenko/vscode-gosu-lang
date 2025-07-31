@@ -1,0 +1,346 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'src/**'
+      - 'modules/**'
+      - 'syntaxes/**'
+      - 'package*.json'
+      - '**/package*.json'
+      - 'tsconfig*.json'
+      - '**/tsconfig*.json'
+      - 'turbo.json'
+      - 'vitest.config.ts'
+      - '**/vitest.config.ts'
+      - 'biome.jsonc'
+      - '**/biome.jsonc'
+      - '.eslintrc.json'
+      - 'language-configuration.json'
+      - '.vscodeignore'
+      - '.github/workflows/ci.yml'
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
+      - 'roadmap.md'
+      - '.gitignore'
+      - '**.log'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'src/**'
+      - 'modules/**'
+      - 'syntaxes/**'
+      - 'package*.json'
+      - '**/package*.json'
+      - 'tsconfig*.json'
+      - '**/tsconfig*.json'
+      - 'turbo.json'
+      - 'vitest.config.ts'
+      - '**/vitest.config.ts'
+      - 'biome.jsonc'
+      - '**/biome.jsonc'
+      - '.eslintrc.json'
+      - 'language-configuration.json'
+      - '.vscodeignore'
+      - '.github/workflows/ci.yml'
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
+      - 'roadmap.md'
+      - '.gitignore'
+      - '**.log'
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: "20.19.3"
+  NPM_VERSION: "10.9.0"
+
+jobs:
+  # Job 1: Lint and Type Check
+  lint-and-typecheck:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: Check for skip CI
+        run: |
+          if [[ "${{ github.event.head_commit.message }}" =~ \[skip\ ci\]|\[ci\ skip\]|\[no\ ci\]|\[skip\ actions\]|\[actions\ skip\] ]]; then
+            echo "CI skipped due to commit message"
+            exit 78
+          fi
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Verify npm version
+        run: |
+          npm --version
+          if [ "$(npm --version)" != "${{ env.NPM_VERSION }}" ]; then
+            npm install -g npm@${{ env.NPM_VERSION }}
+          fi
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+  # Job 2: Test Matrix (Multiple platforms)
+  test:
+    name: Test
+    needs: lint-and-typecheck
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            platform: Linux
+          - os: windows-latest
+            platform: Windows
+          - os: macos-latest
+            platform: macOS
+    
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Verify npm version (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          npm --version
+          if [ "$(npm --version)" != "${{ env.NPM_VERSION }}" ]; then
+            npm install -g npm@${{ env.NPM_VERSION }}
+          fi
+
+      - name: Verify npm version (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          npm --version
+          $currentVersion = npm --version
+          if ($currentVersion -ne "${{ env.NPM_VERSION }}") {
+            npm install -g npm@${{ env.NPM_VERSION }}
+          }
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Build all modules
+        run: npm run build
+        env:
+          CI: true
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+        env:
+          CI: true
+
+      - name: Check coverage thresholds
+        run: node scripts/check-coverage.js
+
+      - name: Upload coverage reports (Ubuntu only)
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: |
+            coverage/
+            modules/*/coverage/
+          retention-days: 7
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.platform }}
+          path: |
+            **/test-results.xml
+            **/coverage/
+          retention-days: 3
+
+  # Job 3: Build and Package Extension
+  build-extension:
+    name: Build Extension
+    needs: [lint-and-typecheck, test]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Verify npm version
+        run: |
+          npm --version
+          if [ "$(npm --version)" != "${{ env.NPM_VERSION }}" ]; then
+            npm install -g npm@${{ env.NPM_VERSION }}
+          fi
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Build all modules
+        run: npm run build
+        env:
+          CI: true
+
+      - name: Package extension
+        run: npm run package
+
+      - name: Upload VSIX artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vsix-package
+          path: "*.vsix"
+          retention-days: 30
+
+      - name: Verify package contents
+        run: |
+          echo "📦 Generated VSIX files:"
+          ls -la *.vsix
+          echo ""
+          echo "📋 Package contents:"
+          npx vsce ls --tree
+
+  # Job 4: Security and Quality Gates
+  security-check:
+    name: Security & Quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Run npm audit
+        run: npm audit --audit-level=high
+
+      - name: Check for known vulnerabilities
+        run: |
+          echo "🔍 Checking for known vulnerabilities..."
+          npx audit-ci --moderate
+
+  # Job 5: Post-build validation
+  post-build-validation:
+    name: Post-build Validation
+    needs: [build-extension]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    
+    steps:
+      - name: Download VSIX artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: vsix-package
+
+      - name: Validate VSIX package
+        run: |
+          echo "📦 Validating VSIX package..."
+          ls -la *.vsix
+          
+          # Check file size (should be reasonable)
+          file_size=$(stat -c%s *.vsix)
+          echo "Package size: ${file_size} bytes"
+          
+          if [ $file_size -lt 100000 ]; then
+            echo "❌ Package seems too small (< 100KB)"
+            exit 1
+          fi
+          
+          if [ $file_size -gt 50000000 ]; then
+            echo "❌ Package seems too large (> 50MB)"
+            exit 1
+          fi
+          
+          echo "✅ Package size validation passed"
+
+  # Job 6: Summary
+  ci-summary:
+    name: CI Summary
+    if: always()
+    needs: [lint-and-typecheck, test, build-extension, security-check, post-build-validation]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    
+    steps:
+      - name: Generate summary
+        run: |
+          echo "# 🚀 CI Pipeline Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Job Status" >> $GITHUB_STEP_SUMMARY
+          echo "- **Lint & Type Check**: ${{ needs.lint-and-typecheck.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tests**: ${{ needs.test.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build Extension**: ${{ needs.build-extension.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Security Check**: ${{ needs.security-check.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Post-build Validation**: ${{ needs.post-build-validation.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Determine overall status
+          if [ "${{ needs.lint-and-typecheck.result }}" = "success" ] && 
+             [ "${{ needs.test.result }}" = "success" ] && 
+             [ "${{ needs.build-extension.result }}" = "success" ] && 
+             [ "${{ needs.security-check.result }}" = "success" ] && 
+             [ "${{ needs.post-build-validation.result }}" = "success" ]; then
+            echo "## ✅ Overall Status: SUCCESS" >> $GITHUB_STEP_SUMMARY
+            echo "All checks passed! The extension is ready for release." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## ❌ Overall Status: FAILED" >> $GITHUB_STEP_SUMMARY
+            echo "One or more checks failed. Please review the job outputs above." >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Check overall success
+        if: |
+          needs.lint-and-typecheck.result != 'success' ||
+          needs.test.result != 'success' ||
+          needs.build-extension.result != 'success' ||
+          needs.security-check.result != 'success' ||
+          needs.post-build-validation.result != 'success'
+        run: |
+          echo "❌ CI pipeline failed"
+          exit 1

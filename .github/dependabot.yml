@@ -1,0 +1,163 @@
+# Dependabot configuration for automated dependency updates
+# Docs: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  # Root package.json dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "OleksandrKucherenko"
+    assignees:
+      - "OleksandrKucherenko"
+    commit-message:
+      prefix: "deps"
+      prefix-development: "deps-dev"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "npm"
+    ignore:
+      # Ignore major version updates for critical dependencies
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "vitest"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@vscode/vsce"
+        update-types: ["version-update:semver-major"]
+    groups:
+      # Group VS Code related dependencies
+      vscode-dependencies:
+        patterns:
+          - "vscode-*"
+          - "@vscode/*"
+          - "@types/vscode"
+      # Group testing dependencies
+      testing-dependencies:
+        patterns:
+          - "vitest"
+          - "@vitest/*"
+          - "jsdom"
+      # Group build tools
+      build-tools:
+        patterns:
+          - "typescript"
+          - "turbo"
+          - "rimraf"
+          - "tsx"
+      # Group linting and formatting
+      code-quality:
+        patterns:
+          - "@biomejs/*"
+          - "husky"
+          - "lint-staged"
+
+  # Client module dependencies
+  - package-ecosystem: "npm"
+    directory: "/modules/client"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:30"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "OleksandrKucherenko"
+    commit-message:
+      prefix: "deps(client)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "client-module"
+      - "npm"
+
+  # Server module dependencies
+  - package-ecosystem: "npm"
+    directory: "/modules/server"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "10:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "OleksandrKucherenko"
+    commit-message:
+      prefix: "deps(server)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "server-module"
+      - "npm"
+
+  # Parser module dependencies
+  - package-ecosystem: "npm"
+    directory: "/modules/parser"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "10:30"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "OleksandrKucherenko"
+    commit-message:
+      prefix: "deps(parser)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "parser-module"
+      - "npm"
+    ignore:
+      # Don't update ANTLR as it requires manual grammar regeneration
+      - dependency-name: "antlr4ng"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+
+  # Shared module dependencies
+  - package-ecosystem: "npm"
+    directory: "/modules/shared"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "11:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "OleksandrKucherenko"
+    commit-message:
+      prefix: "deps(shared)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "shared-module"
+      - "npm"
+
+  # GitHub Actions dependencies
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "OleksandrKucherenko"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
+      - "ci"
+    groups:
+      # Group all GitHub Actions updates
+      github-actions:
+        patterns:
+          - "*"
