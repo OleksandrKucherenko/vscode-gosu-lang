@@ -1,0 +1,3 @@
+class MyClass {
+  function abc[
+}

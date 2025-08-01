@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.1.2/schema.json",
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "root": true,
   "vcs": {
     "enabled": true,
@@ -10,6 +10,17 @@
   "files": {
     "ignoreUnknown": false,
     "includes": ["**/src/**", "**/tests/**"]
+  },
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": "on",
+        "useSortedAttributes": "on",
+        "useSortedKeys": "off",
+        "useSortedProperties": "on"
+      }
+    }
   },
   "formatter": {
     "enabled": true,

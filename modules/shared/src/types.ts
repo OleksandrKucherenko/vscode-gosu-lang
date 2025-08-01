@@ -2,22 +2,22 @@
  * Shared types and interfaces for the Gosu Language Server
  */
 
-import { Range, Position } from 'vscode-languageserver-types';
+import type { Position, Range } from "vscode-languageserver-types"
 
 /**
  * Gosu file types supported by the language server
  */
-export type GosuFileType = 'class' | 'enhancement' | 'template' | 'program';
+export type GosuFileType = "class" | "enhancement" | "template" | "program"
 
 /**
  * Gosu file extensions mapped to their types
  */
 export const GOSU_FILE_EXTENSIONS = {
-  '.gs': 'class' as GosuFileType,
-  '.gsx': 'enhancement' as GosuFileType,
-  '.gst': 'template' as GosuFileType,
-  '.gsp': 'program' as GosuFileType,
-} as const;
+  ".gs": "class" as GosuFileType,
+  ".gsx": "enhancement" as GosuFileType,
+  ".gst": "template" as GosuFileType,
+  ".gsp": "program" as GosuFileType,
+} as const
 
 /**
  * Language server configuration options
@@ -25,29 +25,29 @@ export const GOSU_FILE_EXTENSIONS = {
 export interface GosuLSPConfig {
   /** Enable/disable specific features */
   features: {
-    completion: boolean;
-    hover: boolean;
-    definition: boolean;
-    references: boolean;
-    formatting: boolean;
-    diagnostics: boolean;
-  };
-  
+    completion: boolean
+    hover: boolean
+    definition: boolean
+    references: boolean
+    formatting: boolean
+    diagnostics: boolean
+  }
+
   /** Java-related configuration */
   java: {
     /** Java source paths for cross-language navigation */
-    sourcePaths: string[];
+    sourcePaths: string[]
     /** Java classpath for type resolution */
-    classpath: string[];
-  };
-  
+    classpath: string[]
+  }
+
   /** Parser configuration */
   parser: {
     /** Enable/disable parse caching */
-    enableCaching: boolean;
+    enableCaching: boolean
     /** Parse debounce delay in milliseconds */
-    debounceMs: number;
-  };
+    debounceMs: number
+  }
 }
 
 /**
@@ -70,38 +70,38 @@ export const DEFAULT_CONFIG: GosuLSPConfig = {
     enableCaching: true,
     debounceMs: 300,
   },
-};
+}
 
 /**
  * Symbol information for Gosu language constructs
  */
 export interface GosuSymbol {
-  name: string;
-  kind: GosuSymbolKind;
-  range: Range;
-  selectionRange: Range;
-  detail?: string;
-  documentation?: string;
+  name: string
+  kind: GosuSymbolKind
+  range: Range
+  selectionRange: Range
+  detail?: string
+  documentation?: string
 }
 
 /**
  * Gosu-specific symbol kinds
  */
 export enum GosuSymbolKind {
-  Class = 'class',
-  Enhancement = 'enhancement',
-  Property = 'property',
-  Function = 'function',
-  Constructor = 'constructor',
-  Variable = 'variable',
-  Field = 'field',
-  Method = 'method',
-  Interface = 'interface',
-  Enum = 'enum',
-  EnumConstant = 'enumConstant',
-  Package = 'package',
-  Template = 'template',
-  Program = 'program',
+  Class = "class",
+  Enhancement = "enhancement",
+  Property = "property",
+  Function = "function",
+  Constructor = "constructor",
+  Variable = "variable",
+  Field = "field",
+  Method = "method",
+  Interface = "interface",
+  Enum = "enum",
+  EnumConstant = "enumConstant",
+  Package = "package",
+  Template = "template",
+  Program = "program",
 }
 
 /**
@@ -118,9 +118,12 @@ export enum DiagnosticSeverity {
  * Language server error types
  */
 export class GosuLSPError extends Error {
-  constructor(message: string, public code?: string) {
-    super(message);
-    this.name = 'GosuLSPError';
+  constructor(
+    message: string,
+    public code?: string,
+  ) {
+    super(message)
+    this.name = "GosuLSPError"
   }
 }
 
@@ -128,9 +131,12 @@ export class GosuLSPError extends Error {
  * Parser-specific error
  */
 export class GosuParseError extends GosuLSPError {
-  constructor(message: string, public position?: Position) {
-    super(message, 'PARSE_ERROR');
-    this.name = 'GosuParseError';
+  constructor(
+    message: string,
+    public position?: Position,
+  ) {
+    super(message, "PARSE_ERROR")
+    this.name = "GosuParseError"
   }
 }
 
@@ -138,13 +144,13 @@ export class GosuParseError extends GosuLSPError {
  * Utility function to determine Gosu file type from URI
  */
 export function getGosuFileType(uri: string): GosuFileType | null {
-  const extension = uri.substring(uri.lastIndexOf('.'));
-  return GOSU_FILE_EXTENSIONS[extension as keyof typeof GOSU_FILE_EXTENSIONS] || null;
+  const extension = uri.substring(uri.lastIndexOf("."))
+  return GOSU_FILE_EXTENSIONS[extension as keyof typeof GOSU_FILE_EXTENSIONS] || null
 }
 
 /**
  * Utility function to check if a URI is a Gosu file
  */
 export function isGosuFile(uri: string): boolean {
-  return getGosuFileType(uri) !== null;
+  return getGosuFileType(uri) !== null
 }

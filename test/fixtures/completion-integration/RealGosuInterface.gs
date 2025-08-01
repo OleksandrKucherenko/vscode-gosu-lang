@@ -1,0 +1,3 @@
+interface RealGosuInterface {
+  function doSomething()
+}

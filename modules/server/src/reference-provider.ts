@@ -1,14 +1,8 @@
-import { TextDocument } from "vscode-languageserver-textdocument"
-import { Position, Location, Range } from "vscode-languageserver/node"
+import { GosuParser } from "@gosu-lsp/parser"
+import type { GosuSymbolTable, GosuSymbolType } from "@gosu-lsp/shared"
+import type { Location, Position, Range } from "vscode-languageserver/node"
+import type { TextDocument } from "vscode-languageserver-textdocument"
 import { GosuSymbolExtractor } from "./symbol-extractor"
-import { GosuParser } from "../../parser/src/parser"
-import {
-  GosuSymbolTable,
-  GosuASTSymbol,
-  GosuSymbolType,
-  findSymbolsByName,
-  getVisibleSymbols,
-} from "../../shared/src/symbols"
 
 export interface ReferenceContext {
   includeDeclaration?: boolean
@@ -69,7 +63,7 @@ export class GosuReferenceProvider {
       const includeDeclaration = context?.includeDeclaration ?? true
 
       // Search through all indexed documents
-      for (const [uri, docIndex] of this.documentIndexes) {
+      for (const [_uri, docIndex] of this.documentIndexes) {
         const docReferences = this.findReferencesInDocument(docIndex, symbolAtPosition, includeDeclaration)
         references.push(...docReferences)
       }
@@ -324,7 +318,7 @@ export class GosuReferenceProvider {
       if (!this.globalSymbolMap.has(symbol.name)) {
         this.globalSymbolMap.set(symbol.name, [])
       }
-      this.globalSymbolMap.get(symbol.name)!.push(symbol)
+      this.globalSymbolMap.get(symbol.name)?.push(symbol)
     }
   }
 

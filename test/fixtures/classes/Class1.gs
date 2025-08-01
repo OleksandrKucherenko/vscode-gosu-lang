@@ -1,0 +1,1 @@
+class Class1 { function method1() {} }

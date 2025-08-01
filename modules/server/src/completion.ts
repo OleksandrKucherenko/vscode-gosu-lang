@@ -1,16 +1,11 @@
-import Debug from 'debug'
-import { TextDocument } from 'vscode-languageserver-textdocument'
-import { Position, CompletionItem, CompletionItemKind, InsertTextFormat } from 'vscode-languageserver/node'
-import {
-  GosuKeywordInfo,
-  GosuKeywordCategory,
-  getAllGosuKeywords,
-  findKeywordsByPrefix,
-  getKeywordsByCategory
-} from '@gosu-lsp/shared'
-import { GosuASTCompletionProvider } from './ast-completion'
+import { type GosuKeywordCategory, type GosuKeywordInfo, getKeywordsByCategory } from "@gosu-lsp/shared"
+import Debug from "debug"
+import { type CompletionItem, CompletionItemKind, InsertTextFormat, type Position } from "vscode-languageserver/node"
+import type { TextDocument } from "vscode-languageserver-textdocument"
+import { GosuASTCompletionProvider } from "./ast-completion"
+import type { GosuJavaSymbolResolver } from "./java-symbol-resolver"
 
-const debug = Debug('gosu:lsp:completion')
+const debug = Debug("gosu:lsp:completion")
 
 /**
  * Context information for completion suggestions
@@ -32,78 +27,79 @@ interface CompletionContext {
  * Provides auto-completion suggestions for Gosu language keywords
  */
 export class GosuCompletionProvider {
-  private readonly debug = Debug('gosu:lsp:completion:provider')
   private astCompletionProvider: GosuASTCompletionProvider
 
-  constructor() {
-    this.astCompletionProvider = new GosuASTCompletionProvider()
-    this.debug('Initialized GosuCompletionProvider with AST support')
+  constructor(javaSymbolResolver: GosuJavaSymbolResolver) {
+    this.astCompletionProvider = new GosuASTCompletionProvider(javaSymbolResolver)
+    debug("Initialized GosuCompletionProvider with AST support")
   }
 
   /**
    * Get completion items for the given document position
    */
-  async getCompletions(document: TextDocument, position: Position, triggerCharacter?: string): Promise<CompletionItem[]> {
-    this.debug(`Getting completions at ${position.line}:${position.character} (trigger: ${triggerCharacter})`)
-    
+  async getCompletions(
+    document: TextDocument,
+    position: Position,
+    triggerCharacter?: string,
+  ): Promise<CompletionItem[]> {
+    debug(`Getting completions at ${position.line}:${position.character} (trigger: ${triggerCharacter})`)
+
     try {
       const allCompletions: CompletionItem[] = []
 
       // Get AST-based completions (symbols, members, imports)
       try {
-        const astCompletions = await this.astCompletionProvider.getCompletions(
-          document,
-          position,
-          triggerCharacter
-        )
+        const astCompletions = await this.astCompletionProvider.getCompletions(document, position, triggerCharacter)
         allCompletions.push(...astCompletions)
-        this.debug(`Added ${astCompletions.length} AST-based completions`)
+        debug(`Added ${astCompletions.length} AST-based completions`)
       } catch (error) {
-        this.debug('Error getting AST completions:', error)
+        debug("Error getting AST completions:", error)
       }
 
       // Analyze the context at the cursor position
       const context = this.analyzeContext(document, position)
-      
-      this.debug(`Completion context:`, {
+
+      debug(`Completion context:`, {
         isFileStart: context.isFileStart,
         isInClassBody: context.isInClassBody,
         isInFunctionBody: context.isInFunctionBody,
         prefix: context.prefix,
-        linePrefix: context.linePrefix
+        linePrefix: context.linePrefix,
       })
-      
+
       // Get relevant keywords based on context
       let relevantKeywords: GosuKeywordInfo[]
-      
+
       // First get keywords based on context
       const contextKeywords = this.getKeywordsForContext(context)
-      this.debug(`Context keywords:`, contextKeywords.map(k => k.keyword))
-      
+      debug(
+        `Context keywords:`,
+        contextKeywords.map((k) => k.keyword),
+      )
+
       if (context.prefix) {
         // Filter context keywords by prefix
-        relevantKeywords = contextKeywords.filter(keyword =>
-          keyword.keyword.toLowerCase().startsWith(context.prefix.toLowerCase())
+        relevantKeywords = contextKeywords.filter((keyword) =>
+          keyword.keyword.toLowerCase().startsWith(context.prefix.toLowerCase()),
         )
-        this.debug(`Found ${relevantKeywords.length} keywords matching prefix "${context.prefix}": ${relevantKeywords.map(k => k.keyword)}`)
+        debug(
+          `Found ${relevantKeywords.length} keywords matching prefix "${context.prefix}": ${relevantKeywords.map((k) => k.keyword)}`,
+        )
       } else {
         // Use all context keywords
         relevantKeywords = contextKeywords
-        this.debug(`Found ${relevantKeywords.length} keywords for context`)
+        debug(`Found ${relevantKeywords.length} keywords for context`)
       }
-      
+
       // Convert keywords to completion items
-      const keywordCompletions = relevantKeywords.map(keyword =>
-        this.createCompletionItem(keyword)
-      )
+      const keywordCompletions = relevantKeywords.map((keyword) => this.createCompletionItem(keyword))
       allCompletions.push(...keywordCompletions)
-      this.debug(`Added ${keywordCompletions.length} keyword completions`)
-      
-      this.debug(`Returning ${allCompletions.length} total completions`)
+      debug(`Added ${keywordCompletions.length} keyword completions`)
+
+      debug(`Returning ${allCompletions.length} total completions`)
       return allCompletions
-      
     } catch (error) {
-      this.debug('Error getting completions:', error)
+      debug("Error getting completions:", error)
       return []
     }
   }
@@ -113,25 +109,25 @@ export class GosuCompletionProvider {
    */
   private analyzeContext(document: TextDocument, position: Position): CompletionContext {
     const text = document.getText()
-    const lines = text.split('\n')
-    const currentLine = lines[position.line] || ''
+    const lines = text.split("\n")
+    const currentLine = lines[position.line] || ""
     const linePrefix = currentLine.substring(0, position.character)
-    
+
     // Extract the current word/prefix being typed
     const wordMatch = linePrefix.match(/(\w+)$/)
-    const prefix = wordMatch ? wordMatch[1] : ''
-    
+    const prefix = wordMatch ? wordMatch[1] : ""
+
     // Analyze document structure
     const isFileStart = this.isAtFileStart(lines, position.line)
     const isInClassBody = this.isInClassBody(lines, position.line)
     const isInFunctionBody = this.isInFunctionBody(lines, position.line)
-    
+
     return {
       isFileStart,
       isInClassBody,
       isInFunctionBody,
       prefix,
-      linePrefix: linePrefix.trim()
+      linePrefix: linePrefix.trim(),
     }
   }
 
@@ -155,21 +151,21 @@ export class GosuCompletionProvider {
   private isInClassBody(lines: string[], currentLine: number): boolean {
     let braceDepth = 0
     let inClassLike = false
-    
+
     for (let i = 0; i <= currentLine && i < lines.length; i++) {
       const line = lines[i].trim()
-      
+
       // Check for class-like declarations (class, interface, enhancement, etc.)
       if (line.match(/^(public|private|protected|internal)?\s*(class|interface|enhancement|enum|structure)\s+/)) {
         inClassLike = true
       }
-      
+
       // Count braces
       const openBraces = (line.match(/\{/g) || []).length
       const closeBraces = (line.match(/\}/g) || []).length
       braceDepth += openBraces - closeBraces
     }
-    
+
     return inClassLike && braceDepth > 0
   }
 
@@ -181,43 +177,43 @@ export class GosuCompletionProvider {
     let functionBraceDepth = 0
     let inFunction = false
     let inClassLike = false
-    
+
     for (let i = 0; i <= currentLine && i < lines.length; i++) {
       const line = lines[i].trim()
-      
+
       // Check for class-like declaration
       if (line.match(/^(public|private|protected|internal)?\s*(class|interface|enhancement|enum|structure)\s+/)) {
         inClassLike = true
         continue
       }
-      
+
       // Check for function declaration (only count if we're inside a class-like construct)
       if (inClassLike && line.match(/(function|construct)\s+/)) {
         inFunction = true
         // Reset function brace depth when we encounter a new function
         functionBraceDepth = 0
       }
-      
+
       // Count braces
       const openBraces = (line.match(/\{/g) || []).length
       const closeBraces = (line.match(/\}/g) || []).length
-      
+
       // Track class-like braces
       if (inClassLike) {
         classLikeBraceDepth += openBraces - closeBraces
       }
-      
+
       // Track function braces if we're in a function
       if (inFunction && classLikeBraceDepth > 0) {
         functionBraceDepth += openBraces - closeBraces
-        
+
         // If we've closed the function, we're no longer in it
         if (functionBraceDepth <= 0) {
           inFunction = false
         }
       }
     }
-    
+
     return inClassLike && inFunction && classLikeBraceDepth > 0 && functionBraceDepth > 0
   }
 
@@ -226,32 +222,36 @@ export class GosuCompletionProvider {
    */
   private getKeywordsForContext(context: CompletionContext): GosuKeywordInfo[] {
     const keywords: GosuKeywordInfo[] = []
-    
+
     if (context.isFileStart) {
       // At file start, suggest package and declaration keywords
-      keywords.push(...getKeywordsByCategory('declaration').filter(k => 
-        ['package', 'class', 'interface', 'enhancement', 'enum', 'structure'].includes(k.keyword)
-      ))
-      keywords.push(...getKeywordsByCategory('visibility'))
+      keywords.push(
+        ...getKeywordsByCategory("declaration").filter((k) =>
+          ["package", "class", "interface", "enhancement", "enum", "structure"].includes(k.keyword),
+        ),
+      )
+      keywords.push(...getKeywordsByCategory("visibility"))
     } else if (context.isInFunctionBody) {
       // Inside function body, suggest control flow and literals
-      keywords.push(...getKeywordsByCategory('control'))
-      keywords.push(...getKeywordsByCategory('literal'))
-      keywords.push(...getKeywordsByCategory('type'))
-      keywords.push(...getKeywordsByCategory('declaration').filter(k => k.keyword === 'var'))
+      keywords.push(...getKeywordsByCategory("control"))
+      keywords.push(...getKeywordsByCategory("literal"))
+      keywords.push(...getKeywordsByCategory("type"))
+      keywords.push(...getKeywordsByCategory("declaration").filter((k) => k.keyword === "var"))
     } else if (context.isInClassBody) {
       // Inside class body, suggest member declarations
-      keywords.push(...getKeywordsByCategory('declaration').filter(k => 
-        ['function', 'var', 'property', 'construct'].includes(k.keyword)
-      ))
-      keywords.push(...getKeywordsByCategory('visibility'))
-      keywords.push(...getKeywordsByCategory('modifier'))
+      keywords.push(
+        ...getKeywordsByCategory("declaration").filter((k) =>
+          ["function", "var", "property", "construct"].includes(k.keyword),
+        ),
+      )
+      keywords.push(...getKeywordsByCategory("visibility"))
+      keywords.push(...getKeywordsByCategory("modifier"))
     } else {
       // Default context - return most common keywords
-      keywords.push(...getKeywordsByCategory('declaration'))
-      keywords.push(...getKeywordsByCategory('visibility'))
+      keywords.push(...getKeywordsByCategory("declaration"))
+      keywords.push(...getKeywordsByCategory("visibility"))
     }
-    
+
     return keywords
   }
 
@@ -266,9 +266,9 @@ export class GosuCompletionProvider {
       documentation: `Gosu ${keyword.category}: ${keyword.description}`,
       insertText: keyword.snippet || keyword.keyword,
       insertTextFormat: keyword.snippet ? InsertTextFormat.Snippet : InsertTextFormat.PlainText,
-      sortText: this.getSortText(keyword)
+      sortText: this.getSortText(keyword),
     }
-    
+
     return item
   }
 
@@ -277,16 +277,16 @@ export class GosuCompletionProvider {
    */
   private getCompletionItemKind(category: GosuKeywordCategory): CompletionItemKind {
     switch (category) {
-      case 'declaration':
+      case "declaration":
         return CompletionItemKind.Keyword
-      case 'visibility':
-      case 'modifier':
+      case "visibility":
+      case "modifier":
         return CompletionItemKind.Keyword
-      case 'control':
+      case "control":
         return CompletionItemKind.Keyword
-      case 'literal':
+      case "literal":
         return CompletionItemKind.Keyword
-      case 'type':
+      case "type":
         return CompletionItemKind.TypeParameter
       default:
         return CompletionItemKind.Keyword
@@ -299,18 +299,18 @@ export class GosuCompletionProvider {
   private getSortText(keyword: GosuKeywordInfo): string {
     // Prioritize certain keywords
     const priority: Record<string, string> = {
-      'class': '0001',
-      'interface': '0002',
-      'package': '0003',
-      'function': '0004',
-      'var': '0005',
-      'public': '0010',
-      'private': '0011',
-      'if': '0020',
-      'for': '0021',
-      'return': '0022'
+      class: "0001",
+      interface: "0002",
+      package: "0003",
+      function: "0004",
+      var: "0005",
+      public: "0010",
+      private: "0011",
+      if: "0020",
+      for: "0021",
+      return: "0022",
     }
-    
+
     return priority[keyword.keyword] || `1000_${keyword.keyword}`
   }
 
@@ -318,7 +318,7 @@ export class GosuCompletionProvider {
    * Get trigger characters for completion
    */
   getTriggerCharacters(): string[] {
-    return ['.', ':', ' ']
+    return [".", ":", " "]
   }
 
   /**
@@ -326,7 +326,7 @@ export class GosuCompletionProvider {
    */
   onDocumentChange(document: TextDocument): void {
     this.astCompletionProvider.clearDocumentCache(document.uri)
-    this.debug(`Cleared AST cache for document: ${document.uri}`)
+    debug(`Cleared AST cache for document: ${document.uri}`)
   }
 
   /**
@@ -334,6 +334,6 @@ export class GosuCompletionProvider {
    */
   clearAllCaches(): void {
     this.astCompletionProvider.clearAllCaches()
-    this.debug('Cleared all AST caches')
+    debug("Cleared all AST caches")
   }
 }

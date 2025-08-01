@@ -1,0 +1,1 @@
+invalid gosu code {

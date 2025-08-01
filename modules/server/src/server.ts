@@ -1,28 +1,28 @@
+import Debug from "debug"
 import {
+  type CompletionItem,
+  type CompletionParams,
+  type Connection,
   createConnection,
-  TextDocuments,
+  type DefinitionParams,
+  type HoverParams,
+  type InitializeParams,
+  type InitializeResult,
   ProposedFeatures,
-  InitializeParams,
-  InitializeResult,
+  type ReferenceParams,
+  type SemanticTokensParams,
+  type SemanticTokensRangeParams,
   TextDocumentSyncKind,
-  Connection,
-  CompletionItem,
-  CompletionParams,
-  TextDocumentPositionParams,
-  SemanticTokensParams,
-  SemanticTokensRangeParams,
-  DefinitionParams,
-  HoverParams,
-  ReferenceParams,
+  TextDocuments,
 } from "vscode-languageserver/node"
 import { TextDocument } from "vscode-languageserver-textdocument"
-import Debug from "debug"
-import { createDiagnosticsProvider, GosuDiagnosticsProvider } from "./diagnostics"
-import { GosuCompletionProvider } from "./completion"
-import { GosuSemanticHighlightingProvider } from "./semantic-highlighting"
+import { GosuASTCompletionProvider } from "./ast-completion"
 import { GosuDefinitionProvider } from "./definition-provider"
+import { createDiagnosticsProvider, type GosuDiagnosticsProvider } from "./diagnostics"
 import { GosuHoverProvider } from "./hover-provider"
+import { GosuJavaSymbolResolver } from "./java-symbol-resolver"
 import { GosuReferenceProvider } from "./reference-provider"
+import { GosuSemanticHighlightingProvider } from "./semantic-highlighting"
 
 // Create debug loggers for different namespaces
 const debugLog = Debug("gosu:lsp:server")
@@ -34,7 +34,7 @@ export interface GosuLanguageServer {
   connection: Connection
   documents: TextDocuments<TextDocument>
   diagnosticsProvider: GosuDiagnosticsProvider
-  completionProvider: GosuCompletionProvider
+  completionProvider: GosuASTCompletionProvider
   semanticHighlightingProvider: GosuSemanticHighlightingProvider
   definitionProvider: GosuDefinitionProvider
   hoverProvider: GosuHoverProvider
@@ -53,8 +53,16 @@ export function createServer(): GosuLanguageServer {
   // Create diagnostics provider
   const diagnosticsProvider = createDiagnosticsProvider()
 
-  // Create completion provider
-  const completionProvider = new GosuCompletionProvider()
+  // Create Java symbol resolver
+  const javaSymbolResolver = new GosuJavaSymbolResolver({
+    // TODO: Configure this properly based on workspace settings
+    classpath: [],
+    sourcePaths: [],
+  })
+
+  // Create AST-based completion provider
+  // Pass the javaSymbolResolver to the constructor
+  const completionProvider = new GosuASTCompletionProvider(javaSymbolResolver)
 
   // Create semantic highlighting provider
   const semanticHighlightingProvider = new GosuSemanticHighlightingProvider()

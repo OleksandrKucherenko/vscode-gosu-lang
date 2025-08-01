@@ -1,3 +1,4 @@
+import { readFixture } from "@gosu-lsp/shared"
 import Debug from "debug"
 import { describe, expect, test } from "vitest"
 import { GosuParser } from "./parser"
@@ -13,21 +14,7 @@ describe("GosuParser", () => {
       test("Then it should parse a simple class without errors", () => {
         debug("Testing valid class syntax parsing")
 
-        const validGosuCode = `
-package test
-
-public class SimpleClass {
-  var _field : String = "hello"
-  
-  construct() {
-    // empty constructor
-  }
-  
-  function getField() : String {
-    return _field
-  }
-}
-`
+        const validGosuCode = readFixture("parser/SimpleClass.gs")
 
         const result = parser.parseText(validGosuCode, "SimpleClass.gs")
 
@@ -40,15 +27,7 @@ public class SimpleClass {
       test("And it should parse enhancement syntax without errors", () => {
         debug("Testing valid enhancement syntax parsing")
 
-        const enhancementCode = `
-package test
-
-enhancement MyStringEnhancement : String {
-  function printWarning() {
-    print("WARNING: " + this)
-  }
-}
-`
+        const enhancementCode = readFixture("parser/MyStringEnhancement.gsx")
 
         const result = parser.parseText(enhancementCode, "MyStringEnhancement.gsx")
 
@@ -60,10 +39,7 @@ enhancement MyStringEnhancement : String {
       test("And it should parse template syntax without errors", () => {
         debug("Testing valid template syntax parsing")
 
-        const templateCode = `<%@ params( names : String[] ) %>
-All Names: <% for( name in names ) { %>
-  * \${name}
-<% } %>`
+        const templateCode = readFixture("parser/AllNames.gst")
 
         const result = parser.parseText(templateCode, "AllNames.gst")
 
@@ -84,15 +60,7 @@ All Names: <% for( name in names ) { %>
       test("Then it should report syntax errors for missing braces", () => {
         debug("Testing invalid syntax - missing braces")
 
-        const invalidCode = `
-package test
-
-public class InvalidClass {
-  var _field : String = "hello"
-  
-  construct() {
-    // missing closing brace
-`
+        const invalidCode = readFixture("parser/InvalidClassMissingBrace.gs")
 
         const result = parser.parseText(invalidCode, "InvalidClass.gs")
 
@@ -116,13 +84,7 @@ public class InvalidClass {
       test("And it should report errors for invalid keywords", () => {
         debug("Testing invalid syntax - invalid keywords")
 
-        const invalidCode = `
-package test
-
-public invalidkeyword MyClass {
-  var field : String
-}
-`
+        const invalidCode = readFixture("parser/InvalidKeyword.gs")
 
         const result = parser.parseText(invalidCode, "InvalidKeyword.gs")
 
@@ -136,17 +98,7 @@ public invalidkeyword MyClass {
       test("And it should handle multiple syntax errors", () => {
         debug("Testing multiple syntax errors")
 
-        const multipleErrorCode = `
-package test
-
-public class MultiError {
-  var field : UnknownType = 
-  
-  construct( {
-    this.field = "incomplete
-  }
-}
-`
+        const multipleErrorCode = readFixture("parser/MultiError.gs")
 
         const result = parser.parseText(multipleErrorCode, "MultiError.gs")
 

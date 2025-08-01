@@ -1,0 +1,1 @@
+class ModifiedClass { function newMethod() {} }

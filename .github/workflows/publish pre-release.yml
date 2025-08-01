@@ -32,16 +32,15 @@ on:
       - 'language-configuration.json'
       - '.vscodeignore'
       - 'index.js'
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - 'LICENSE'
-      - 'roadmap.md'
-      - '.gitignore'
-      - '**.log'
-      - '.github/workflows/ci.yml'
-      - '.github/workflows/security.yml'
-      - '.github/dependabot.yml'
+      - '!**.md'
+      - '!docs/**'
+      - '!LICENSE'
+      - '!roadmap.md'
+      - '!.gitignore'
+      - '!**.log'
+      - '!.github/workflows/ci.yml'
+      - '!.github/workflows/security.yml'
+      - '!.github/dependabot.yml'
 
 jobs:
   release:

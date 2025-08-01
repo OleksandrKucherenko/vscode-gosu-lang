@@ -1,6 +1,17 @@
+import { readFileSync } from "fs"
+import path from "path"
+import { fileURLToPath } from "url"
 import { describe, expect, it } from "vitest"
 
 import { containsGosuKeywords, extractClassNames, extractFunctionNames, isGosuFile } from "./gosuUtils"
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+function readFixture(testFile: string): string {
+  const filePath = path.resolve(__dirname, `../../test/fixtures/${testFile}`)
+  return readFileSync(filePath, "utf8")
+}
 
 describe("GosuUtils functions", () => {
   describe("containsGosuKeywords", () => {
@@ -32,12 +43,7 @@ describe("GosuUtils functions", () => {
 
   describe("extractClassNames", () => {
     it("should extract class names from GOSU code", () => {
-      const text = `
-                class MyClass {
-                }
-                class AnotherClass extends BaseClass {
-                }
-            `
+      const text = readFixture("utils/ClassesForExtraction.gs")
       const classNames = extractClassNames(text)
       expect(classNames).toEqual(["MyClass", "AnotherClass"])
     })
@@ -57,14 +63,7 @@ describe("GosuUtils functions", () => {
 
   describe("extractFunctionNames", () => {
     it("should extract function names from GOSU code", () => {
-      const text = `
-                function getName(): String {
-                    return _name
-                }
-                function setAge(age: int) {
-                    _age = age
-                }
-            `
+      const text = readFixture("utils/FunctionsForExtraction.gs")
       const functionNames = extractFunctionNames(text)
       expect(functionNames).toEqual(["getName", "setAge"])
     })

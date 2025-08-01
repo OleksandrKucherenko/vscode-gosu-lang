@@ -82,8 +82,9 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run build",
-    "build": "turbo run build && npm run build:root",
+    "build": "turbo run build && npm run build:server",
     "build:root": "tsc --project ./tsconfig.json",
+    "build:server": "node scripts/build-server.js",
     "clean": "turbo run clean && rimraf out dist coverage .nyc_output",
     "lint": "turbo run lint",
     "package": "vsce package --no-yarn --tree",
@@ -105,6 +106,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.1.2",
+    "esbuild": "^0.20.0",
     "@types/debug": "^4.1.12",
     "@types/node": "^24.1.0",
     "@types/vscode": "^1.74.0",

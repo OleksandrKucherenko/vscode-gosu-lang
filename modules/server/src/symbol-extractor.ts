@@ -1,41 +1,41 @@
-import { ParseTree } from 'antlr4ng'
-import Debug from 'debug'
-import { GosuParser } from '../../parser/src/parser'
+import type { GosuParser } from "@gosu-lsp/parser"
 import {
-  GosuSymbolTable,
-  GosuASTSymbol,
-  GosuImport,
-  GosuParameter,
+  addSymbolToTable,
   createSymbolTable,
-  addSymbolToTable
-} from '../../shared/src/symbols'
+  type GosuASTSymbol,
+  type GosuImport,
+  type GosuParameter,
+  type GosuSymbolTable,
+} from "@gosu-lsp/shared"
+import type { ParseTree } from "antlr4ng"
+import Debug from "debug"
 
-const debug = Debug('gosu:lsp:symbol-extractor')
+const debug = Debug("gosu:lsp:symbol-extractor")
 
 /**
  * AST Symbol Extractor for Gosu Language
  * Traverses ANTLR parse tree to extract symbols for intelligent completion
  */
 export class GosuSymbolExtractor {
-  private parser: GosuParser
+  parser: GosuParser
 
   constructor(parser: GosuParser) {
     this.parser = parser
-    debug('Initialized GosuSymbolExtractor')
+    debug("Initialized GosuSymbolExtractor")
   }
 
   /**
    * Extract symbols from parsed AST
    */
   extractSymbols(uri: string, ast: ParseTree): GosuSymbolTable {
-    debug('Extracting symbols from AST for %s', uri)
-    
+    debug("Extracting symbols from AST for %s", uri)
+
     const symbolTable = createSymbolTable(uri)
-    
+
     // Start traversal from root
     this.traverse(ast, symbolTable, null)
-    
-    debug('Extracted %d symbols from %s', symbolTable.allSymbols.length, uri)
+
+    debug("Extracted %d symbols from %s", symbolTable.allSymbols.length, uri)
     return symbolTable
   }
 
@@ -48,63 +48,73 @@ export class GosuSymbolExtractor {
     const nodeText = node.getText()
     const nodeType = node.constructor.name
 
-    debug('Traversing node: %s (%s)', nodeType, nodeText.substring(0, 50))
+    debug("Traversing node: %s (%s)", nodeType, nodeText.substring(0, 50))
 
     // Log all node types to debug the AST structure
-    if (nodeType.includes('Class') || nodeType.includes('Interface') || nodeType.includes('Enhancement') ||
-        nodeType.includes('Function') || nodeType.includes('Method') || nodeType.includes('Field') ||
-        nodeType.includes('Variable') || nodeType.includes('Property') || nodeType.includes('Constructor') ||
-        nodeType.includes('Uses') || nodeType.includes('Import') || nodeType.includes('Package')) {
-      debug('*** POTENTIAL SYMBOL NODE: %s -> %s', nodeType, nodeText.substring(0, 100))
+    if (
+      nodeType.includes("Class") ||
+      nodeType.includes("Interface") ||
+      nodeType.includes("Enhancement") ||
+      nodeType.includes("Function") ||
+      nodeType.includes("Method") ||
+      nodeType.includes("Field") ||
+      nodeType.includes("Variable") ||
+      nodeType.includes("Property") ||
+      nodeType.includes("Constructor") ||
+      nodeType.includes("Uses") ||
+      nodeType.includes("Import") ||
+      nodeType.includes("Package")
+    ) {
+      debug("*** POTENTIAL SYMBOL NODE: %s -> %s", nodeType, nodeText.substring(0, 100))
     }
 
     // Extract symbols based on node type
     switch (nodeType) {
-      case 'StartContext':
-      case 'CompilationUnitContext':
+      case "StartContext":
+      case "CompilationUnitContext":
         this.extractFromCompilationUnit(node, symbolTable, parentScope)
         break
-      
-      case 'NamespaceStatementContext':
+
+      case "NamespaceStatementContext":
         this.extractPackageStatement(node, symbolTable)
         break
-      
-      case 'UsesStatementContext':
+
+      case "UsesStatementContext":
         this.extractUsesStatement(node, symbolTable)
         break
-      
-      case 'GClassContext':
+
+      case "GClassContext":
         this.extractClassDeclaration(node, symbolTable, parentScope)
         break
-      
-      case 'InterfaceDeclarationContext':
+
+      case "InterfaceDeclarationContext":
         this.extractInterfaceDeclaration(node, symbolTable, parentScope)
         break
-      
-      case 'EnhancementDeclarationContext':
+
+      case "EnhancementDeclarationContext":
         this.extractEnhancementDeclaration(node, symbolTable, parentScope)
         break
-      
-      case 'FieldDefnContext':
+
+      case "FieldDefnContext":
         this.extractFieldDeclaration(node, symbolTable, parentScope)
         break
-      
-      case 'ConstructorDefnContext':
+
+      case "ConstructorDefnContext":
         this.extractConstructorDeclaration(node, symbolTable, parentScope)
         break
-      
-      case 'FunctionDefnContext':
+
+      case "FunctionDefnContext":
         this.extractMethodDeclaration(node, symbolTable, parentScope)
         break
-      
-      case 'PropertyDeclarationContext':
+
+      case "PropertyDeclarationContext":
         this.extractPropertyDeclaration(node, symbolTable, parentScope)
         break
-      
-      case 'VariableDeclarationContext':
+
+      case "VariableDeclarationContext":
         this.extractVariableDeclaration(node, symbolTable, parentScope)
         break
-      
+
       default:
         // Continue traversing child nodes
         this.traverseChildren(node, symbolTable, parentScope)
@@ -135,9 +145,9 @@ export class GosuSymbolExtractor {
   /**
    * Extract package statement
    */
-  private extractPackageStatement(node: ParseTree, symbolTable: GosuSymbolTable): void {
+  private extractPackageStatement(node: ParseTree, _symbolTable: GosuSymbolTable): void {
     // Package statements don't add symbols but could be used for context
-    debug('Found package statement: %s', node.getText())
+    debug("Found package statement: %s", node.getText())
   }
 
   /**
@@ -145,26 +155,24 @@ export class GosuSymbolExtractor {
    */
   private extractUsesStatement(node: ParseTree, symbolTable: GosuSymbolTable): void {
     const text = node.getText()
-    debug('Found uses statement: %s', text)
-    
+    debug("Found uses statement: %s", text)
+
     // For UsesStatementContext, extract the full import path
     // The text will be something like "java.util.List" without the "uses" keyword
     const fullPath = text.trim()
-    const isWildcard = fullPath.endsWith('.*')
-    const importName = isWildcard
-      ? fullPath.replace('.*', '')
-      : fullPath.split('.').pop() || fullPath
+    const isWildcard = fullPath.endsWith(".*")
+    const importName = isWildcard ? fullPath.replace(".*", "") : fullPath.split(".").pop() || fullPath
 
     const importSymbol: GosuImport = {
       name: importName,
       path: fullPath,
       isWildcard,
       line: this.getLineNumber(node),
-      column: this.getColumnNumber(node)
+      column: this.getColumnNumber(node),
     }
 
     symbolTable.imports.push(importSymbol)
-    debug('Added import symbol: %s -> %s', importName, fullPath)
+    debug("Added import symbol: %s -> %s", importName, fullPath)
   }
 
   /**
@@ -172,34 +180,34 @@ export class GosuSymbolExtractor {
    */
   private extractClassDeclaration(node: ParseTree, symbolTable: GosuSymbolTable, parentScope: string | null): void {
     const text = node.getText()
-    debug('Found class declaration: %s', text.substring(0, 100))
-    
+    debug("Found class declaration: %s", text.substring(0, 100))
+
     // For GClassContext, we need to find the class name from child nodes
-    let className = ''
-    let visibility = 'internal'
-    
+    let className = ""
+    let visibility = "internal"
+
     // Look for the class name in child nodes
     const childCount = node.getChildCount()
     for (let i = 0; i < childCount; i++) {
       const child = node.getChild(i)
       if (child) {
         const childType = child.constructor.name
-        if (childType === 'IdContext') {
+        if (childType === "IdContext") {
           className = child.getText()
           break
         }
       }
     }
-    
+
     // Look for visibility in parent node (ModifiersContext)
     const parent = (node as any).parent
     if (parent) {
       const parentSiblings = parent.getChildCount()
       for (let i = 0; i < parentSiblings; i++) {
         const sibling = parent.getChild(i)
-        if (sibling && sibling.constructor.name === 'ModifiersContext') {
+        if (sibling && sibling.constructor.name === "ModifiersContext") {
           const modifierText = sibling.getText().toLowerCase()
-          if (['public', 'private', 'protected', 'internal'].includes(modifierText)) {
+          if (["public", "private", "protected", "internal"].includes(modifierText)) {
             visibility = modifierText as any
           }
           break
@@ -210,20 +218,20 @@ export class GosuSymbolExtractor {
     if (className) {
       const classSymbol: GosuASTSymbol = {
         name: className,
-        type: 'class',
+        type: "class",
         line: this.getLineNumber(node),
         column: this.getColumnNumber(node),
         visibility: visibility as any,
-        scope: parentScope || 'file'
+        scope: parentScope || "file",
       }
 
       addSymbolToTable(symbolTable, classSymbol)
-      debug('Added class symbol: %s (%s)', className, visibility)
+      debug("Added class symbol: %s (%s)", className, visibility)
 
       // Continue traversing with class as parent scope
       this.traverseChildren(node, symbolTable, className)
     } else {
-      debug('Could not extract class name from node')
+      debug("Could not extract class name from node")
       this.traverseChildren(node, symbolTable, parentScope)
     }
   }
@@ -233,24 +241,24 @@ export class GosuSymbolExtractor {
    */
   private extractInterfaceDeclaration(node: ParseTree, symbolTable: GosuSymbolTable, parentScope: string | null): void {
     const text = node.getText()
-    debug('Found interface declaration: %s', text.substring(0, 100))
-    
+    debug("Found interface declaration: %s", text.substring(0, 100))
+
     const interfaceMatch = text.match(/(public|private|protected|internal)?\s*interface\s+([a-zA-Z_][a-zA-Z0-9_]*)/i)
     if (interfaceMatch) {
-      const visibility = interfaceMatch[1] as any || 'public'
+      const visibility = (interfaceMatch[1] as any) || "public"
       const interfaceName = interfaceMatch[2]
 
       const interfaceSymbol: GosuASTSymbol = {
         name: interfaceName,
-        type: 'interface',
+        type: "interface",
         line: this.getLineNumber(node),
         column: this.getColumnNumber(node),
         visibility,
-        scope: parentScope || 'file'
+        scope: parentScope || "file",
       }
 
       addSymbolToTable(symbolTable, interfaceSymbol)
-      debug('Added interface symbol: %s (%s)', interfaceName, visibility)
+      debug("Added interface symbol: %s (%s)", interfaceName, visibility)
 
       // Continue traversing with interface as parent scope
       this.traverseChildren(node, symbolTable, interfaceName)
@@ -260,26 +268,32 @@ export class GosuSymbolExtractor {
   /**
    * Extract enhancement declaration
    */
-  private extractEnhancementDeclaration(node: ParseTree, symbolTable: GosuSymbolTable, parentScope: string | null): void {
+  private extractEnhancementDeclaration(
+    node: ParseTree,
+    symbolTable: GosuSymbolTable,
+    parentScope: string | null,
+  ): void {
     const text = node.getText()
-    debug('Found enhancement declaration: %s', text.substring(0, 100))
-    
-    const enhancementMatch = text.match(/(public|private|protected|internal)?\s*enhancement\s+([a-zA-Z_][a-zA-Z0-9_]*)/i)
+    debug("Found enhancement declaration: %s", text.substring(0, 100))
+
+    const enhancementMatch = text.match(
+      /(public|private|protected|internal)?\s*enhancement\s+([a-zA-Z_][a-zA-Z0-9_]*)/i,
+    )
     if (enhancementMatch) {
-      const visibility = enhancementMatch[1] as any || 'public'
+      const visibility = (enhancementMatch[1] as any) || "public"
       const enhancementName = enhancementMatch[2]
 
       const enhancementSymbol: GosuASTSymbol = {
         name: enhancementName,
-        type: 'enhancement',
+        type: "enhancement",
         line: this.getLineNumber(node),
         column: this.getColumnNumber(node),
         visibility,
-        scope: parentScope || 'file'
+        scope: parentScope || "file",
       }
 
       addSymbolToTable(symbolTable, enhancementSymbol)
-      debug('Added enhancement symbol: %s (%s)', enhancementName, visibility)
+      debug("Added enhancement symbol: %s (%s)", enhancementName, visibility)
 
       // Continue traversing with enhancement as parent scope
       this.traverseChildren(node, symbolTable, enhancementName)
@@ -291,23 +305,23 @@ export class GosuSymbolExtractor {
    */
   private extractFieldDeclaration(node: ParseTree, symbolTable: GosuSymbolTable, parentScope: string | null): void {
     const text = node.getText()
-    debug('Found field declaration: %s', text.substring(0, 100))
-    
+    debug("Found field declaration: %s", text.substring(0, 100))
+
     // For FieldDefnContext, extract field name and type from child nodes
-    let fieldName = ''
-    let dataType = ''
-    let visibility = 'internal'
+    let fieldName = ""
+    let dataType = ""
+    let visibility = "internal"
     let isStatic = false
-    
+
     // Look for field name and type in child nodes
     const childCount = node.getChildCount()
     for (let i = 0; i < childCount; i++) {
       const child = node.getChild(i)
       if (child) {
         const childType = child.constructor.name
-        if (childType === 'IdContext') {
+        if (childType === "IdContext") {
           fieldName = child.getText()
-        } else if (childType === 'OptionalTypeContext') {
+        } else if (childType === "OptionalTypeContext") {
           // Extract type from OptionalTypeContext
           const typeText = child.getText()
           const typeMatch = typeText.match(/:(.+)/)
@@ -317,19 +331,19 @@ export class GosuSymbolExtractor {
         }
       }
     }
-    
+
     // Look for visibility and static modifiers in parent declaration
     const parent = (node as any).parent
     if (parent) {
       const parentSiblings = parent.getChildCount()
       for (let i = 0; i < parentSiblings; i++) {
         const sibling = parent.getChild(i)
-        if (sibling && sibling.constructor.name === 'ModifiersContext') {
+        if (sibling && sibling.constructor.name === "ModifiersContext") {
           const modifierText = sibling.getText().toLowerCase()
-          if (['public', 'private', 'protected', 'internal'].includes(modifierText)) {
+          if (["public", "private", "protected", "internal"].includes(modifierText)) {
             visibility = modifierText as any
           }
-          if (modifierText.includes('static')) {
+          if (modifierText.includes("static")) {
             isStatic = true
           }
         }
@@ -339,19 +353,19 @@ export class GosuSymbolExtractor {
     if (fieldName && dataType) {
       const fieldSymbol: GosuASTSymbol = {
         name: fieldName,
-        type: 'field',
+        type: "field",
         dataType,
         line: this.getLineNumber(node),
         column: this.getColumnNumber(node),
         visibility: visibility as any,
         isStatic,
-        scope: parentScope || 'file'
+        scope: parentScope || "file",
       }
 
       addSymbolToTable(symbolTable, fieldSymbol)
-      debug('Added field symbol: %s : %s (%s%s)', fieldName, dataType, visibility, isStatic ? ' static' : '')
+      debug("Added field symbol: %s : %s (%s%s)", fieldName, dataType, visibility, isStatic ? " static" : "")
     } else {
-      debug('Could not extract field info: name=%s, type=%s', fieldName, dataType)
+      debug("Could not extract field info: name=%s, type=%s", fieldName, dataType)
     }
 
     // Continue traversing for nested content
@@ -361,35 +375,39 @@ export class GosuSymbolExtractor {
   /**
    * Extract constructor declaration
    */
-  private extractConstructorDeclaration(node: ParseTree, symbolTable: GosuSymbolTable, parentScope: string | null): void {
+  private extractConstructorDeclaration(
+    node: ParseTree,
+    symbolTable: GosuSymbolTable,
+    parentScope: string | null,
+  ): void {
     const text = node.getText()
-    debug('Found constructor declaration: %s', text.substring(0, 100))
-    
+    debug("Found constructor declaration: %s", text.substring(0, 100))
+
     // For ConstructorDefnContext, extract parameters from child nodes
-    let visibility = 'public'
+    let visibility = "public"
     let parameters: GosuParameter[] = []
-    
+
     // Look for parameters in child nodes
     const childCount = node.getChildCount()
     for (let i = 0; i < childCount; i++) {
       const child = node.getChild(i)
-      if (child && child.constructor.name === 'ParametersContext') {
+      if (child && child.constructor.name === "ParametersContext") {
         const paramText = child.getText()
-        const paramString = paramText.replace(/[()]/g, '') // Remove parentheses
+        const paramString = paramText.replace(/[()]/g, "") // Remove parentheses
         parameters = this.parseParameters(paramString)
         break
       }
     }
-    
+
     // Look for visibility in parent declaration
     const parent = (node as any).parent
     if (parent) {
       const parentSiblings = parent.getChildCount()
       for (let i = 0; i < parentSiblings; i++) {
         const sibling = parent.getChild(i)
-        if (sibling && sibling.constructor.name === 'ModifiersContext') {
+        if (sibling && sibling.constructor.name === "ModifiersContext") {
           const modifierText = sibling.getText().toLowerCase()
-          if (['public', 'private', 'protected', 'internal'].includes(modifierText)) {
+          if (["public", "private", "protected", "internal"].includes(modifierText)) {
             visibility = modifierText as any
           }
         }
@@ -397,17 +415,17 @@ export class GosuSymbolExtractor {
     }
 
     const constructorSymbol: GosuASTSymbol = {
-      name: 'construct',
-      type: 'constructor',
+      name: "construct",
+      type: "constructor",
       line: this.getLineNumber(node),
       column: this.getColumnNumber(node),
       visibility: visibility as any,
       parameters,
-      scope: parentScope || 'file'
+      scope: parentScope || "file",
     }
 
     addSymbolToTable(symbolTable, constructorSymbol)
-    debug('Added constructor symbol with %d parameters (%s)', parameters.length, visibility)
+    debug("Added constructor symbol with %d parameters (%s)", parameters.length, visibility)
 
     // Continue traversing for function body
     this.traverseChildren(node, symbolTable, parentScope)
@@ -418,46 +436,46 @@ export class GosuSymbolExtractor {
    */
   private extractMethodDeclaration(node: ParseTree, symbolTable: GosuSymbolTable, parentScope: string | null): void {
     const text = node.getText()
-    debug('Found method declaration: %s', text.substring(0, 100))
-    
+    debug("Found method declaration: %s", text.substring(0, 100))
+
     // For FunctionDefnContext, extract method name, parameters, and return type from child nodes
-    let methodName = ''
-    let visibility = 'public'
+    let methodName = ""
+    let visibility = "public"
     let isStatic = false
-    let returnType = 'void'
+    let returnType = "void"
     let parameters: GosuParameter[] = []
-    
+
     // Look for method info in child nodes
     const childCount = node.getChildCount()
     for (let i = 0; i < childCount; i++) {
       const child = node.getChild(i)
       if (child) {
         const childType = child.constructor.name
-        if (childType === 'IdContext') {
+        if (childType === "IdContext") {
           methodName = child.getText()
-        } else if (childType === 'ParametersContext') {
+        } else if (childType === "ParametersContext") {
           const paramText = child.getText()
-          const paramString = paramText.replace(/[()]/g, '') // Remove parentheses
+          const paramString = paramText.replace(/[()]/g, "") // Remove parentheses
           parameters = this.parseParameters(paramString)
-        } else if (childType === 'TypeLiteralContext') {
+        } else if (childType === "TypeLiteralContext") {
           // This is the return type
           returnType = child.getText()
         }
       }
     }
-    
+
     // Look for visibility and static modifiers in parent declaration
     const parent = (node as any).parent
     if (parent) {
       const parentSiblings = parent.getChildCount()
       for (let i = 0; i < parentSiblings; i++) {
         const sibling = parent.getChild(i)
-        if (sibling && sibling.constructor.name === 'ModifiersContext') {
+        if (sibling && sibling.constructor.name === "ModifiersContext") {
           const modifierText = sibling.getText().toLowerCase()
-          if (['public', 'private', 'protected', 'internal'].includes(modifierText)) {
+          if (["public", "private", "protected", "internal"].includes(modifierText)) {
             visibility = modifierText as any
           }
-          if (modifierText.includes('static')) {
+          if (modifierText.includes("static")) {
             isStatic = true
           }
         }
@@ -467,20 +485,27 @@ export class GosuSymbolExtractor {
     if (methodName) {
       const methodSymbol: GosuASTSymbol = {
         name: methodName,
-        type: 'function',
+        type: "function",
         returnType,
         line: this.getLineNumber(node),
         column: this.getColumnNumber(node),
         visibility: visibility as any,
         isStatic,
         parameters,
-        scope: parentScope || 'file'
+        scope: parentScope || "file",
       }
 
       addSymbolToTable(symbolTable, methodSymbol)
-      debug('Added method symbol: %s(%s) : %s (%s%s)', methodName, parameters.map(p => p.name).join(', '), returnType, visibility, isStatic ? ' static' : '')
+      debug(
+        "Added method symbol: %s(%s) : %s (%s%s)",
+        methodName,
+        parameters.map((p) => p.name).join(", "),
+        returnType,
+        visibility,
+        isStatic ? " static" : "",
+      )
     } else {
-      debug('Could not extract method name from node')
+      debug("Could not extract method name from node")
     }
 
     // Continue traversing for function body and local variables
@@ -492,31 +517,33 @@ export class GosuSymbolExtractor {
    */
   private extractPropertyDeclaration(node: ParseTree, symbolTable: GosuSymbolTable, parentScope: string | null): void {
     const text = node.getText()
-    debug('Found property declaration: %s', text.substring(0, 100))
-    
+    debug("Found property declaration: %s", text.substring(0, 100))
+
     // Match property getter/setter patterns
-    const propertyMatch = text.match(/(public|private|protected|internal)?\s*property\s+(get|set)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*(?:\(([^)]*)\))?\s*(?::\s*([a-zA-Z0-9_<>[\],.\s]+))?/i)
+    const propertyMatch = text.match(
+      /(public|private|protected|internal)?\s*property\s+(get|set)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*(?:\(([^)]*)\))?\s*(?::\s*([a-zA-Z0-9_<>[\],.\s]+))?/i,
+    )
     if (propertyMatch) {
-      const visibility = propertyMatch[1] as any || 'public'
+      const visibility = (propertyMatch[1] as any) || "public"
       const accessorType = propertyMatch[2].toLowerCase()
       const propertyName = propertyMatch[3]
-      const paramString = propertyMatch[4] || ''
-      const returnType = propertyMatch[5]?.trim() || (accessorType === 'get' ? 'Object' : 'void')
-      const parameters = accessorType === 'set' ? this.parseParameters(paramString) : []
+      const paramString = propertyMatch[4] || ""
+      const returnType = propertyMatch[5]?.trim() || (accessorType === "get" ? "Object" : "void")
+      const parameters = accessorType === "set" ? this.parseParameters(paramString) : []
 
       const propertySymbol: GosuASTSymbol = {
         name: propertyName,
-        type: 'property',
+        type: "property",
         returnType,
         line: this.getLineNumber(node),
         column: this.getColumnNumber(node),
         visibility,
         parameters,
-        scope: parentScope || 'file'
+        scope: parentScope || "file",
       }
 
       addSymbolToTable(symbolTable, propertySymbol)
-      debug('Added property symbol: %s %s : %s (%s)', accessorType, propertyName, returnType, visibility)
+      debug("Added property symbol: %s %s : %s (%s)", accessorType, propertyName, returnType, visibility)
     }
 
     // Continue traversing for property body
@@ -528,8 +555,8 @@ export class GosuSymbolExtractor {
    */
   private extractVariableDeclaration(node: ParseTree, symbolTable: GosuSymbolTable, parentScope: string | null): void {
     const text = node.getText()
-    debug('Found variable declaration: %s', text.substring(0, 100))
-    
+    debug("Found variable declaration: %s", text.substring(0, 100))
+
     // Match variable patterns: "var result : List<String> = new ArrayList<String>()"
     const varMatch = text.match(/var\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*:\s*([a-zA-Z0-9_<>[\],.\s]+)/i)
     if (varMatch) {
@@ -538,15 +565,15 @@ export class GosuSymbolExtractor {
 
       const variableSymbol: GosuASTSymbol = {
         name: varName,
-        type: 'variable',
+        type: "variable",
         dataType,
         line: this.getLineNumber(node),
         column: this.getColumnNumber(node),
-        scope: parentScope || 'file'
+        scope: parentScope || "file",
       }
 
       addSymbolToTable(symbolTable, variableSymbol)
-      debug('Added variable symbol: %s : %s', varName, dataType)
+      debug("Added variable symbol: %s : %s", varName, dataType)
     }
 
     // Continue traversing
@@ -557,12 +584,12 @@ export class GosuSymbolExtractor {
    * Parse parameter string into parameter objects
    */
   private parseParameters(paramString: string): GosuParameter[] {
-    if (!paramString || paramString.trim() === '') {
+    if (!paramString || paramString.trim() === "") {
       return []
     }
 
     const parameters: GosuParameter[] = []
-    const paramParts = paramString.split(',')
+    const paramParts = paramString.split(",")
 
     for (const part of paramParts) {
       const trimmed = part.trim()
@@ -574,10 +601,15 @@ export class GosuSymbolExtractor {
             name: paramMatch[1],
             type: paramMatch[2].trim(),
             isOptional: !!paramMatch[3],
-            defaultValue: paramMatch[3]?.trim()
+            defaultValue: paramMatch[3]?.trim(),
           }
           parameters.push(parameter)
-          debug('Parsed parameter: %s : %s%s', parameter.name, parameter.type, parameter.isOptional ? ' (optional)' : '')
+          debug(
+            "Parsed parameter: %s : %s%s",
+            parameter.name,
+            parameter.type,
+            parameter.isOptional ? " (optional)" : "",
+          )
         }
       }
     }
@@ -599,7 +631,7 @@ export class GosuSymbolExtractor {
         return context.getStart().line
       }
     } catch (error) {
-      debug('Could not get line number from node: %O', error)
+      debug("Could not get line number from node: %O", error)
     }
     return 1 // Default fallback
   }
@@ -618,7 +650,7 @@ export class GosuSymbolExtractor {
         return context.getStart().column
       }
     } catch (error) {
-      debug('Could not get column number from node: %O', error)
+      debug("Could not get column number from node: %O", error)
     }
     return 0 // Default fallback
   }

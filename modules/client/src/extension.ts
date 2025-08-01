@@ -1,8 +1,8 @@
-import Debug from "debug"
 import * as path from "node:path"
+import Debug from "debug"
 import * as vscode from "vscode"
 import type { LanguageClientOptions, ServerOptions } from "vscode-languageclient/node"
-import { TransportKind, LanguageClient } from "vscode-languageclient/node"
+import { LanguageClient, TransportKind } from "vscode-languageclient/node"
 
 // Create debug logger for client
 const debugClient = Debug("gosu:lsp:client")

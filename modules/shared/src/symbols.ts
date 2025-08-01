@@ -2,18 +2,18 @@
  * Symbol information extracted from Gosu AST for intelligent completion
  */
 
-export type GosuSymbolType = 
-  | 'variable' 
-  | 'parameter' 
-  | 'function' 
-  | 'property' 
-  | 'constructor'
-  | 'class' 
-  | 'interface' 
-  | 'enhancement'
-  | 'enum'
-  | 'import'
-  | 'field'
+export type GosuSymbolType =
+  | "variable"
+  | "parameter"
+  | "function"
+  | "property"
+  | "constructor"
+  | "class"
+  | "interface"
+  | "enhancement"
+  | "enum"
+  | "import"
+  | "field"
 
 export interface GosuASTSymbol {
   /** Symbol name */
@@ -27,7 +27,7 @@ export interface GosuASTSymbol {
   /** Column where symbol is defined (0-based) */
   column: number
   /** Symbol visibility (public, private, protected, internal) */
-  visibility?: 'public' | 'private' | 'protected' | 'internal'
+  visibility?: "public" | "private" | "protected" | "internal"
   /** Whether symbol is static */
   isStatic?: boolean
   /** Whether symbol is final/readonly */
@@ -113,7 +113,7 @@ export interface JavaMethodInfo {
   /** Method parameters */
   parameters: JavaParameter[]
   /** Method visibility */
-  visibility: 'public' | 'private' | 'protected' | 'package'
+  visibility: "public" | "private" | "protected" | "package"
   /** Whether method is static */
   isStatic?: boolean
   /** Whether method is final */
@@ -133,7 +133,7 @@ export interface JavaFieldInfo {
   /** Field type */
   type: string
   /** Field visibility */
-  visibility: 'public' | 'private' | 'protected' | 'package'
+  visibility: "public" | "private" | "protected" | "package"
   /** Whether field is static */
   isStatic?: boolean
   /** Whether field is final */
@@ -198,7 +198,7 @@ export interface GosuSymbolTable {
 
 export interface GosuScope {
   /** Scope type */
-  type: 'file' | 'class' | 'function' | 'block'
+  type: "file" | "class" | "function" | "block"
   /** Scope name */
   name: string
   /** Symbols defined in this scope */
@@ -223,7 +223,7 @@ export function createSymbolTable(uri: string): GosuSymbolTable {
     classes: [],
     functions: [],
     variables: [],
-    scopes: []
+    scopes: [],
   }
 }
 
@@ -232,28 +232,28 @@ export function createSymbolTable(uri: string): GosuSymbolTable {
  */
 export function addSymbolToTable(table: GosuSymbolTable, symbol: GosuASTSymbol): void {
   table.allSymbols.push(symbol)
-  
+
   // Add to name-based lookup
   const existing = table.symbols.get(symbol.name) || []
   existing.push(symbol)
   table.symbols.set(symbol.name, existing)
-  
+
   // Add to type-specific arrays
   switch (symbol.type) {
-    case 'class':
-    case 'interface':
-    case 'enhancement':
-    case 'enum':
+    case "class":
+    case "interface":
+    case "enhancement":
+    case "enum":
       table.classes.push(symbol)
       break
-    case 'function':
-    case 'constructor':
+    case "function":
+    case "constructor":
       table.functions.push(symbol)
       break
-    case 'variable':
-    case 'parameter':
-    case 'field':
-    case 'property':
+    case "variable":
+    case "parameter":
+    case "field":
+    case "property":
       table.variables.push(symbol)
       break
   }
@@ -272,7 +272,7 @@ export function findSymbolsByName(table: GosuSymbolTable, name: string): GosuAST
 export function findSymbolsByPrefix(table: GosuSymbolTable, prefix: string): GosuASTSymbol[] {
   const lowerPrefix = prefix.toLowerCase()
   const results: GosuASTSymbol[] = []
-  
+
   for (const symbolList of table.symbols.values()) {
     for (const symbol of symbolList) {
       if (symbol.name.toLowerCase().startsWith(lowerPrefix)) {
@@ -280,7 +280,7 @@ export function findSymbolsByPrefix(table: GosuSymbolTable, prefix: string): Gos
       }
     }
   }
-  
+
   return results
 }
 
@@ -288,7 +288,7 @@ export function findSymbolsByPrefix(table: GosuSymbolTable, prefix: string): Gos
  * Find symbols by type
  */
 export function findSymbolsByType(table: GosuSymbolTable, type: GosuSymbolType): GosuASTSymbol[] {
-  return table.allSymbols.filter(symbol => symbol.type === type)
+  return table.allSymbols.filter((symbol) => symbol.type === type)
 }
 
 /**
@@ -296,24 +296,26 @@ export function findSymbolsByType(table: GosuSymbolTable, type: GosuSymbolType):
  */
 export function getVisibleSymbols(table: GosuSymbolTable, line: number): GosuASTSymbol[] {
   const visibleSymbols: GosuASTSymbol[] = []
-  
+
   // Add file-level symbols (imports, classes)
-  visibleSymbols.push(...table.imports.map(imp => ({
-    name: imp.name,
-    type: 'import' as GosuSymbolType,
-    line: imp.line,
-    column: imp.column,
-    dataType: imp.path
-  })))
-  
+  visibleSymbols.push(
+    ...table.imports.map((imp) => ({
+      name: imp.name,
+      type: "import" as GosuSymbolType,
+      line: imp.line,
+      column: imp.column,
+      dataType: imp.path,
+    })),
+  )
+
   visibleSymbols.push(...table.classes)
-  
+
   // Find current scope and add its symbols
   for (const scope of table.scopes) {
     if (line >= scope.startLine && line <= scope.endLine) {
       visibleSymbols.push(...scope.symbols)
     }
   }
-  
+
   return visibleSymbols
 }

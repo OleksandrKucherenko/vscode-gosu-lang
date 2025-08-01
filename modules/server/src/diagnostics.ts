@@ -1,10 +1,10 @@
-import { TextDocument } from 'vscode-languageserver-textdocument'
-import { Diagnostic, DiagnosticSeverity, Range, Position } from 'vscode-languageserver'
-import Debug from 'debug'
-import { GosuParser } from '@gosu-lsp/parser'
-import type { GosuSyntaxError } from '@gosu-lsp/parser'
+import type { GosuSyntaxError } from "@gosu-lsp/parser"
+import { GosuParser } from "@gosu-lsp/parser"
+import Debug from "debug"
+import { type Diagnostic, DiagnosticSeverity, Position, type Range } from "vscode-languageserver"
+import type { TextDocument } from "vscode-languageserver-textdocument"
 
-const debug = Debug('gosu:lsp:diagnostics')
+const debug = Debug("gosu:lsp:diagnostics")
 
 /**
  * Cache entry for parsed document diagnostics
@@ -32,7 +32,7 @@ interface DiagnosticsConfig {
 const DEFAULT_CONFIG: Required<DiagnosticsConfig> = {
   maxDiagnostics: 100,
   enableCaching: true,
-  cacheSize: 100
+  cacheSize: 100,
 }
 
 /**
@@ -48,10 +48,10 @@ export class GosuDiagnosticsProvider {
     this.parser = new GosuParser({
       maxErrors: this.config.maxDiagnostics,
       includeWarnings: true,
-      buildAst: false // Only need syntax validation for diagnostics
+      buildAst: false, // Only need syntax validation for diagnostics
     })
-    
-    debug('Initialized diagnostics provider with config: %O', this.config)
+
+    debug("Initialized diagnostics provider with config: %O", this.config)
   }
 
   /**
@@ -59,13 +59,13 @@ export class GosuDiagnosticsProvider {
    */
   validateDocument(document: TextDocument): Diagnostic[] {
     const uri = document.uri
-    debug('Validating document: %s (version: %d)', uri, document.version)
+    debug("Validating document: %s (version: %d)", uri, document.version)
 
     // Check cache if enabled
     if (this.config.enableCaching) {
       const cached = this.cache.get(uri)
       if (cached && cached.version === document.version) {
-        debug('Using cached diagnostics for %s', uri)
+        debug("Using cached diagnostics for %s", uri)
         return cached.diagnostics
       }
     }
@@ -79,18 +79,15 @@ export class GosuDiagnosticsProvider {
       this.updateCache(uri, document.version, diagnostics)
     }
 
-    debug('Found %d diagnostics for %s', diagnostics.length, uri)
+    debug("Found %d diagnostics for %s", diagnostics.length, uri)
     return diagnostics
   }
 
   /**
    * Convert GosuSyntaxError array to LSP Diagnostics
    */
-  private convertSyntaxErrorsToDiagnostics(
-    syntaxErrors: GosuSyntaxError[],
-    document: TextDocument
-  ): Diagnostic[] {
-    return syntaxErrors.map(error => this.convertSyntaxErrorToDiagnostic(error, document))
+  private convertSyntaxErrorsToDiagnostics(syntaxErrors: GosuSyntaxError[], document: TextDocument): Diagnostic[] {
+    return syntaxErrors.map((error) => this.convertSyntaxErrorToDiagnostic(error, document))
   }
 
   /**
@@ -100,7 +97,7 @@ export class GosuDiagnosticsProvider {
     // Convert 1-based line numbers to 0-based for LSP
     const line = Math.max(0, error.line - 1)
     const character = Math.max(0, error.column)
-    
+
     // Calculate end position based on error length or use single character
     const length = error.length || 1
     const endCharacter = character + length
@@ -108,25 +105,30 @@ export class GosuDiagnosticsProvider {
     // Ensure positions are within document bounds
     const lineCount = document.lineCount
     const safeLineIndex = Math.min(line, lineCount - 1)
-    const lineText = safeLineIndex < lineCount ? document.getText({
-      start: Position.create(safeLineIndex, 0),
-      end: Position.create(safeLineIndex + 1, 0)
-    }).replace(/\r?\n$/, '') : ''
-    
+    const lineText =
+      safeLineIndex < lineCount
+        ? document
+            .getText({
+              start: Position.create(safeLineIndex, 0),
+              end: Position.create(safeLineIndex + 1, 0),
+            })
+            .replace(/\r?\n$/, "")
+        : ""
+
     const maxCharacter = lineText.length
     const safeStartCharacter = Math.min(character, maxCharacter)
     const safeEndCharacter = Math.min(endCharacter, maxCharacter)
 
     const range: Range = {
       start: Position.create(safeLineIndex, safeStartCharacter),
-      end: Position.create(safeLineIndex, Math.max(safeEndCharacter, safeStartCharacter + 1))
+      end: Position.create(safeLineIndex, Math.max(safeEndCharacter, safeStartCharacter + 1)),
     }
 
     const diagnostic: Diagnostic = {
       severity: this.mapSeverity(error.severity),
       range,
       message: error.message,
-      source: 'gosu'
+      source: "gosu",
     }
 
     if (error.code) {
@@ -139,11 +141,11 @@ export class GosuDiagnosticsProvider {
   /**
    * Map GosuSyntaxError severity to LSP DiagnosticSeverity
    */
-  private mapSeverity(severity: 'error' | 'warning'): DiagnosticSeverity {
+  private mapSeverity(severity: "error" | "warning"): DiagnosticSeverity {
     switch (severity) {
-      case 'error':
+      case "error":
         return DiagnosticSeverity.Error
-      case 'warning':
+      case "warning":
         return DiagnosticSeverity.Warning
       default:
         return DiagnosticSeverity.Error
@@ -163,7 +165,7 @@ export class GosuDiagnosticsProvider {
     }
 
     this.cache.set(uri, { version, diagnostics })
-    debug('Cached diagnostics for %s (version: %d)', uri, version)
+    debug("Cached diagnostics for %s (version: %d)", uri, version)
   }
 
   /**
@@ -172,10 +174,10 @@ export class GosuDiagnosticsProvider {
   clearCache(uri?: string): void {
     if (uri) {
       this.cache.delete(uri)
-      debug('Cleared cache for %s', uri)
+      debug("Cleared cache for %s", uri)
     } else {
       this.cache.clear()
-      debug('Cleared entire diagnostics cache')
+      debug("Cleared entire diagnostics cache")
     }
   }
 
@@ -185,7 +187,7 @@ export class GosuDiagnosticsProvider {
   getCacheStats(): { size: number; maxSize: number } {
     return {
       size: this.cache.size,
-      maxSize: this.config.cacheSize
+      maxSize: this.config.cacheSize,
     }
   }
 
@@ -194,15 +196,15 @@ export class GosuDiagnosticsProvider {
    */
   updateConfig(config: Partial<DiagnosticsConfig>): void {
     this.config = { ...this.config, ...config }
-    
+
     // Update parser configuration
     this.parser.updateConfig({
       maxErrors: this.config.maxDiagnostics,
       includeWarnings: true,
-      buildAst: false
+      buildAst: false,
     })
-    
-    debug('Updated diagnostics config: %O', this.config)
+
+    debug("Updated diagnostics config: %O", this.config)
   }
 }
 
