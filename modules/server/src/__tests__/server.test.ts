@@ -164,21 +164,6 @@ describe("GosuLanguageServer", () => {
           hoverProvider: true,
           definitionProvider: true,
           referencesProvider: true,
-          documentHighlightProvider: true,
-          documentSymbolProvider: true,
-          workspaceSymbolProvider: true,
-          codeActionProvider: true,
-          codeLensProvider: {
-            resolveProvider: false,
-          },
-          documentFormattingProvider: true,
-          documentRangeFormattingProvider: true,
-          documentOnTypeFormattingProvider: {
-            firstTriggerCharacter: ";",
-            moreTriggerCharacter: ["}", "\n"],
-          },
-          renameProvider: true,
-          foldingRangeProvider: true,
           semanticTokensProvider: {
             legend: {
               tokenTypes: [

@@ -125,16 +125,19 @@ describe("Gosu Language Server Integration", () => {
         triggerCharacters: [".", ":"],
       })
 
-      // And: All core LSP features should be enabled
+      // And: Implemented LSP features should be enabled
       expect(result.capabilities.hoverProvider).toBe(true)
       expect(result.capabilities.definitionProvider).toBe(true)
-      expect(result.capabilities.documentFormattingProvider).toBe(true)
-      expect(result.capabilities.documentRangeFormattingProvider).toBe(true)
-      expect(result.capabilities.documentHighlightProvider).toBe(true)
       expect(result.capabilities.referencesProvider).toBe(true)
-      expect(result.capabilities.renameProvider).toBe(true)
-      expect(result.capabilities.documentSymbolProvider).toBe(true)
-      expect(result.capabilities.workspaceSymbolProvider).toBe(true)
+      expect(result.capabilities.semanticTokensProvider).toBeDefined()
+
+      // And: Unimplemented features should not be advertised
+      expect(result.capabilities.documentFormattingProvider).toBeUndefined()
+      expect(result.capabilities.documentRangeFormattingProvider).toBeUndefined()
+      expect(result.capabilities.documentHighlightProvider).toBeUndefined()
+      expect(result.capabilities.renameProvider).toBeUndefined()
+      expect(result.capabilities.documentSymbolProvider).toBeUndefined()
+      expect(result.capabilities.workspaceSymbolProvider).toBeUndefined()
 
       // And: Server info should be correctly set
       expect(result.serverInfo).toEqual({

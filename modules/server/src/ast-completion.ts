@@ -427,10 +427,11 @@ export class GosuASTCompletionProvider {
       const insertText = `${symbol.name}(${params})`
       item.detail = `${symbol.name}(${params})${symbol.returnType ? ` : ${symbol.returnType}` : ""}`
 
+      // Always set insertText for tests and other consumers
+      item.insertText = insertText
+
       if (replaceRange) {
         item.textEdit = TextEdit.replace(replaceRange, insertText)
-      } else {
-        item.insertText = insertText
       }
     }
 
