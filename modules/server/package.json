@@ -5,16 +5,14 @@
   "main": "src/server.ts",
   "types": "src/server.ts",
   "scripts": {
-    "clean": "rimraf out dist coverage",
+    "clean": "rimraf coverage",
     "lint": "biome check --write --unsafe --no-errors-on-unmatched",
     "test": "vitest",
-    "test:watch": "vitest --watch --coverage --ui",
+    "test:watch": "vitest --watch --ui",
     "test:coverage": "vitest --coverage",
-    "package": "echo 'No package target for server module'",
+    "typecheck": "tsc --noEmit --project tsconfig.json",
     "start": "tsx src/server.ts",
-    "dev": "tsx --watch src/server.ts",
-    "build": "echo 'Server module build handled by root'",
-    "check:types": "tsc --noEmit --project tsconfig.json"
+    "dev": "tsx --watch src/server.ts"
   },
   "keywords": [
     "gosu",

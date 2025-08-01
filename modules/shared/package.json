@@ -5,14 +5,12 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "scripts": {
-    "clean": "rimraf out dist coverage",
+    "clean": "rimraf coverage",
     "lint": "biome check --write --unsafe --no-errors-on-unmatched",
     "test": "vitest",
-    "test:watch": "vitest --watch --coverage --ui",
+    "test:watch": "vitest --watch --ui",
     "test:coverage": "vitest --coverage",
-    "package": "echo 'No package target for shared module'",
-    "build": "echo 'No build target for shared module, it is a library'",
-    "check:types": "tsc --noEmit --project tsconfig.json"
+    "typecheck": "tsc --noEmit --project tsconfig.json"
   },
   "keywords": [
     "gosu",

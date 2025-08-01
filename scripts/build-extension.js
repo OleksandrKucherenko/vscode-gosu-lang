@@ -2,21 +2,20 @@
 
 const { build } = require("esbuild")
 
-async function buildServer() {
-    console.log("Building LSP server...")
+async function buildExtension() {
+    console.log("Building VSCode extension client...")
 
     await build({
-        entryPoints: ["src/server.ts"],
+        entryPoints: ["src/extension.ts"],
         bundle: true,
-        outfile: "out/server.js",
+        outfile: "out/extension.js",
         platform: "node",
         format: "cjs",
         target: "node16",
         external: [
-            // VS Code LSP APIs must remain external
-            "vscode-languageserver",
-            "vscode-languageserver-textdocument",
-            "vscode-languageserver-types"
+            // VS Code APIs must remain external
+            "vscode",
+            "vscode-languageclient"
         ],
         sourcemap: true,
         minify: process.env.NODE_ENV === "production",
@@ -32,14 +31,14 @@ async function buildServer() {
         logLevel: "info"
     })
 
-    console.log("LSP server built successfully!")
+    console.log("Extension client built successfully!")
 }
 
 if (require.main === module) {
-    buildServer().catch((error) => {
-        console.error("Server build failed:", error)
+    buildExtension().catch((error) => {
+        console.error("Extension build failed:", error)
         process.exit(1)
     })
 }
 
-module.exports = { buildServer }
+module.exports = { buildExtension }

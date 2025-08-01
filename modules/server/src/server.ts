@@ -112,43 +112,18 @@ export function createServer(): GosuLanguageServer {
     return {
       capabilities: {
         textDocumentSync: TextDocumentSyncKind.Full,
-        // Completion provider
+        // Completion provider - IMPLEMENTED
         completionProvider: {
           resolveProvider: true,
           triggerCharacters: [".", ":"],
         },
-        // Hover provider
+        // Hover provider - IMPLEMENTED
         hoverProvider: true,
-        // Definition provider
+        // Definition provider - IMPLEMENTED
         definitionProvider: true,
-        // References provider
+        // References provider - IMPLEMENTED
         referencesProvider: true,
-        // Document highlight provider
-        documentHighlightProvider: true,
-        // Document symbol provider
-        documentSymbolProvider: true,
-        // Workspace symbol provider
-        workspaceSymbolProvider: true,
-        // Code action provider
-        codeActionProvider: true,
-        // Code lens provider
-        codeLensProvider: {
-          resolveProvider: false,
-        },
-        // Document formatting provider
-        documentFormattingProvider: true,
-        // Document range formatting provider
-        documentRangeFormattingProvider: true,
-        // Document on type formatting provider
-        documentOnTypeFormattingProvider: {
-          firstTriggerCharacter: ";",
-          moreTriggerCharacter: ["}", "\n"],
-        },
-        // Rename provider
-        renameProvider: true,
-        // Folding range provider
-        foldingRangeProvider: true,
-        // Semantic tokens provider
+        // Semantic tokens provider - IMPLEMENTED
         semanticTokensProvider: {
           legend: {
             tokenTypes: [
@@ -193,6 +168,18 @@ export function createServer(): GosuLanguageServer {
             delta: false,
           },
         },
+
+        // TODO: Implement these capabilities in future versions:
+        // - documentHighlightProvider
+        // - documentSymbolProvider
+        // - workspaceSymbolProvider
+        // - codeActionProvider
+        // - codeLensProvider
+        // - documentFormattingProvider
+        // - documentRangeFormattingProvider
+        // - documentOnTypeFormattingProvider
+        // - renameProvider
+        // - foldingRangeProvider
       },
       serverInfo: {
         name: "Gosu Language Server",

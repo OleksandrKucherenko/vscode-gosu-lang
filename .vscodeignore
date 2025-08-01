@@ -1,40 +1,51 @@
+# Source files (exclude from package)
+src/**
+modules/**/src/**
+**/*.ts
+**/*.map
+
+# Keep bundled outputs only
+!out/**
+
+# Development files
+node_modules/**
+test/**
+scripts/**
+.turbo/**
+coverage/**
+**/*.test.*
 .vscode/**
 .vscode-test/**
-out/test/**
-src/**
+.secrets
+.secrets/**
+.github/**
+.husky/**
+
+# Configuration files
 .gitignore
 tsconfig.json
 vsc-extension-quickstart.md
 **/tsconfig.json
 **/.eslintrc.json
-**/*.map
-**/*.ts
+biome.jsonc
+vitest.config.js
+.yarnrc.yml
+.yarn/**
+
+# Build artifacts
+**/*.log
+**/tsconfig.tsbuildinfo
+**/.antlr/**
+
+# Package files
 **/*.url
 **/*.zip
 **/*.vsix
-**/*.test.*
-.secrets
-.secrets/**
-.github/**
-biome.jsonc
-vitest.config.js
-vsix/logo-large.png
-.yarnrc.yml
-.yarn/**
+
+# Grammar development files
 syntaxes/grammar/**
-**/.antlr/**
 !**/*.ebnf
 !**/*.g4
 
-**/*.log
-
-**/tsconfig.tsbuildinfo
-.husky/**
-coverage/**
-.turbo/**
-test/**
-scripts/**
-node_modules/**
-modules/**
-!modules/**/dist/**
-!modules/**/package.json
+# Icons
+vsix/logo-large.png
