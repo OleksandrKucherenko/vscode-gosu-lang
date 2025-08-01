@@ -16,7 +16,7 @@ import type { GosuLanguageServer } from "../server.js"
 import { createServer } from "../server.js"
 
 // Create debug logger for integration tests
-const debugIntegration = Debug("gosu:lsp:test:integration")
+const debug = Debug("gosu:lsp:test:integration")
 
 // Mock the connection creation
 vi.mock("vscode-languageserver/node", async () => {
@@ -35,7 +35,7 @@ describe("Gosu Language Server Integration", () => {
   beforeEach(() => {
     // Given: Clean test environment
     vi.clearAllMocks()
-    debugIntegration("Setting up integration test environment")
+    debug("Setting up integration test environment")
 
     // Given: Mock disposable for handler registrations
     const mockDisposable = { dispose: vi.fn() }
@@ -81,7 +81,7 @@ describe("Gosu Language Server Integration", () => {
     // When: Create and start server instance for testing
     server = createServer()
     server.start()
-    debugIntegration("Created and started server instance for integration testing")
+    debug("Created and started server instance for integration testing")
   })
 
   afterEach(() => {
@@ -91,7 +91,7 @@ describe("Gosu Language Server Integration", () => {
   describe("Server Initialization", () => {
     it("should handle initialization request and return capabilities", () => {
       // Given: Full client capabilities for LSP features
-      debugIntegration("Testing initialization with full client capabilities")
+      debug("Testing initialization with full client capabilities")
       const initParams: InitializeParams = {
         processId: null,
         rootUri: "file:///test/workspace",
@@ -112,7 +112,7 @@ describe("Gosu Language Server Integration", () => {
 
       // When: Initialize handler is called with client capabilities
       const result = initializeHandler(initParams)
-      debugIntegration("Initialize handler called with full client capabilities")
+      debug("Initialize handler called with full client capabilities")
 
       // Then: Server should return complete LSP capabilities
       expect(result).toBeDefined()
@@ -145,12 +145,12 @@ describe("Gosu Language Server Integration", () => {
         version: "1.0.0",
       })
 
-      debugIntegration("Full capabilities initialization test completed")
+      debug("Full capabilities initialization test completed")
     })
 
     it("should handle initialization with minimal client capabilities", () => {
       // Given: Minimal client capabilities
-      debugIntegration("Testing initialization with minimal client capabilities")
+      debug("Testing initialization with minimal client capabilities")
       const initParams: InitializeParams = {
         processId: null,
         rootUri: "file:///test/workspace",
@@ -160,7 +160,7 @@ describe("Gosu Language Server Integration", () => {
 
       // When: Initialize handler is called with minimal capabilities
       const result = initializeHandler(initParams)
-      debugIntegration("Initialize handler called with minimal client capabilities")
+      debug("Initialize handler called with minimal client capabilities")
 
       // Then: Server should still return all capabilities
       expect(result).toBeDefined()
@@ -170,14 +170,14 @@ describe("Gosu Language Server Integration", () => {
       expect(result.capabilities.completionProvider).toBeDefined()
       expect(result.capabilities.hoverProvider).toBe(true)
 
-      debugIntegration("Minimal capabilities initialization test completed")
+      debug("Minimal capabilities initialization test completed")
     })
   })
 
   describe("Server Lifecycle", () => {
     it("should register initialization handlers on creation", () => {
       // Given: Server has been created and started
-      debugIntegration("Testing server lifecycle handler registration")
+      debug("Testing server lifecycle handler registration")
 
       // Then: Core LSP handlers should be registered
       expect(mockConnection.onInitialize).toHaveBeenCalledWith(expect.any(Function))
@@ -185,24 +185,24 @@ describe("Gosu Language Server Integration", () => {
       expect(mockConnection.onDidChangeConfiguration).toHaveBeenCalled()
       expect(mockConnection.onDidChangeWatchedFiles).toHaveBeenCalled()
 
-      debugIntegration("Server lifecycle handler registration verified")
+      debug("Server lifecycle handler registration verified")
     })
 
     it("should start listening for connections", () => {
       // Given: Server has been started in beforeEach
-      debugIntegration("Testing server connection listening")
+      debug("Testing server connection listening")
 
       // Then: Server should start listening for connections
       expect(mockConnection.listen).toHaveBeenCalled()
 
-      debugIntegration("Server connection listening verified")
+      debug("Server connection listening verified")
     })
   })
 
   describe("LSP Protocol Compliance", () => {
     it("should return initialize result in correct format", () => {
       // Given: Standard LSP initialization parameters
-      debugIntegration("Testing LSP protocol compliance")
+      debug("Testing LSP protocol compliance")
       const initParams: InitializeParams = {
         processId: null,
         rootUri: "file:///test/workspace",
@@ -212,7 +212,7 @@ describe("Gosu Language Server Integration", () => {
 
       // When: Initialize handler is called
       const result = initializeHandler(initParams)
-      debugIntegration("Initialize handler called for protocol compliance test")
+      debug("Initialize handler called for protocol compliance test")
 
       // Then: Result should have required LSP properties
       expect(result).toHaveProperty("capabilities")
@@ -228,17 +228,17 @@ describe("Gosu Language Server Integration", () => {
       expect(caps.completionProvider).toHaveProperty("resolveProvider")
       expect(caps.completionProvider).toHaveProperty("triggerCharacters")
 
-      debugIntegration("LSP protocol compliance verification completed")
+      debug("LSP protocol compliance verification completed")
     })
 
     it("should support multiple Gosu file types", () => {
       // Given: Different Gosu file type extensions
-      debugIntegration("Testing support for multiple Gosu file types")
+      debug("Testing support for multiple Gosu file types")
       const fileTypes = [".gs", ".gsx", ".gst", ".gsp"]
 
       // When: Initialize handler is called for each file type
       fileTypes.forEach((extension) => {
-        debugIntegration(`Testing initialization for file type: ${extension}`)
+        debug(`Testing initialization for file type: ${extension}`)
         const initParams: InitializeParams = {
           processId: null,
           rootUri: `file:///test/workspace${extension}`,
@@ -252,7 +252,7 @@ describe("Gosu Language Server Integration", () => {
         expect(result.capabilities).toBeDefined()
       })
 
-      debugIntegration("Multiple Gosu file types support verified")
+      debug("Multiple Gosu file types support verified")
     })
   })
 })

@@ -2,12 +2,14 @@
 import { describe, expect, it, vi } from "vitest"
 import { TextDocument } from "vscode-languageserver-textdocument"
 import { GosuCompletionProvider } from "../completion"
+import { GosuJavaSymbolResolver } from "../java-symbol-resolver"
 
 describe("GosuCompletionProvider Cache Methods", () => {
   describe("Document change handling", () => {
     it("should clear AST cache when document changes", () => {
       // Given: a completion provider
-      const provider = new GosuCompletionProvider()
+      const resolver = new GosuJavaSymbolResolver({ sourcePaths: [], classpath: [] })
+      const provider = new GosuCompletionProvider(resolver)
 
       // Mock the AST completion provider method
       const clearDocumentCacheSpy = vi.spyOn((provider as any).astCompletionProvider, "clearDocumentCache")
@@ -26,7 +28,8 @@ describe("GosuCompletionProvider Cache Methods", () => {
   describe("Clear all caches", () => {
     it("should clear all AST caches", () => {
       // Given: a completion provider
-      const provider = new GosuCompletionProvider()
+      const resolver = new GosuJavaSymbolResolver({ sourcePaths: [], classpath: [] })
+      const provider = new GosuCompletionProvider(resolver)
 
       // Mock the AST completion provider method
       const clearAllCachesSpy = vi.spyOn((provider as any).astCompletionProvider, "clearAllCaches")
@@ -42,7 +45,8 @@ describe("GosuCompletionProvider Cache Methods", () => {
   describe("Trigger characters coverage", () => {
     it("should return correct trigger characters", () => {
       // Given: a completion provider
-      const provider = new GosuCompletionProvider()
+      const resolver = new GosuJavaSymbolResolver({ sourcePaths: [], classpath: [] })
+      const provider = new GosuCompletionProvider(resolver)
 
       // When: getting trigger characters
       const triggerChars = provider.getTriggerCharacters()

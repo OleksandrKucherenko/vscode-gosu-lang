@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/suspicious/noExplicitAny: simplify code */
 import type { GosuParser } from "@gosu-lsp/parser"
 import {
   addSymbolToTable,

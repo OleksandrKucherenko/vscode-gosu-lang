@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, test } from "vitest"
 import { type CompletionItem, CompletionItemKind, type Position } from "vscode-languageserver/node"
 import { TextDocument } from "vscode-languageserver-textdocument"
 import { GosuCompletionProvider } from "../completion"
+import { GosuJavaSymbolResolver } from "../java-symbol-resolver"
 
 const debug = Debug("gosu:lsp:test:completion")
 
@@ -33,7 +34,8 @@ describe("GosuCompletionProvider", () => {
   let completionProvider: GosuCompletionProvider
 
   beforeEach(() => {
-    completionProvider = new GosuCompletionProvider()
+    const resolver = new GosuJavaSymbolResolver({ sourcePaths: [], classpath: [] })
+    completionProvider = new GosuCompletionProvider(resolver)
   })
 
   describe("Given a GosuCompletionProvider instance", () => {

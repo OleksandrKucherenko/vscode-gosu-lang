@@ -13,7 +13,7 @@ export interface HoverResult {
 }
 
 export class GosuHoverProvider {
-  private parser: GosuParser
+  public parser: GosuParser
   private symbolExtractor: GosuSymbolExtractor
   private cache = new Map<string, GosuSymbolTable>()
 

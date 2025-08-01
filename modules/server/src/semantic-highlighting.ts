@@ -55,7 +55,7 @@ export const TOKEN_MODIFIERS = [
 export type TokenType = (typeof TOKEN_TYPES)[number]
 export type TokenModifier = (typeof TOKEN_MODIFIERS)[number]
 
-interface SemanticToken {
+export interface SemanticToken {
   line: number
   startChar: number
   length: number
@@ -300,13 +300,15 @@ export class GosuSemanticHighlightingProvider {
 
     for (const keyword of keywords) {
       const regex = new RegExp(`\\b${keyword}\\b`, "g")
-      let match
+      let match: RegExpExecArray | null
 
-      while ((match = regex.exec(line)) !== null) {
+      match = regex.exec(line)
+      while (match !== null) {
         const tokenType = this.getKeywordTokenType(keyword)
         const modifiers = this.getKeywordModifiers(keyword)
 
         builder.push(lineIndex, match.index, keyword.length, tokenType, modifiers)
+        match = regex.exec(line)
       }
     }
   }
@@ -317,16 +319,19 @@ export class GosuSemanticHighlightingProvider {
   private highlightStrings(line: string, lineIndex: number, builder: SemanticTokensBuilder): void {
     // Double-quoted strings
     const doubleQuoteRegex = /"[^"]*"/g
-    let match
+    let match: RegExpExecArray | null = doubleQuoteRegex.exec(line)
 
-    while ((match = doubleQuoteRegex.exec(line)) !== null) {
+    while (match !== null) {
       builder.push(lineIndex, match.index, match[0].length, TOKEN_TYPES.indexOf("string"), 0)
+      match = doubleQuoteRegex.exec(line)
     }
 
     // Single-quoted strings
     const singleQuoteRegex = /'[^']*'/g
-    while ((match = singleQuoteRegex.exec(line)) !== null) {
-      builder.push(lineIndex, match.index, match[0].length, TOKEN_TYPES.indexOf("string"), 0)
+    let singleMatch: RegExpExecArray | null = singleQuoteRegex.exec(line)
+    while (singleMatch !== null) {
+      builder.push(lineIndex, singleMatch.index, singleMatch[0].length, TOKEN_TYPES.indexOf("string"), 0)
+      singleMatch = singleQuoteRegex.exec(line)
     }
   }
 
@@ -336,10 +341,11 @@ export class GosuSemanticHighlightingProvider {
   private highlightNumbers(line: string, lineIndex: number, builder: SemanticTokensBuilder): void {
     // Integer and floating-point numbers
     const numberRegex = /\b\d+\.?\d*\b/g
-    let match
+    let match: RegExpExecArray | null = numberRegex.exec(line)
 
-    while ((match = numberRegex.exec(line)) !== null) {
+    while (match !== null) {
       builder.push(lineIndex, match.index, match[0].length, TOKEN_TYPES.indexOf("number"), 0)
+      match = numberRegex.exec(line)
     }
   }
 
@@ -376,12 +382,14 @@ export class GosuSemanticHighlightingProvider {
     for (const classSymbol of symbolTable.classes) {
       if (classSymbol.name) {
         const regex = new RegExp(`\\b${this.escapeRegex(classSymbol.name)}\\b`, "g")
-        let match
+        let match: RegExpExecArray | null
 
-        while ((match = regex.exec(line)) !== null) {
+        match = regex.exec(line)
+        while (match !== null) {
           const modifiers = classSymbol.isStatic ? 1 << TOKEN_MODIFIERS.indexOf("static") : 0
 
           builder.push(lineIndex, match.index, classSymbol.name.length, TOKEN_TYPES.indexOf("class"), modifiers)
+          match = regex.exec(line)
         }
       }
     }
@@ -390,13 +398,14 @@ export class GosuSemanticHighlightingProvider {
     for (const functionSymbol of symbolTable.functions) {
       if (functionSymbol.name) {
         const regex = new RegExp(`\\b${this.escapeRegex(functionSymbol.name)}\\b`, "g")
-        let match
+        let match: RegExpExecArray | null = regex.exec(line)
 
-        while ((match = regex.exec(line)) !== null) {
+        while (match !== null) {
           let modifiers = 0
           if (functionSymbol.isStatic) modifiers |= 1 << TOKEN_MODIFIERS.indexOf("static")
 
           builder.push(lineIndex, match.index, functionSymbol.name.length, TOKEN_TYPES.indexOf("function"), modifiers)
+          match = regex.exec(line)
         }
       }
     }
@@ -405,14 +414,15 @@ export class GosuSemanticHighlightingProvider {
     for (const variableSymbol of symbolTable.variables) {
       if (variableSymbol.name) {
         const regex = new RegExp(`\\b${this.escapeRegex(variableSymbol.name)}\\b`, "g")
-        let match
+        let match: RegExpExecArray | null = regex.exec(line)
 
-        while ((match = regex.exec(line)) !== null) {
+        while (match !== null) {
           let modifiers = 0
           if (variableSymbol.isStatic) modifiers |= 1 << TOKEN_MODIFIERS.indexOf("static")
           if (variableSymbol.isFinal) modifiers |= 1 << TOKEN_MODIFIERS.indexOf("readonly")
 
           builder.push(lineIndex, match.index, variableSymbol.name.length, TOKEN_TYPES.indexOf("variable"), modifiers)
+          match = regex.exec(line)
         }
       }
     }
@@ -424,20 +434,23 @@ export class GosuSemanticHighlightingProvider {
   private highlightBasicIdentifiers(line: string, lineIndex: number, builder: SemanticTokensBuilder): void {
     // Class names (capitalized identifiers)
     const classRegex = /\b[A-Z][a-zA-Z0-9_]*\b/g
-    let match
+    let classMatch: RegExpExecArray | null
 
-    while ((match = classRegex.exec(line)) !== null) {
+    classMatch = classRegex.exec(line)
+    while (classMatch !== null) {
       // Skip if it's a keyword
-      if (!this.isKeyword(match[0])) {
-        builder.push(lineIndex, match.index, match[0].length, TOKEN_TYPES.indexOf("class"), 0)
+      if (!this.isKeyword(classMatch[0])) {
+        builder.push(lineIndex, classMatch.index, classMatch[0].length, TOKEN_TYPES.indexOf("class"), 0)
       }
+      classMatch = classRegex.exec(line)
     }
 
     // Function names (after 'function' keyword)
     const functionRegex = /function\s+([a-zA-Z_][a-zA-Z0-9_]*)/g
-    while ((match = functionRegex.exec(line)) !== null) {
-      const functionName = match[1]
-      const functionIndex = match.index + match[0].length - functionName.length
+    let functionMatch: RegExpExecArray | null = functionRegex.exec(line)
+    while (functionMatch !== null) {
+      const functionName = functionMatch[1]
+      const functionIndex = functionMatch.index + functionMatch[0].length - functionName.length
 
       builder.push(
         lineIndex,
@@ -446,6 +459,7 @@ export class GosuSemanticHighlightingProvider {
         TOKEN_TYPES.indexOf("function"),
         1 << TOKEN_MODIFIERS.indexOf("declaration"),
       )
+      functionMatch = functionRegex.exec(line)
     }
   }
 

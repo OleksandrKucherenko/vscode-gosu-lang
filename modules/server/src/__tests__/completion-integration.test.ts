@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, test } from "vitest"
 import { type CompletionItem, CompletionItemKind, type Position } from "vscode-languageserver/node"
 import { TextDocument } from "vscode-languageserver-textdocument"
 import { GosuCompletionProvider } from "../completion"
+import { GosuJavaSymbolResolver } from "../java-symbol-resolver"
 
 const debug = Debug("gosu:lsp:test:completion:integration")
 
@@ -24,7 +25,9 @@ describe("GosuCompletionProvider Integration", () => {
   // Logging helpers
   const logCompletions = (completions: CompletionItem[], context: string) => {
     debug(`${context}: Found ${completions.length} completions`)
-    completions.forEach((c) => debug(`  - ${c.label} (${CompletionItemKind[c.kind!]}): ${c.detail}`))
+    completions.forEach((c) =>
+      debug(`  - ${c.label} (${CompletionItemKind[c.kind ?? CompletionItemKind.Text]}): ${c.detail}`),
+    )
   }
 
   const logContext = (context: string, position: Position, content: string) => {
@@ -36,7 +39,8 @@ describe("GosuCompletionProvider Integration", () => {
   let completionProvider: GosuCompletionProvider
 
   beforeEach(() => {
-    completionProvider = new GosuCompletionProvider()
+    const resolver = new GosuJavaSymbolResolver({ sourcePaths: [], classpath: [] })
+    completionProvider = new GosuCompletionProvider(resolver)
   })
 
   describe("Given real Gosu class files", () => {

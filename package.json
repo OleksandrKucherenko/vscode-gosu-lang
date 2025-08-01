@@ -85,7 +85,7 @@
     "build": "npm run build:dev",
     "build:dev": "npm run typecheck && npm run build:bundles",
     "build:release": "npm run typecheck && cross-env NODE_ENV=production npm run build:bundles",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "turbo run typecheck && tsc --noEmit",
     "build:bundles": "node scripts/build-extension.js && node scripts/build-server.js",
     "clean": "rimraf out coverage .nyc_output && turbo run clean",
     "lint": "turbo run lint",

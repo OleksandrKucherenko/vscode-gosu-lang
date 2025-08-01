@@ -12,13 +12,6 @@ describe("GosuDefinitionProvider", () => {
   })
 
   describe("Given a definition provider instance", () => {
-    describe("When creating the provider", () => {
-      it("Then it should be instantiated successfully", () => {
-        expect(provider).toBeDefined()
-        expect(provider).toBeInstanceOf(GosuDefinitionProvider)
-      })
-    })
-
     describe("When requesting definition for a simple class", () => {
       it("Then it should find class definition", async () => {
         const document = TextDocument.create(

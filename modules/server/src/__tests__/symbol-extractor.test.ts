@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/style/noNonNullAssertion: keep it simple for unit tests */
 import { GosuParser } from "@gosu-lsp/parser"
 import {
   addSymbolToTable,

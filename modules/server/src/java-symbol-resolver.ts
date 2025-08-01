@@ -101,9 +101,11 @@ export class GosuJavaSymbolResolver {
 
     // Check cache first
     if (this.packageCache.has(packageName)) {
-      const cached = this.packageCache.get(packageName)!
-      debug(`Found cached classes for ${packageName}: ${cached.length} classes`)
-      return cached
+      const cached = this.packageCache.get(packageName)
+      if (cached) {
+        debug(`Found cached classes for ${packageName}: ${cached.length} classes`)
+        return cached
+      }
     }
 
     try {

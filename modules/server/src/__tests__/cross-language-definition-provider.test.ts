@@ -15,13 +15,6 @@ describe("GosuCrossLanguageDefinitionProvider", () => {
   })
 
   describe("Given a cross-language definition provider instance", () => {
-    describe("When creating the provider", () => {
-      it("Then it should be instantiated successfully", () => {
-        expect(provider).toBeDefined()
-        expect(provider).toBeInstanceOf(GosuCrossLanguageDefinitionProvider)
-      })
-    })
-
     describe("When navigating to Java standard library types", () => {
       it("Then it should resolve java.lang.String from Gosu imports", async () => {
         const document = TextDocument.create(
