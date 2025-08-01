@@ -16,12 +16,31 @@ on:
     branches:
       - main
     paths:
-      - '**.tmLanguage.json'
-      - '**.tmLanguage.simple.json'
-      - '**.tmLanguage.full.json'
-      - '**.language-configuration.json'
-      - '**.ts'
+      - 'src/**'
+      - 'modules/**'
+      - 'syntaxes/**'
+      - 'package*.json'
+      - '**/package*.json'
+      - 'tsconfig*.json'
+      - '**/tsconfig*.json'
+      - 'turbo.json'
+      - 'vitest.config.ts'
+      - '**/vitest.config.ts'
+      - 'biome.jsonc'
+      - '**/biome.jsonc'
+      - '.eslintrc.json'
+      - 'language-configuration.json'
       - '.vscodeignore'
+      - 'index.js'
+      - '!**.md'
+      - '!docs/**'
+      - '!LICENSE'
+      - '!roadmap.md'
+      - '!.gitignore'
+      - '!**.log'
+      - '!.github/workflows/ci.yml'
+      - '!.github/workflows/security.yml'
+      - '!.github/dependabot.yml'
 
 jobs:
   release:
@@ -30,23 +49,41 @@ jobs:
       version: ${{ steps.get_version.outputs.version }}
       vsix_filename: ${{ steps.get_version.outputs.vsix_filename }}
     steps:
+      - name: Check for skip CI
+        run: |
+          if [[ "${{ github.event.head_commit.message }}" =~ \[skip\ ci\]|\[ci\ skip\]|\[no\ ci\]|\[skip\ actions\]|\[actions\ skip\]|\[skip\ publish\]|\[publish\ skip\] ]]; then
+            echo "🚫 Pre-release publishing skipped due to commit message"
+            echo "Commit message: ${{ github.event.head_commit.message }}"
+            exit 78
+          fi
+
       - uses: actions/checkout@master
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.19.3"
+          cache: 'npm'
+
       - name: Install Dependencies
         run: |
-          npm i
-          npm install -g typescript "@vscode/vsce" "ovsx"
+          npm ci --prefer-offline --no-audit
+          npm install -g "@vscode/vsce" "ovsx"
 
       - name: Build Extension
         run: |
-          npm run compile
+          npm run build
 
-      - name: Run Tests
+      - name: Run Tests with Coverage
         run: |
-          npm run test
+          npm run test:coverage
+
+      - name: Check Coverage Thresholds
+        run: |
+          node scripts/check-coverage.js
 
       - name: Setup Git
         run: |

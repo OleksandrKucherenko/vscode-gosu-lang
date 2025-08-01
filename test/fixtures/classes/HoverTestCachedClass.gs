@@ -1,0 +1,3 @@
+class CachedClass {
+  function test() {}
+}

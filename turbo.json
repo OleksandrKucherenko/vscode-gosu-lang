@@ -1,0 +1,41 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "typecheck": {
+      "dependsOn": ["^typecheck"],
+      "outputs": [],
+      "cache": true
+    },
+    "test": {
+      "dependsOn": ["typecheck"],
+      "outputs": [],
+      "cache": true,
+      "passThroughEnv": ["CI"]
+    },
+    "test:watch": {
+      "dependsOn": ["typecheck"],
+      "cache": false,
+      "persistent": true
+    },
+    "test:coverage": {
+      "dependsOn": ["typecheck"],
+      "outputs": ["coverage/**"],
+      "cache": true
+    },
+    "lint": {
+      "outputs": [],
+      "cache": true
+    },
+    "clean": {
+      "cache": false
+    }
+  },
+  "globalDependencies": [
+    "package.json",
+    "tsconfig.json",
+    "vitest.config.ts"
+  ],
+  "globalEnv": [
+    "NODE_ENV"
+  ]
+}

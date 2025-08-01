@@ -1,0 +1,1 @@
+interface TestInterface { function abstractMethod() }

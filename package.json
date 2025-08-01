@@ -1,7 +1,7 @@
 {
   "name": "gosu-language-support",
   "displayName": "Gosu Programming Language",
-  "description": "Syntax highlighting and language support for GOSU programming language",
+  "description": "LSP server and language support for GOSU programming language",
   "version": "1.0.3",
   "publisher": "OleksandrKucherenko",
   "icon": "./vsix/gosu-lang.png",
@@ -13,16 +13,28 @@
     "url": "git+https://github.com/OleksandrKucherenko/vscode-gosu-lang.git"
   },
   "categories": [
-    "Programming Languages"
+    "Programming Languages",
+    "Language Packs"
   ],
   "keywords": [
     "gosu",
+    "lsp",
+    "language server",
     "syntax highlighting",
-    "language support"
+    "language support",
+    "intellisense",
+    "auto-completion"
   ],
   "main": "./out/extension.js",
+  "workspaces": [
+    "modules/*"
+  ],
   "activationEvents": [
-    "onLanguage:gosu"
+    "onLanguage:gosu",
+    "workspaceContains:**/*.gs",
+    "workspaceContains:**/*.gsx",
+    "workspaceContains:**/*.gst",
+    "workspaceContains:**/*.gsp"
   ],
   "contributes": {
     "languages": [
@@ -69,38 +81,60 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile",
-    "lint": "biome check --write --unsafe --no-errors-on-unmatched",
+    "vscode:prepublish": "npm run build:release",
+    "build": "npm run build:dev",
+    "build:dev": "npm run typecheck && npm run build:bundles",
+    "build:release": "npm run typecheck && cross-env NODE_ENV=production npm run build:bundles",
+    "typecheck": "turbo run typecheck && tsc --noEmit",
+    "build:bundles": "node scripts/build-extension.js && node scripts/build-server.js",
+    "clean": "rimraf out coverage .nyc_output && turbo run clean",
+    "lint": "turbo run lint",
+    "package": "npm run build:release && vsce package --no-yarn",
+    "test:manual": "node scripts/test-manual.js",
+    "test:server": "node scripts/test-server-standalone.js",
+    "watch": "npm run typecheck && concurrently \"tsc --noEmit --watch\" \"node scripts/build-extension.js --watch\" \"node scripts/build-server.js --watch\"",
     "test": "vitest",
-    "test:watch": "vitest --watch",
+    "test:watch": "vitest --watch --ui",
     "test:coverage": "vitest --coverage",
-    "package": "vsce package --no-yarn",
     "check:updates": "npx npm-check-updates --interactive",
+    "generate:parser": "antlr-ng syntaxes/Gosu.g4 -o ./modules/parser/src -l -v -Dlanguage=TypeScript",
     "prepare": "husky"
+  },
+  "dependencies": {
+    "antlr4ng": "^3.0.16",
+    "debug": "^4.4.1",
+    "vscode-languageclient": "^9.0.1",
+    "vscode-languageserver": "^9.0.1",
+    "vscode-languageserver-textdocument": "^1.0.12",
+    "vscode-languageserver-types": "^3.17.5"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.1.2",
+    "esbuild": "^0.20.0",
+    "@types/debug": "^4.1.12",
     "@types/node": "^24.1.0",
-    "@types/vscode": "^1.102.0",
+    "@types/vscode": "^1.74.0",
     "@vitest/coverage-v8": "^3.2.4",
+    "@vitest/ui": "^3.2.4",
     "@vscode/vsce": "^3.6.0",
     "antlr-ng": "^1.0.10",
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
     "husky": "^9.1.7",
+    "jsdom": "^25.0.1",
     "lint-staged": "^16.1.2",
     "oniguruma": "^7.2.3",
+    "rimraf": "^6.0.1",
+    "tsx": "^4.20.3",
+    "turbo": "^2.5.5",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4",
     "vscode-textmate": "^9.2.0"
   },
+  "packageManager": "npm@10.9.0",
   "volta": {
     "node": "20.19.3",
     "yarn": "4.9.2"
-  },
-  "dependencies": {
-    "antlr4ng": "^3.0.16"
   },
   "lint-staged": {
     "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}": [

@@ -1,0 +1,39 @@
+{
+  "name": "@gosu-lsp/server",
+  "version": "1.0.0",
+  "description": "Language Server Protocol server for Gosu language",
+  "main": "src/server.ts",
+  "types": "src/server.ts",
+  "scripts": {
+    "clean": "rimraf coverage",
+    "lint": "biome check --write --unsafe --no-errors-on-unmatched",
+    "test": "vitest",
+    "test:watch": "vitest --watch --ui",
+    "test:coverage": "vitest --coverage",
+    "typecheck": "tsc --noEmit --project tsconfig.json",
+    "start": "tsx src/server.ts",
+    "dev": "tsx --watch src/server.ts"
+  },
+  "keywords": [
+    "gosu",
+    "lsp",
+    "language-server",
+    "server"
+  ],
+  "author": "OleksandrKucherenko",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4",
+    "rimraf": "^6.0.0",
+    "@types/debug": "^4.1.12",
+    "@types/node": "^24.1.0"
+  },
+  "dependencies": {
+    "vscode-languageserver": "^9.0.1",
+    "vscode-languageserver-textdocument": "^1.0.12",
+    "debug": "^4.4.1",
+    "@gosu-lsp/parser": "*",
+    "@gosu-lsp/shared": "*"
+  }
+}

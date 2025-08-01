@@ -1,0 +1,302 @@
+name: Security & Dependency Scanning
+
+on:
+  schedule:
+    # Run weekly on Mondays at 09:00 UTC
+    - cron: '0 9 * * 1'
+  push:
+    branches: [main]
+    paths:
+      - 'package*.json'
+      - '**/package*.json'
+      - '.github/workflows/security.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'package*.json'
+      - '**/package*.json'
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: "20.19.3"
+  NPM_VERSION: "10.9.0"
+
+jobs:
+  # Job 1: Dependency vulnerability scanning
+  dependency-scan:
+    name: Dependency Vulnerability Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: Check for skip CI
+        run: |
+          if [[ "${{ github.event.head_commit.message }}" =~ \[skip\ ci\]|\[ci\ skip\]|\[no\ ci\]|\[skip\ actions\]|\[actions\ skip\]|\[skip\ security\]|\[security\ skip\] ]]; then
+            echo "🚫 Security scan skipped due to commit message"
+            echo "Commit message: ${{ github.event.head_commit.message }}"
+            exit 78
+          fi
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Verify npm version
+        run: |
+          npm --version
+          if [ "$(npm --version)" != "${{ env.NPM_VERSION }}" ]; then
+            npm install -g npm@${{ env.NPM_VERSION }}
+          fi
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Run npm audit
+        id: npm-audit
+        run: |
+          echo "Running npm audit..."
+          npm audit --audit-level=moderate --json > audit-results.json || true
+          
+          # Check if there are any vulnerabilities
+          VULN_COUNT=$(cat audit-results.json | jq '.metadata.vulnerabilities.total // 0')
+          HIGH_VULN=$(cat audit-results.json | jq '.metadata.vulnerabilities.high // 0')
+          CRITICAL_VULN=$(cat audit-results.json | jq '.metadata.vulnerabilities.critical // 0')
+          
+          echo "vulnerabilities=${VULN_COUNT}" >> $GITHUB_OUTPUT
+          echo "high=${HIGH_VULN}" >> $GITHUB_OUTPUT
+          echo "critical=${CRITICAL_VULN}" >> $GITHUB_OUTPUT
+          
+          echo "📊 Vulnerability Summary:"
+          echo "Total vulnerabilities: ${VULN_COUNT}"
+          echo "High severity: ${HIGH_VULN}"
+          echo "Critical severity: ${CRITICAL_VULN}"
+
+      - name: Upload audit results
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit-results
+          path: audit-results.json
+          retention-days: 30
+      
+      - name: Parse and display detailed vulnerabilities
+        if: steps.npm-audit.outputs.vulnerabilities > 0
+        run: |
+          echo "🔍 Parsing detailed vulnerability information..."
+          echo ""
+          
+          # Display critical vulnerabilities
+          if [ "${{ steps.npm-audit.outputs.critical }}" -gt 0 ]; then
+            echo "❌ Critical Vulnerabilities Details:"
+            jq -r '.vulnerabilities | to_entries[] | select(.value.severity == "critical") |
+              "  Package: \(.value.name)\n  Title: \(.value.via[0].title // "N/A")\n  URL: \(.value.via[0].url // "N/A")\n  Severity: \(.value.severity)\n  Range: \(.value.range)\n  Fix Available: \(.value.fixAvailable // false)\n  Path: \(.value.nodes[] // "N/A")\n"' audit-results.json
+            echo ""
+          fi
+          
+          # Display high severity vulnerabilities
+          if [ "${{ steps.npm-audit.outputs.high }}" -gt 0 ]; then
+            echo "⚠️ High Severity Vulnerabilities Details:"
+            jq -r '.vulnerabilities | to_entries[] | select(.value.severity == "high") |
+              "  Package: \(.value.name)\n  Title: \(.value.via[0].title // "N/A")\n  URL: \(.value.via[0].url // "N/A")\n  Severity: \(.value.severity)\n  Range: \(.value.range)\n  Fix Available: \(.value.fixAvailable // false)\n  Path: \(.value.nodes[] // "N/A")\n"' audit-results.json
+            echo ""
+          fi
+          
+          # Display moderate severity vulnerabilities
+          MODERATE_VULN=$(cat audit-results.json | jq '.metadata.vulnerabilities.moderate // 0')
+          if [ "$MODERATE_VULN" -gt 0 ]; then
+            echo "⚠️ Moderate Severity Vulnerabilities Details:"
+            jq -r '.vulnerabilities | to_entries[] | select(.value.severity == "moderate") |
+              "  Package: \(.value.name)\n  Title: \(.value.via[0].title // "N/A")\n  URL: \(.value.via[0].url // "N/A")\n  Severity: \(.value.severity)\n  Range: \(.value.range)\n  Fix Available: \(.value.fixAvailable // false)\n  Path: \(.value.nodes[] // "N/A")\n"' audit-results.json
+            echo ""
+          fi
+      
+      - name: Check critical vulnerabilities
+        if: steps.npm-audit.outputs.critical > 0
+        run: |
+          echo "❌ Critical vulnerabilities found: ${{ steps.npm-audit.outputs.critical }}"
+          echo ""
+          echo "Please review the detailed vulnerability information above."
+          echo "Recommended actions:"
+          echo "1. Run 'npm audit' locally to see full details"
+          echo "2. Run 'npm audit fix' to automatically fix available vulnerabilities"
+          echo "3. For vulnerabilities without automatic fixes, update dependencies manually"
+          echo "4. Check the advisory URLs for more information about each vulnerability"
+          exit 1
+      
+      - name: Check high vulnerabilities
+        if: steps.npm-audit.outputs.high > 0
+        run: |
+          echo "⚠️ High severity vulnerabilities found: ${{ steps.npm-audit.outputs.high }}"
+          echo ""
+          echo "Please review the detailed vulnerability information above."
+          echo "Recommended actions:"
+          echo "1. Run 'npm audit' locally to see full details"
+          echo "2. Run 'npm audit fix' to automatically fix available vulnerabilities"
+          echo "3. For vulnerabilities without automatic fixes, update dependencies manually"
+          echo "4. Check the advisory URLs for more information about each vulnerability"
+      
+      - name: Generate security report
+        run: |
+          echo "# 🔒 Security Scan Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Vulnerability Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Total vulnerabilities**: ${{ steps.npm-audit.outputs.vulnerabilities }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Critical**: ${{ steps.npm-audit.outputs.critical }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **High**: ${{ steps.npm-audit.outputs.high }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Moderate**: $(cat audit-results.json | jq '.metadata.vulnerabilities.moderate // 0')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Add detailed vulnerability table
+          if [ "${{ steps.npm-audit.outputs.vulnerabilities }}" -gt 0 ]; then
+            echo "## 🔍 Detailed Vulnerabilities" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| Package | Severity | Title | Advisory | Fix Available |" >> $GITHUB_STEP_SUMMARY
+            echo "|---------|----------|-------|----------|---------------|" >> $GITHUB_STEP_SUMMARY
+            
+            jq -r '.vulnerabilities | to_entries[] |
+              "| \(.value.name) | \(.value.severity) | \(.value.via[0].title // "N/A") | [\(.value.via[0].source // "N/A")](\(.value.via[0].url // "#")) | \(.value.fixAvailable // false) |"' audit-results.json >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ steps.npm-audit.outputs.critical }}" -gt 0 ]; then
+            echo "🚨 **Action Required**: Critical vulnerabilities must be addressed immediately!" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ steps.npm-audit.outputs.high }}" -gt 0 ]; then
+            echo "⚠️ **Attention**: High severity vulnerabilities should be addressed soon." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ **No critical or high severity vulnerabilities found**" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # Job 2: License compliance check
+  license-check:
+    name: License Compliance Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Install license checker
+        run: npm install -g license-checker
+
+      - name: Check licenses
+        run: |
+          echo "🔍 Checking dependency licenses..."
+          license-checker --json --out licenses.json
+          
+          # Check for problematic licenses
+          PROBLEMATIC_LICENSES=("GPL-2.0" "GPL-3.0" "AGPL-1.0" "AGPL-3.0" "WTFPL")
+          
+          echo "📄 License summary:"
+          license-checker --summary
+          
+          # Check for problematic licenses in the JSON output
+          for license in "${PROBLEMATIC_LICENSES[@]}"; do
+            if grep -q "\"licenses\": \"$license\"" licenses.json; then
+              echo "⚠️ Warning: Found potentially problematic license: $license"
+            fi
+          done
+
+      - name: Upload license report
+        uses: actions/upload-artifact@v4
+        with:
+          name: license-report
+          path: licenses.json
+          retention-days: 30
+
+  # Job 3: CodeQL security analysis
+  codeql-analysis:
+    name: CodeQL Security Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      security-events: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: typescript, javascript
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Build project
+        run: npm run build
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:typescript"
+
+  # Job 4: Security summary
+  security-summary:
+    name: Security Summary
+    if: always()
+    needs: [dependency-scan, license-check, codeql-analysis]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    
+    steps:
+      - name: Generate security summary
+        run: |
+          echo "# 🛡️ Security Scan Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Job Status" >> $GITHUB_STEP_SUMMARY
+          echo "- **Dependency Scan**: ${{ needs.dependency-scan.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **License Check**: ${{ needs.license-check.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **CodeQL Analysis**: ${{ needs.codeql-analysis.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Determine overall security status
+          if [ "${{ needs.dependency-scan.result }}" = "success" ] && 
+             [ "${{ needs.license-check.result }}" = "success" ] && 
+             [ "${{ needs.codeql-analysis.result }}" = "success" ]; then
+            echo "## ✅ Overall Status: PASSED" >> $GITHUB_STEP_SUMMARY
+            echo "All security checks completed successfully!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## ⚠️ Overall Status: ATTENTION REQUIRED" >> $GITHUB_STEP_SUMMARY
+            echo "One or more security checks require attention. Please review the detailed results above." >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 📋 Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "1. Review any identified vulnerabilities" >> $GITHUB_STEP_SUMMARY
+          echo "2. Update dependencies with security patches" >> $GITHUB_STEP_SUMMARY
+          echo "3. Address any license compliance issues" >> $GITHUB_STEP_SUMMARY
+          echo "4. Review CodeQL findings for potential security improvements" >> $GITHUB_STEP_SUMMARY
+
+      - name: Check for security failures
+        if: |
+          needs.dependency-scan.result != 'success' ||
+          needs.license-check.result != 'success' ||
+          needs.codeql-analysis.result != 'success'
+        run: |
+          echo "❌ Security scan completed with issues"
+          echo "Please review the security findings and address any critical issues"
+          # Don't fail the workflow for security issues, just warn
+          exit 0

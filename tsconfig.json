@@ -1,19 +1,39 @@
 {
-    "compilerOptions": {
-        "module": "commonjs",
-        "target": "ES2020",
-        "lib": ["ES2020"],
-        "outDir": "out",
-        "sourceMap": true,
-        "strict": true,
-        "rootDir": "src",
-        "esModuleInterop": true,
-        "skipLibCheck": true,
-        "forceConsistentCasingInFileNames": true
-    },
-    "exclude": [
-        "node_modules",
-        ".vscode-test",
-        "vitest.config.ts"
-    ]
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["ES2020"],
+    "outDir": "out",
+    "rootDir": ".",
+    "sourceMap": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "moduleDetection": "force",
+    "module": "commonjs",
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "paths": {
+      "@gosu-lsp/shared": ["./modules/shared/dist"],
+      "@gosu-lsp/shared/*": ["./modules/shared/dist/*"],
+      "@gosu-lsp/parser": ["./modules/parser/src"],
+      "@gosu-lsp/parser/*": ["./modules/parser/src/*"],
+      "@gosu-lsp/server": ["./modules/server/src"],
+      "@gosu-lsp/server/*": ["./modules/server/src/*"],
+      "@gosu-lsp/client": ["./modules/client/src"],
+      "@gosu-lsp/client/*": ["./modules/client/src/*"]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "modules/*/src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "out",
+    "modules/*/node_modules",
+    "**/*.test.ts"
+  ]
 }
