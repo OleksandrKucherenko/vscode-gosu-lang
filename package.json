@@ -113,7 +113,7 @@
     "esbuild": "^0.25.8",
     "@types/debug": "^4.1.12",
     "@types/node": "^24.2.1",
-    "@types/vscode": "^1.74.0",
+    "@types/vscode": "^1.103.0",
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4",
     "@vscode/vsce": "^3.6.0",
