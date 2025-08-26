@@ -118,7 +118,7 @@
     "@vitest/ui": "^3.2.4",
     "@vscode/vsce": "^3.6.0",
     "antlr-ng": "^1.0.10",
-    "concurrently": "^9.2.0",
+    "concurrently": "^9.2.1",
     "cross-env": "^10.0.0",
     "husky": "^9.1.7",
     "jsdom": "^26.1.0",
