@@ -27,7 +27,7 @@
     "vitest": "^3.2.4",
     "rimraf": "^6.0.0",
     "@types/debug": "^4.1.12",
-    "@types/node": "^24.3.0"
+    "@types/node": "^24.3.1"
   },
   "dependencies": {
     "vscode-languageserver": "^9.0.1",
