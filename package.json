@@ -102,7 +102,7 @@
   },
   "dependencies": {
     "antlr4ng": "^3.0.16",
-    "debug": "^4.4.1",
+    "debug": "^4.4.3",
     "vscode-languageclient": "^9.0.1",
     "vscode-languageserver": "^9.0.1",
     "vscode-languageserver-textdocument": "^1.0.12",

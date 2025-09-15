@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "vscode-languageclient": "^9.0.1",
-    "debug": "^4.4.1",
+    "debug": "^4.4.3",
     "@gosu-lsp/shared": "*"
   }
 }
