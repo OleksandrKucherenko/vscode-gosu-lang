@@ -8,7 +8,7 @@
 
 ## Parser (handwritten wrapper)
 - **High** – `parseByFileType` ignores the detected file type and always calls `parser.start()` (`modules/parser/src/parser.ts:99-115`). The grammar defines specialised entry points for enhancements, programs, templates, etc., so enhancement/template files will be parsed under class assumptions – exactly the class of parse bugs you reported.
-- **Medium** – `validateSyntax` instantiates a brand new `GosuParser` which immediately calls back into `parseText` (`modules/parser/src/parser.ts:122-127`). Besides the obvious performance hit, this duplicates listener registrations and can introduce inconsistent error caps vs. the existing instance.
+- [x] **Medium** – `validateSyntax` now reuses the existing parser instance and restores configuration after the check (see `modules/parser/src/parser.ts`).
 - **Low** – Exceptions falling through the `parseText` catch block are normalised to a single `PARSE_EXCEPTION` at line 1 column 0 (`modules/parser/src/parser.ts:75-92`), erasing the actual failure position. That makes parser diagnostics extremely hard to action.
 
 ## Parser (ANTLR-generated artefacts)

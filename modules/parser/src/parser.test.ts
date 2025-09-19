@@ -112,6 +112,18 @@ describe("GosuParser", () => {
       })
     })
 
+    describe("When validating syntax without AST", () => {
+      test("Then it should preserve parser configuration", () => {
+        const parser = new GosuParser()
+        const initialConfig = parser.getConfig()
+
+        const errors = parser.validateSyntax("function Broken() {", "Broken.gs")
+
+        expect(errors.length).toBeGreaterThan(0)
+        expect(parser.getConfig()).toEqual(initialConfig)
+      })
+    })
+
     describe("When parsing with different file types", () => {
       test("Then it should detect .gs files as regular classes", () => {
         debug("Testing .gs file type detection")
