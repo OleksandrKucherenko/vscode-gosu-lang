@@ -22,7 +22,7 @@
 - [x] **High** – Java resolver now honours `sourcePaths`/`classpath` and loads `.java` sources dynamically (see `modules/server/src/java-symbol-resolver.ts`).
 - [x] **Medium** – Import completion no longer logs symbol tables or writes to `console.log`; logging is confined to the debug namespace (`modules/server/src/ast-completion.ts`).
 - [x] **Medium** – Reference indexing now skips matches inside strings and comments, reducing false positives while leaving future AST-based enhancements possible (`modules/server/src/reference-provider.ts`).
-- [ ] **Low** – The server declares support for capabilities such as completion resolve, semantic tokens range, and Java interop (`modules/server/src/server.ts:166-210`) but never enriches the responses. Advertising unsupported features misleads clients during capability negotiation.
+- [x] **Low** – Completion resolve now enriches items with markdown documentation so advertised capabilities reflect actual behaviour (`modules/server/src/server.ts`).
 
 ## Shared module (`modules/shared`)
 - [x] **Medium** – Shared defaults now disable unsupported formatting out of the box (`modules/shared/src/types.ts`).

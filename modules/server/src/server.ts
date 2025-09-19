@@ -302,8 +302,13 @@ export function createServer(): GosuLanguageServer {
   connection.onCompletionResolve((item: CompletionItem): CompletionItem => {
     debugCompletion(`Resolving completion item: ${item.label}`)
 
-    // For now, just return the item as-is
-    // Later we can add more detailed documentation, import statements, etc.
+    if (!item.documentation && item.detail) {
+      item.documentation = {
+        kind: "markdown",
+        value: `**${item.label}**\n\n${item.detail}`,
+      }
+    }
+
     return item
   })
 

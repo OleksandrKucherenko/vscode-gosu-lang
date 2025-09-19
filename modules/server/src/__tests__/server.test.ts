@@ -2,6 +2,7 @@
 import Debug from "debug"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import {
+  type CompletionItem,
   createConnection,
   type InitializeParams,
   type InitializeResult,
@@ -134,6 +135,27 @@ describe("GosuLanguageServer", () => {
       expect(mockDocuments.onDidClose).toHaveBeenCalledWith(expect.any(Function))
 
       debug("Document event handlers registration verified")
+    })
+
+    it("should enrich completion items when resolved", () => {
+      const resolveHandler = mockConnection.onCompletionResolve.mock.calls[0][0]
+      const item = { label: "foo", detail: "Sample detail" } as CompletionItem
+
+      const resolved = resolveHandler({ ...item })
+
+      expect(resolved.documentation).toEqual({
+        kind: "markdown",
+        value: "**foo**\n\nSample detail",
+      })
+
+      const preDocumentedItem = {
+        label: "bar",
+        detail: "Existing detail",
+        documentation: { kind: "markdown", value: "custom" },
+      } as CompletionItem
+
+      const resolvedPreDocumented = resolveHandler({ ...preDocumentedItem })
+      expect(resolvedPreDocumented.documentation).toBe(preDocumentedItem.documentation)
     })
   })
 
