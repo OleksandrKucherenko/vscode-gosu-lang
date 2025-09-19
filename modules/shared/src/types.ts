@@ -144,7 +144,12 @@ export class GosuParseError extends GosuLSPError {
  * Utility function to determine Gosu file type from URI
  */
 export function getGosuFileType(uri: string): GosuFileType | null {
-  const extension = uri.substring(uri.lastIndexOf("."))
+  const lastDotIndex = uri.lastIndexOf(".")
+  if (lastDotIndex === -1) {
+    return null
+  }
+
+  const extension = uri.substring(lastDotIndex).toLowerCase()
   return GOSU_FILE_EXTENSIONS[extension as keyof typeof GOSU_FILE_EXTENSIONS] || null
 }
 

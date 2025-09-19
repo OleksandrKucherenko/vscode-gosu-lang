@@ -26,7 +26,7 @@
 
 ## Shared module (`modules/shared`)
 - [x] **Medium** – Shared defaults now disable unsupported formatting out of the box (`modules/shared/src/types.ts`).
-- **Low** – `getGosuFileType` performs a case-sensitive match and returns `null` for uppercase extensions (`modules/shared/src/types.ts:146-155`). Windows users frequently encounter uppercase `.GS` files, so parser and language features silently switch off.
+- [x] **Low** – `getGosuFileType` now matches extensions case-insensitively so uppercase `.GS*` files work across platforms (`modules/shared/src/types.ts`).
 
 ## Tooling & build scripts
 - `scripts/build-server.js` and `scripts/build-extension.js` only bundle the root entry points and never copy the ANTLR runtime artefacts. Because the generated parser is required at runtime, builds executed without a prior `npm run generate:parser && npm run build` produce VSIX bundles that lack the ANTLR output.
