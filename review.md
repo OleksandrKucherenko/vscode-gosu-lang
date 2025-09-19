@@ -30,7 +30,7 @@
 
 ## Tooling & build scripts
 - `scripts/build-server.js` and `scripts/build-extension.js` only bundle the root entry points and never copy the ANTLR runtime artefacts. Because the generated parser is required at runtime, builds executed without a prior `npm run generate:parser && npm run build` produce VSIX bundles that lack the ANTLR output.
-- The monorepo `tsconfig.json` maps `@gosu-lsp/shared` to `modules/shared/dist` (`tsconfig.json:18-27`), but no package emits that directory during local development. Editors that rely on the TS server (including VS Code) therefore cannot resolve the shared module until somebody runs a full `tsc` build.
+- [x] The monorepo `tsconfig.json` now points `@gosu-lsp/shared` to the source directory so editors resolve imports without building (`tsconfig.json`).
 
 ## Testing gaps
 - There are unit tests for the keyword-based completion provider, but the server ships the AST-based provider (`modules/server/src/completion.ts` vs. `modules/server/src/ast-completion.ts`). None of the tests exercise the production code path, so regressions in the real completion stack go unnoticed.
