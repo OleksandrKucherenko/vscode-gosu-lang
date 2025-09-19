@@ -246,6 +246,34 @@ describe("GosuLanguageServer", () => {
     })
   })
 
+  describe("document change handling", () => {
+    it("should invalidate completion cache when document content changes", async () => {
+      // Given: the change handler registered during server construction
+      const changeHandler = mockDocuments.onDidChangeContent.mock.calls[0][0]
+
+      // And: a document with basic Gosu content
+      const document = {
+        uri: "file:///test.gs",
+        version: 2,
+        getText: () => "package test\nclass Test {}",
+      }
+
+      // And: spies to avoid exercising heavy dependencies during the test
+      const completionSpy = vi.spyOn(server.completionProvider, "clearDocumentCache").mockImplementation(() => {})
+      vi.spyOn(server.referenceProvider, "addDocument").mockResolvedValue()
+      vi.spyOn(server.semanticHighlightingProvider, "onDocumentChange").mockImplementation(() => {})
+      vi.spyOn(server.definitionProvider, "onDocumentChange").mockImplementation(() => {})
+      vi.spyOn(server.hoverProvider, "onDocumentChange").mockImplementation(() => {})
+      vi.spyOn(server.diagnosticsProvider, "validateDocument").mockReturnValue([])
+
+      // When: the document change handler is invoked
+      await changeHandler({ document })
+
+      // Then: the completion provider cache should be invalidated
+      expect(completionSpy).toHaveBeenCalledWith(document.uri)
+    })
+  })
+
   describe("start method", () => {
     it("should start connection and documents listening", () => {
       // Given: Server has been created
