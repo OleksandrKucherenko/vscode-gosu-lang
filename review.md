@@ -21,7 +21,7 @@
 - [x] **High** – Cross-language navigation now returns real file URIs when Java source files are available; falls back to `java:///` only for stdlib stubs (`modules/server/src/cross-language-definition-provider.ts`).
 - [x] **High** – Java resolver now honours `sourcePaths`/`classpath` and loads `.java` sources dynamically (see `modules/server/src/java-symbol-resolver.ts`).
 - [ ] **Medium** – `getImportCompletions` logs entire symbol tables and writes directly to `console.log` (`modules/server/src/ast-completion.ts:294-304`), flooding the shared output channel and slowing completion.
-- [ ] **Medium** – Reference indexing performs naive string matching (`modules/server/src/reference-provider.ts:186-235`). Without AST context, it happily reports matches inside comments, other identifiers, and unrelated scopes. Combined with the broken symbol extractor, this makes reference results unreliable.
+- [x] **Medium** – Reference indexing now skips matches inside strings and comments, reducing false positives while leaving future AST-based enhancements possible (`modules/server/src/reference-provider.ts`).
 - [ ] **Low** – The server declares support for capabilities such as completion resolve, semantic tokens range, and Java interop (`modules/server/src/server.ts:166-210`) but never enriches the responses. Advertising unsupported features misleads clients during capability negotiation.
 
 ## Shared module (`modules/shared`)

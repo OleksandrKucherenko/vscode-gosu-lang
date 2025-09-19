@@ -63,6 +63,29 @@ describe("GosuReferenceProvider", () => {
           expect(references.length).toBeGreaterThan(0)
         }
       })
+
+      it("And it should ignore occurrences inside strings and comments", async () => {
+        const doc = TextDocument.create(
+          "file:///CountExample.gs",
+          "gosu",
+          1,
+          readFixture("reference/CountReferences.gs"),
+        )
+
+        await referenceProvider.addDocument(doc)
+
+        const position: Position = { line: 3, character: 8 }
+        const references = await referenceProvider.findReferences(doc, position, { includeDeclaration: true })
+
+        expect(references).toBeDefined()
+        if (!references) return
+
+        const sortedLines = references.map((ref) => ref.range.start.line).sort((a, b) => a - b)
+        expect(sortedLines).toEqual([3, 6, 10])
+        references.forEach((ref) => {
+          expect(ref.uri).toBe("file:///CountExample.gs")
+        })
+      })
     })
 
     describe("When handling workspace changes", () => {
