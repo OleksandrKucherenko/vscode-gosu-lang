@@ -59,7 +59,7 @@ export const DEFAULT_CONFIG: GosuLSPConfig = {
     hover: true,
     definition: true,
     references: true,
-    formatting: true,
+    formatting: false,
     diagnostics: true,
   },
   java: {

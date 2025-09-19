@@ -25,7 +25,7 @@
 - [ ] **Low** – The server declares support for capabilities such as completion resolve, semantic tokens range, and Java interop (`modules/server/src/server.ts:166-210`) but never enriches the responses. Advertising unsupported features misleads clients during capability negotiation.
 
 ## Shared module (`modules/shared`)
-- **Medium** – `DEFAULT_CONFIG` turns on features (formatting, code actions) that the server does not implement (`modules/shared/src/types.ts:55-72`). Anyone reading shared defaults will assume functionality that simply is not there.
+- [x] **Medium** – Shared defaults now disable unsupported formatting out of the box (`modules/shared/src/types.ts`).
 - **Low** – `getGosuFileType` performs a case-sensitive match and returns `null` for uppercase extensions (`modules/shared/src/types.ts:146-155`). Windows users frequently encounter uppercase `.GS` files, so parser and language features silently switch off.
 
 ## Tooling & build scripts
