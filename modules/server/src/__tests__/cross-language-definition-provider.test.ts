@@ -1,3 +1,5 @@
+import path from "node:path"
+import { pathToFileURL } from "node:url"
 import { readFixtureAsync } from "@gosu-lsp/shared"
 import { beforeEach, describe, expect, it } from "vitest"
 import type { Position } from "vscode-languageserver/node"
@@ -6,11 +8,12 @@ import { GosuCrossLanguageDefinitionProvider } from "../cross-language-definitio
 
 describe("GosuCrossLanguageDefinitionProvider", () => {
   let provider: GosuCrossLanguageDefinitionProvider
+  const javaFixturePath = path.resolve(__dirname, "../../../../test/fixtures/java")
 
   beforeEach(() => {
     provider = new GosuCrossLanguageDefinitionProvider({
-      sourcePaths: ["src/test/java"],
-      classpath: ["lib/java-stdlib.jar"],
+      sourcePaths: [javaFixturePath],
+      classpath: [],
     })
   })
 
@@ -103,6 +106,25 @@ describe("GosuCrossLanguageDefinitionProvider", () => {
         expect(definition).toBeDefined()
         const loc = Array.isArray(definition) ? definition[0] : definition
         expect(loc?.uri).toBe("java:///java/util/List.java")
+      })
+    })
+
+    describe("When navigating to custom Java sources", () => {
+      it("Then it should resolve types from configured source paths", async () => {
+        const document = TextDocument.create(
+          "file:///test.gs",
+          "gosu",
+          1,
+          await readFixtureAsync("cross-language/java/custom/CustomFixtureImport.gs"),
+        )
+
+        const position: Position = { line: 5, character: 24 }
+        const definition = await provider.getDefinition(document, position)
+
+        expect(definition).toBeDefined()
+        const loc = Array.isArray(definition) ? definition[0] : definition
+        const expectedUri = pathToFileURL(path.join(javaFixturePath, "com/example/CustomFixture.java")).href
+        expect(loc?.uri).toBe(expectedUri)
       })
     })
 

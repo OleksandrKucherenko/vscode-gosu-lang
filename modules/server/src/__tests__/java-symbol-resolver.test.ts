@@ -155,16 +155,15 @@ describe("GosuJavaSymbolResolver", () => {
 
     describe("When caching resolved types", () => {
       it("Then it should cache frequently accessed types", async () => {
-        const startTime1 = Date.now()
         const result1 = await resolver.resolveJavaType("java.lang.String")
-        const duration1 = Date.now() - startTime1
-
-        const startTime2 = Date.now()
         const result2 = await resolver.resolveJavaType("java.lang.String")
-        const duration2 = Date.now() - startTime2
 
         expect(result1).toEqual(result2)
-        expect(duration2).toBeLessThanOrEqual(duration1) // Cache should be faster
+
+        const cache = (resolver as any).cache as Map<string, unknown>
+        expect(cache.has("java.lang.String")).toBe(true)
+        expect(cache.get("java.lang.String")).toBe(result1)
+        expect(result2).toBe(result1)
       })
 
       it("And it should invalidate cache when configuration changes", async () => {
