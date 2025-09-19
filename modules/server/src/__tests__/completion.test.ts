@@ -249,4 +249,21 @@ describe("GosuCompletionProvider", () => {
       })
     })
   })
+
+  describe("When generating import completions", () => {
+    it("Then it should not write to the console", async () => {
+      const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {})
+
+      const resolver = new GosuJavaSymbolResolver({ sourcePaths: [], classpath: [] })
+      const provider = new GosuCompletionProvider(resolver)
+
+      const document = TextDocument.create("file:///imports.gs", "gosu", 1, "uses java.\n")
+      const position: Position = { line: 0, character: 9 }
+
+      await provider.getCompletions(document, position)
+
+      expect(consoleSpy).not.toHaveBeenCalled()
+      consoleSpy.mockRestore()
+    })
+  })
 })
