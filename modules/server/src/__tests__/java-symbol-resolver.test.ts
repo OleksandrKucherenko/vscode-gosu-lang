@@ -1,13 +1,16 @@
+import path from "node:path"
 import { beforeEach, describe, expect, it } from "vitest"
 import { GosuJavaSymbolResolver } from "../java-symbol-resolver"
 
 describe("GosuJavaSymbolResolver", () => {
   let resolver: GosuJavaSymbolResolver
+  const fixtureSourcePath = path.resolve(__dirname, "../../../../test/fixtures/java")
+  const altFixtureSourcePath = path.resolve(__dirname, "../../../../test/fixtures/java-alt")
 
   beforeEach(() => {
     resolver = new GosuJavaSymbolResolver({
-      sourcePaths: ["src/test/java"],
-      classpath: ["lib/java-stdlib.jar"],
+      sourcePaths: [fixtureSourcePath],
+      classpath: [],
     })
   })
 
@@ -52,10 +55,21 @@ describe("GosuJavaSymbolResolver", () => {
     })
 
     describe("When resolving custom Java types", () => {
-      it("Then it should attempt to resolve from source paths", async () => {
-        const result = await resolver.resolveJavaType("com.example.CustomClass")
+      it("Then it should resolve from configured source paths", async () => {
+        const result = await resolver.resolveJavaType("com.example.CustomFixture")
 
-        // Should return null if not found, but not throw an error
+        expect(result).toBeDefined()
+        expect(result?.fullyQualifiedName).toBe("com.example.CustomFixture")
+        expect(result?.className).toBe("CustomFixture")
+        expect(result?.packageName).toBe("com.example")
+        expect(result?.isInterface).toBe(false)
+        expect(result?.sourceFilePath?.replace(/\\/g, "/")).toContain("CustomFixture.java")
+        expect(result?.isJavaStandardLibrary).toBe(false)
+      })
+
+      it("And it should return null when source is missing", async () => {
+        const result = await resolver.resolveJavaType("com.example.DoesNotExist")
+
         expect(result).toBeNull()
       })
 
@@ -156,14 +170,17 @@ describe("GosuJavaSymbolResolver", () => {
       it("And it should invalidate cache when configuration changes", async () => {
         await resolver.resolveJavaType("java.lang.String")
 
+        const missingBeforeUpdate = await resolver.resolveJavaType("com.example.ConfigUpdateFixture")
+        expect(missingBeforeUpdate).toBeNull()
+
         resolver.updateConfiguration({
-          sourcePaths: ["src/main/java"],
-          classpath: ["lib/updated.jar"],
+          sourcePaths: [altFixtureSourcePath],
+          classpath: [],
         })
 
-        // Should work without errors after config update
-        const result = await resolver.resolveJavaType("java.lang.String")
-        expect(result).toBeDefined()
+        const afterUpdate = await resolver.resolveJavaType("com.example.ConfigUpdateFixture")
+        expect(afterUpdate).toBeDefined()
+        expect(afterUpdate?.sourceFilePath?.replace(/\\/g, "/")).toContain("ConfigUpdateFixture.java")
       })
     })
 

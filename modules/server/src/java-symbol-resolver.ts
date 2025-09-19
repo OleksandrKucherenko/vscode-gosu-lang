@@ -1,3 +1,6 @@
+import type { Dirent } from "node:fs"
+import { promises as fs } from "node:fs"
+import path from "node:path"
 import type { JavaResolverConfig, JavaSymbolInfo, ParameterizedTypeInfo } from "@gosu-lsp/shared"
 import Debug from "debug"
 
@@ -11,9 +14,11 @@ export class GosuJavaSymbolResolver {
   private cache = new Map<string, JavaSymbolInfo | null>()
   private packageCache = new Map<string, string[]>()
   private javaStandardLibrary: Map<string, JavaSymbolInfo>
+  private config: JavaResolverConfig
 
   constructor(config: JavaResolverConfig) {
     this.javaStandardLibrary = this.initializeJavaStandardLibrary()
+    this.config = this.normalizeConfig(config)
     debug("Initialized GosuJavaSymbolResolver with config: %O", config)
   }
 
@@ -27,12 +32,13 @@ export class GosuJavaSymbolResolver {
    * Resolve a Java type by its fully qualified name
    */
   async resolveJavaType(typeName: string): Promise<JavaSymbolInfo | null> {
-    debug(`Resolving Java type: ${typeName}`)
+    const normalizedTypeName = this.normalizeTypeName(typeName)
+    debug(`Resolving Java type: ${typeName} (normalized: ${normalizedTypeName})`)
 
     // Check cache first
-    if (this.cache.has(typeName)) {
-      const cached = this.cache.get(typeName)
-      debug(`Found cached result for ${typeName}: ${cached ? "resolved" : "null"}`)
+    if (this.cache.has(normalizedTypeName)) {
+      const cached = this.cache.get(normalizedTypeName)
+      debug(`Found cached result for ${normalizedTypeName}: ${cached ? "resolved" : "null"}`)
       return cached ?? null
     }
 
@@ -40,26 +46,26 @@ export class GosuJavaSymbolResolver {
       let result: JavaSymbolInfo | null = null
 
       // First try standard library
-      result = this.javaStandardLibrary.get(typeName) || null
+      result = this.javaStandardLibrary.get(normalizedTypeName) || null
 
       if (!result) {
-        // Try to resolve from classpath or source paths
-        result = await this.resolveCustomJavaType(typeName)
+        // Try to resolve from configured source paths / classpath
+        result = await this.resolveCustomJavaType(normalizedTypeName)
       }
 
       // Cache the result
-      this.cache.set(typeName, result)
+      this.cache.set(normalizedTypeName, result)
 
       if (result) {
-        debug(`Successfully resolved ${typeName}: ${result.className}`)
+        debug(`Successfully resolved ${normalizedTypeName}: ${result.className}`)
       } else {
-        debug(`Could not resolve Java type: ${typeName}`)
+        debug(`Could not resolve Java type: ${normalizedTypeName}`)
       }
 
       return result
     } catch (error) {
-      debug(`Error resolving Java type ${typeName}:`, error)
-      this.cache.set(typeName, null)
+      debug(`Error resolving Java type ${normalizedTypeName}:`, error)
+      this.cache.set(normalizedTypeName, null)
       return null
     }
   }
@@ -81,8 +87,11 @@ export class GosuJavaSymbolResolver {
         }
       }
 
-      // TODO: Add packages from classpath analysis
-      // This would require JAR file parsing or external tools
+      // Collect packages from configured source paths
+      const customPackages = await this.collectPackagesFromSourcePaths()
+      for (const pkg of customPackages) {
+        packages.add(pkg)
+      }
 
       const result = Array.from(packages).sort()
       debug(`Found ${result.length} available packages`)
@@ -118,8 +127,11 @@ export class GosuJavaSymbolResolver {
         }
       }
 
-      // TODO: Add classes from classpath analysis
-      // This would require JAR file parsing or source file scanning
+      // Collect classes from configured source paths
+      const customClasses = await this.collectClassesFromSourcePaths(packageName)
+      for (const className of customClasses) {
+        classes.add(className)
+      }
 
       const result = Array.from(classes).sort()
       this.packageCache.set(packageName, result)
@@ -219,7 +231,8 @@ export class GosuJavaSymbolResolver {
    */
   updateConfiguration(config: JavaResolverConfig): void {
     debug("Updating Java resolver configuration: %O", config)
-    // this.config = config // Revert this line
+    this.config = this.normalizeConfig(config)
+
     // Clear caches when configuration changes
     this.cache.clear()
     this.packageCache.clear()
@@ -503,34 +516,165 @@ export class GosuJavaSymbolResolver {
   }
 
   /**
-   * Placeholder for resolving custom Java types (from classpath/source)
+   * Resolve custom Java types from configured source paths
    */
   private async resolveCustomJavaType(typeName: string): Promise<JavaSymbolInfo | null> {
-    debug(`Attempting to resolve custom Java type (not in stdlib): ${typeName}`)
-    // This is a placeholder. In a real scenario, this would involve:
-    // 1. Scanning predefined classpath JARs or directories.
-    // 2. Using an external Java parser (e.g., ANTLR for Java) to parse .java files.
-    // 3. For complex scenarios, integrating with a real Java compilation service.
-    // For now, we return null, indicating it's not a known custom type.
+    debug(`Attempting to resolve custom Java type: ${typeName}`)
 
-    // Example of a mocked custom type (can be removed later)
-    if (typeName === "com.example.MyCustomClass") {
-      return {
-        fullyQualifiedName: "com.example.MyCustomClass",
-        className: "MyCustomClass",
-        packageName: "com.example",
-        isJavaStandardLibrary: false,
-        methods: [
-          {
-            name: "doSomething",
-            returnType: "void",
-            parameters: [],
-            visibility: "public",
-          },
-        ],
+    const primaryType = this.stripInnerClassReference(typeName)
+    const packageAndClass = this.getPackageAndClassName(primaryType)
+    if (!packageAndClass) {
+      return null
+    }
+
+    const { packageName, className } = packageAndClass
+    const candidatePaths = this.getCandidateSourcePaths(packageName, className)
+
+    for (const candidatePath of candidatePaths) {
+      try {
+        await fs.access(candidatePath)
+      } catch {
+        continue
+      }
+
+      const symbol = await this.buildSymbolFromSource(candidatePath, packageName, className)
+      if (symbol) {
+        return symbol
       }
     }
+
     return null
+  }
+
+  private normalizeConfig(config: JavaResolverConfig): JavaResolverConfig {
+    return {
+      sourcePaths: Array.from(config.sourcePaths ?? []),
+      classpath: Array.from(config.classpath ?? []),
+    }
+  }
+
+  private normalizeTypeName(typeName: string): string {
+    return typeName
+      .replace(/<[^>]*>/g, "")
+      .replace(/\s+/g, "")
+      .replace(/\[\]/g, "")
+      .trim()
+  }
+
+  private stripInnerClassReference(typeName: string): string {
+    return typeName.split("$")[0]
+  }
+
+  private getPackageAndClassName(fullyQualifiedName: string): { packageName: string; className: string } | null {
+    const sanitized = fullyQualifiedName.trim()
+    const lastDotIndex = sanitized.lastIndexOf(".")
+    if (lastDotIndex === -1) {
+      return null
+    }
+
+    return {
+      packageName: sanitized.substring(0, lastDotIndex),
+      className: sanitized.substring(lastDotIndex + 1),
+    }
+  }
+
+  private getCandidateSourcePaths(packageName: string, className: string): string[] {
+    const packageSegments = packageName ? packageName.split(".") : []
+    return this.config.sourcePaths.map((sourceRoot) =>
+      path.resolve(sourceRoot, ...packageSegments, `${className}.java`),
+    )
+  }
+
+  private async buildSymbolFromSource(
+    filePath: string,
+    packageName: string,
+    className: string,
+  ): Promise<JavaSymbolInfo | null> {
+    try {
+      const source = await fs.readFile(filePath, "utf8")
+      const declarationRegex = new RegExp(
+        `(public\\s+)?(final\\s+)?(abstract\\s+)?(class|interface|enum)\\s+${className}\\b`,
+      )
+      const declarationMatch = source.match(declarationRegex)
+
+      if (!declarationMatch) {
+        debug(`Unable to find declaration for ${className} in ${filePath}`)
+        return null
+      }
+
+      const kind = declarationMatch[4]
+      const symbol: JavaSymbolInfo = {
+        fullyQualifiedName: packageName ? `${packageName}.${className}` : className,
+        className,
+        packageName,
+        isInterface: kind === "interface",
+        isEnum: kind === "enum",
+        isAbstract: Boolean(declarationMatch[3]),
+        isFinal: Boolean(declarationMatch[2]),
+        isJavaStandardLibrary: false,
+        sourceFilePath: filePath,
+      }
+
+      debug(`Resolved custom Java symbol from source: %o`, symbol)
+
+      return symbol
+    } catch (error) {
+      debug(`Failed to parse Java source ${filePath}:`, error)
+      return null
+    }
+  }
+
+  private async collectPackagesFromSourcePaths(): Promise<Set<string>> {
+    const packages = new Set<string>()
+
+    for (const sourceRoot of this.config.sourcePaths) {
+      await this.walkSourcePackages(sourceRoot, "", packages)
+    }
+
+    return packages
+  }
+
+  private async walkSourcePackages(currentDir: string, packagePrefix: string, packages: Set<string>): Promise<void> {
+    let entries: Dirent[]
+    try {
+      entries = await fs.readdir(currentDir, { withFileTypes: true })
+    } catch {
+      return
+    }
+
+    const hasJavaFiles = entries.some((entry) => entry.isFile() && entry.name.endsWith(".java"))
+    if (hasJavaFiles && packagePrefix) {
+      packages.add(packagePrefix)
+    }
+
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue
+      const nextPrefix = packagePrefix ? `${packagePrefix}.${entry.name}` : entry.name
+      await this.walkSourcePackages(path.join(currentDir, entry.name), nextPrefix, packages)
+    }
+  }
+
+  private async collectClassesFromSourcePaths(packageName: string): Promise<Set<string>> {
+    const classes = new Set<string>()
+    const packageSegments = packageName ? packageName.split(".") : []
+
+    for (const sourceRoot of this.config.sourcePaths) {
+      const packageDir = path.resolve(sourceRoot, ...packageSegments)
+      let entries: Dirent[]
+      try {
+        entries = await fs.readdir(packageDir, { withFileTypes: true })
+      } catch {
+        continue
+      }
+
+      for (const entry of entries) {
+        if (entry.isFile() && entry.name.endsWith(".java")) {
+          classes.add(entry.name.replace(/\.java$/, ""))
+        }
+      }
+    }
+
+    return classes
   }
 
   /**
