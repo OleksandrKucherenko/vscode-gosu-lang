@@ -11,7 +11,7 @@
 ## 2. AST Acquisition & Preprocessing
 - [ ] **Parser Contract** – write tests around `@gosu-lsp/parser` output to guarantee full AST availability (`ASTIntegrationClass` fixtures, malformed fixtures)
   - [ ] Validate comments/trivia retention requirements and add parser hooks/tests if missing
-  - [ ] Expose dual-pass (top-down / bottom-up) parse helpers with red-green tests for recovery metadata *(Stage 3 deferred)*
+  - [ ] Expose dual-pass (top-down / bottom-up) parse helpers with red-green tests for recovery metadata *(Stage 3 low priority; tackle last)*
     - [x] Stage 1: implement “anchor” detection using regex to locate function/method scopes and mark them as parse start points
     - [x] Stage 1 tests: prove anchors isolate broken function bodies while the rest of file formats correctly
     - [x] Stage 2: integrate anchors into top-down pass, skipping segments flagged as errored and emitting recovery metadata
