@@ -55,6 +55,19 @@ describe("GosuParser", () => {
 
         const helloComment = comments.find((comment) => comment.text.includes("hello"))
         expect(helloComment?.commentType).toBe("line")
+
+        const docComment = comments.find((comment) => comment.commentType === "doc")
+        expect(docComment).toBeDefined()
+        if (docComment) {
+          const slice = code.slice(docComment.startIndex, docComment.stopIndex + 1)
+          expect(slice).toBe(docComment.text)
+        }
+
+        const firstToken = result.tokens?.[0]
+        if (firstToken) {
+          const slice = code.slice(firstToken.startIndex, firstToken.stopIndex + 1)
+          expect(slice).toBe(firstToken.text)
+        }
       })
 
       test("And it should build an AST for complex integration fixtures", () => {

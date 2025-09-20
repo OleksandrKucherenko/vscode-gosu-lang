@@ -15,14 +15,14 @@
     - [x] Stage 1: implement “anchor” detection using regex to locate function/method scopes and mark them as parse start points
     - [x] Stage 1 tests: prove anchors isolate broken function bodies while the rest of file formats correctly
     - [x] Stage 2: integrate anchors into top-down pass, skipping segments flagged as errored and emitting recovery metadata
-- [ ] **Syntax Diagnostics** – design fail-fast behaviour with optional fallback
+- [x] **Syntax Diagnostics** – design fail-fast behaviour with optional fallback
   - [x] Add tests ensuring syntax errors produce structured formatter diagnostics
   - [x] Add tests for recovery mode that marks failing lines as ignored when dual parsing isolates them
 
 ## 3. Formatting Pipeline (Google Java Format inspired)
-- [ ] **Phase 0 – Token Stream Normalisation**
-  - [ ] Build lexer bridge test to confirm tokens/comments map 1:1 with source offsets
-  - [ ] Implement token model with comment association (tests for inline, block, doc comments)
+- [x] **Phase 0 – Token Stream Normalisation**
+  - [x] Build lexer bridge test to confirm tokens/comments map 1:1 with source offsets
+  - [x] Implement token model with comment association (tests for inline, block, doc comments)
 - [ ] **Phase 1 – AST Traversal to Formatting IR**
   - [ ] Create visitor tests for classes, enhancements, interfaces, properties, functions, control flow
   - [ ] Implement `GosuFormattingVisitor` emitting neutral IR nodes (red test first, then implementation)

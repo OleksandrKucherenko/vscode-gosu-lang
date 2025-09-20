@@ -50,9 +50,11 @@ export interface GosuToken {
   line: number
   column: number
   channel: number
+  startIndex: number
+  stopIndex: number
 }
 
-export type GosuCommentType = "line" | "block"
+export type GosuCommentType = "line" | "block" | "doc"
 
 /**
  * Comment trivia token captured from hidden channels

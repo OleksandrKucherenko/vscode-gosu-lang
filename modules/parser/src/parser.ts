@@ -176,6 +176,8 @@ function collectTokens(tokenStream: CommonTokenStream): { tokens: GosuToken[]; c
       line: token.line,
       column: token.charPositionInLine,
       channel: token.channel,
+      startIndex: token.start ?? 0,
+      stopIndex: token.stop ?? token.start ?? 0,
     }
 
     tokens.push(gosuToken)
@@ -183,7 +185,8 @@ function collectTokens(tokenStream: CommonTokenStream): { tokens: GosuToken[]; c
     if (token.type === GosuLexer.LINE_COMMENT || token.type === GosuLexer.COMMENT) {
       comments.push({
         ...gosuToken,
-        commentType: token.type === GosuLexer.LINE_COMMENT ? "line" : "block",
+        commentType:
+          token.type === GosuLexer.LINE_COMMENT ? "line" : gosuToken.text.startsWith("/**") ? "doc" : "block",
       })
     }
   }
