@@ -1,6 +1,6 @@
 # Gosu Formatter Implementation Plan
 
-- [ ] Scaffold `modules/formatter` package structure and public API surface
+- [x] Scaffold `modules/formatter` package structure and public API surface
 - [ ] Define `.gosuformatting.jsonc` configuration schema and defaults
 - [ ] Add configuration loader tests (JSON5 parsing, default merge, error handling)
 - [ ] Implement configuration loader with JSON5 support
