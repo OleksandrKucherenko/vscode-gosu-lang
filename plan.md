@@ -23,9 +23,9 @@
 - [x] **Phase 0 – Token Stream Normalisation**
   - [x] Build lexer bridge test to confirm tokens/comments map 1:1 with source offsets
   - [x] Implement token model with comment association (tests for inline, block, doc comments)
-- [ ] **Phase 1 – AST Traversal to Formatting IR**
-  - [ ] Create visitor tests for classes, enhancements, interfaces, properties, functions, control flow
-  - [ ] Implement `GosuFormattingVisitor` emitting neutral IR nodes (red test first, then implementation)
+- [x] **Phase 1 – AST Traversal to Formatting IR**
+  - [x] Create visitor tests for classes, enhancements, interfaces, properties, functions, control flow
+  - [x] Implement `GosuFormattingVisitor` emitting neutral IR nodes (red test first, then implementation)
 - [ ] **Phase 2 – Operation Generation**
   - [ ] Define OpsBuilder with unit tests covering indentation ops, soft/hard breaks, grouping boundaries
   - [ ] Emit operations for core statements/expressions with snapshot assertions

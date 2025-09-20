@@ -9,6 +9,9 @@ import {
   loadFormattingConfig,
 } from "./config"
 
+export type { FormattingNode } from "./ir/nodes"
+export { buildFormattingTree } from "./ir/visitor"
+
 export {
   DEFAULT_FORMATTING_CONFIG,
   FORMATTER_CONFIG_SCHEMA,
