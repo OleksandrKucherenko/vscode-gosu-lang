@@ -1,4 +1,17 @@
-export type FormattingNodeKind = "class" | "function" | "constructor" | "property"
+export type FormattingNodeKind =
+  | "class"
+  | "interface"
+  | "enhancement"
+  | "function"
+  | "constructor"
+  | "property"
+  | "statement"
+  | "expression"
+  | "block"
+  | "parameter"
+  | "type"
+  | "uses"
+  | "package"
 
 export interface SourcePosition {
   line: number
@@ -15,4 +28,5 @@ export interface FormattingNode {
   name: string | null
   range: SourceRange
   children: FormattingNode[]
+  metadata?: Record<string, unknown>
 }

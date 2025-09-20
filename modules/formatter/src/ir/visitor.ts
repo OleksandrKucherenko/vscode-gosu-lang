@@ -27,6 +27,30 @@ class FormattingTreeBuilder {
     if (node instanceof ParserRuleContext) {
       const ruleName = this.getRuleName(node)
       switch (ruleName) {
+        case "packageDeclaration":
+        case "PackageDeclarationContext": {
+          const packageNode: FormattingNode = {
+            kind: "package",
+            name: this.getPackageName(node),
+            range: this.getRange(node),
+            children: [],
+          }
+          target.push(packageNode)
+          this.visitChildren(node, packageNode.children)
+          return
+        }
+        case "usesStatement":
+        case "UsesStatementContext": {
+          const usesNode: FormattingNode = {
+            kind: "uses",
+            name: this.getUsesName(node),
+            range: this.getRange(node),
+            children: [],
+          }
+          target.push(usesNode)
+          this.visitChildren(node, usesNode.children)
+          return
+        }
         case "gClass":
         case "GClassContext": {
           const classNode: FormattingNode = {
@@ -39,10 +63,22 @@ class FormattingTreeBuilder {
           this.visitChildren(node, classNode.children)
           return
         }
+        case "gInterface":
+        case "GInterfaceContext": {
+          const interfaceNode: FormattingNode = {
+            kind: "interface",
+            name: this.getIdentifierText(node, "id"),
+            range: this.getRange(node),
+            children: [],
+          }
+          target.push(interfaceNode)
+          this.visitChildren(node, interfaceNode.children)
+          return
+        }
         case "gEnhancement":
         case "GEnhancementContext": {
           const enhancementNode: FormattingNode = {
-            kind: "class",
+            kind: "enhancement",
             name: this.getIdentifierText(node, "id"),
             range: this.getRange(node),
             children: [],
@@ -87,6 +123,30 @@ class FormattingTreeBuilder {
           }
           target.push(propertyNode)
           this.visitChildren(node, propertyNode.children)
+          return
+        }
+        case "block":
+        case "BlockContext": {
+          const blockNode: FormattingNode = {
+            kind: "block",
+            name: null,
+            range: this.getRange(node),
+            children: [],
+          }
+          target.push(blockNode)
+          this.visitChildren(node, blockNode.children)
+          return
+        }
+        case "statement":
+        case "StatementContext": {
+          const statementNode: FormattingNode = {
+            kind: "statement",
+            name: null,
+            range: this.getRange(node),
+            children: [],
+          }
+          target.push(statementNode)
+          this.visitChildren(node, statementNode.children)
           return
         }
         default:
@@ -152,6 +212,32 @@ class FormattingTreeBuilder {
       }
     }
 
+    return null
+  }
+
+  private getPackageName(node: ParserRuleContext): string | null {
+    // Try to extract package name from the node
+    try {
+      const text = node.getText()
+      if (text && text.startsWith("package ")) {
+        return text.replace("package ", "").trim()
+      }
+    } catch {
+      // Ignore
+    }
+    return null
+  }
+
+  private getUsesName(node: ParserRuleContext): string | null {
+    // Try to extract uses name from the node
+    try {
+      const text = node.getText()
+      if (text && text.startsWith("uses ")) {
+        return text.replace("uses ", "").trim()
+      }
+    } catch {
+      // Ignore
+    }
     return null
   }
 
