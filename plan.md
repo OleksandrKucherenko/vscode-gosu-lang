@@ -14,7 +14,7 @@
   - [ ] Expose dual-pass (top-down / bottom-up) parse helpers with red-green tests for recovery metadata
     - [x] Stage 1: implement “anchor” detection using regex to locate function/method scopes and mark them as parse start points
     - [x] Stage 1 tests: prove anchors isolate broken function bodies while the rest of file formats correctly
-    - [ ] Stage 2: integrate anchors into top-down pass, skipping segments flagged as errored and emitting recovery metadata
+    - [x] Stage 2: integrate anchors into top-down pass, skipping segments flagged as errored and emitting recovery metadata
     - [ ] Stage 3: introduce true bottom-up parsing once anchor approach is stable, preserving existing tests
 - [ ] **Syntax Diagnostics** – design fail-fast behaviour with optional fallback
   - [ ] Add tests ensuring syntax errors produce structured formatter diagnostics

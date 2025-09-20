@@ -55,6 +55,8 @@ describe("formatDocument", () => {
     const result = await formatDocument(request)
 
     expect(result.config).toEqual(DEFAULT_FORMATTING_CONFIG)
+    expect(result.ignoredAnchors?.length ?? 0).toBe(0)
+    expect(result.ignoredLines?.length ?? 0).toBe(0)
   })
 
   it("allows explicit config override in the request", async () => {
@@ -74,5 +76,34 @@ describe("formatDocument", () => {
     const result = await formatDocument(request)
 
     expect(result.config).toEqual(customConfig)
+    expect(result.ignoredAnchors?.length ?? 0).toBe(0)
+    expect(result.ignoredLines?.length ?? 0).toBe(0)
+  })
+
+  it("marks broken function anchors as ignored ranges", async () => {
+    const gosuSource = `
+class Sample {
+  function ok() {
+    return 1
+  }
+
+  function broken() {
+    if (true) {
+      return 2
+  // missing braces
+}
+`
+
+    const result = await formatDocument({
+      uri: "file:///Broken.gs",
+      text: gosuSource,
+    })
+
+    expect(result.ignoredAnchors).toBeDefined()
+    const brokenAnchor = result.ignoredAnchors?.find((anchor) => anchor.name === "broken")
+    expect(brokenAnchor).toBeDefined()
+    expect(brokenAnchor?.isComplete).toBe(false)
+    expect(brokenAnchor?.lines.length).toBeGreaterThan(0)
+    expect(result.ignoredLines).toEqual(brokenAnchor?.lines)
   })
 })
