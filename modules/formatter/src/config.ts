@@ -13,12 +13,63 @@ export interface FormattingConfig {
   maxLineLength: number
 }
 
+interface FormatterOptionSchemaBase {
+  key: keyof FormattingConfig
+  description: string
+}
+
+export interface StringOptionSchema extends FormatterOptionSchemaBase {
+  type: "string"
+  default: string
+  enum: string[]
+}
+
+export interface NumberOptionSchema extends FormatterOptionSchemaBase {
+  type: "number"
+  default: number
+  minimum: number
+  maximum?: number
+}
+
+export type FormatterOptionSchema = StringOptionSchema | NumberOptionSchema
+
 export const DEFAULT_FORMATTING_CONFIG: FormattingConfig = Object.freeze({
   indentStyle: "space" as IndentStyle,
   indentSize: 2,
   continuationIndentSize: 4,
   maxLineLength: 100,
 })
+
+export const FORMATTER_CONFIG_SCHEMA: FormatterOptionSchema[] = [
+  {
+    key: "indentStyle",
+    type: "string",
+    default: DEFAULT_FORMATTING_CONFIG.indentStyle,
+    enum: ["space", "tab"],
+    description: "Controls whether indentation uses spaces or tabs.",
+  },
+  {
+    key: "indentSize",
+    type: "number",
+    default: DEFAULT_FORMATTING_CONFIG.indentSize,
+    minimum: 1,
+    description: "Number of spaces or tab columns to use for each indentation level.",
+  },
+  {
+    key: "continuationIndentSize",
+    type: "number",
+    default: DEFAULT_FORMATTING_CONFIG.continuationIndentSize,
+    minimum: 1,
+    description: "Indent width when breaking a line across multiple lines (continuation indentation).",
+  },
+  {
+    key: "maxLineLength",
+    type: "number",
+    default: DEFAULT_FORMATTING_CONFIG.maxLineLength,
+    minimum: 40,
+    description: "Target maximum line length before the formatter introduces line breaks.",
+  },
+]
 
 export interface LoadFormattingConfigOptions {
   searchDir: string

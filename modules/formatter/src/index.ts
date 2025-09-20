@@ -1,4 +1,10 @@
-export { DEFAULT_FORMATTING_CONFIG, type FormattingConfig, loadFormattingConfig } from "./config"
+export {
+  DEFAULT_FORMATTING_CONFIG,
+  FORMATTER_CONFIG_SCHEMA,
+  type FormatterOptionSchema,
+  type FormattingConfig,
+  loadFormattingConfig,
+} from "./config"
 
 export interface FormatResult {
   formattedText: string
