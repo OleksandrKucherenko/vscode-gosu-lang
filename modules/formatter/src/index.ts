@@ -1,3 +1,5 @@
+export { DEFAULT_FORMATTING_CONFIG, type FormattingConfig, loadFormattingConfig } from "./config"
+
 export interface FormatResult {
   formattedText: string
   // Lines that were ignored due to syntax issues; numbers are 1-based
