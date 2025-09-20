@@ -2,6 +2,7 @@ import { promises as fs } from "node:fs"
 import path from "node:path"
 
 import JSON5 from "json5"
+import { type ParseError, parse as parseJsonc, printParseErrorCode } from "jsonc-parser"
 
 export type IndentStyle = "space" | "tab"
 
@@ -74,10 +75,61 @@ function normalizeConfigValue(partial: Record<string, unknown>): FormattingConfi
   return result
 }
 
+function getLineAndColumn(text: string, offset: number): { line: number; column: number } {
+  let line = 1
+  let lastLineStart = 0
+
+  for (let i = 0; i < offset; i++) {
+    const char = text[i]
+    if (char === "\n") {
+      line += 1
+      lastLineStart = i + 1
+    }
+  }
+
+  const column = offset - lastLineStart + 1
+
+  return { line, column }
+}
+
+function parseJsoncContent(fileContent: string, configPath: string): unknown {
+  const errors: ParseError[] = []
+  const result = parseJsonc(fileContent, errors, {
+    allowTrailingComma: true,
+    disallowComments: false,
+  })
+
+  if (errors.length > 0) {
+    const [{ error, offset }] = errors
+    const { line, column } = getLineAndColumn(fileContent, offset)
+    const errorCode = printParseErrorCode(error)
+    throw new Error(
+      `Invalid JSONC formatting configuration at ${configPath}: ${errorCode} (line ${line}, column ${column})`,
+    )
+  }
+
+  return result
+}
+
 async function readConfigFile(configPath: string): Promise<unknown> {
   const fileContent = await fs.readFile(configPath, "utf8")
+  const extension = path.extname(configPath).toLowerCase()
+
+  if (extension === ".jsonc") {
+    return parseJsoncContent(fileContent, configPath)
+  }
+
   try {
-    return JSON5.parse(fileContent)
+    switch (extension) {
+      case ".json5":
+        return JSON5.parse(fileContent)
+
+      case ".json":
+        return JSON.parse(fileContent)
+
+      default:
+        return JSON5.parse(fileContent)
+    }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
     throw new Error(`Failed to parse formatter configuration at ${configPath}: ${message}`)
@@ -85,17 +137,28 @@ async function readConfigFile(configPath: string): Promise<unknown> {
 }
 
 export async function loadFormattingConfig(options: LoadFormattingConfigOptions): Promise<FormattingConfig> {
-  const { searchDir, configFileName = ".gosuformatting.jsonc" } = options
-  const configPath = path.join(searchDir, configFileName)
+  const { searchDir, configFileName } = options
 
-  try {
-    await fs.access(configPath)
-  } catch (error) {
-    const code = (error as NodeJS.ErrnoException).code
-    if (code === "ENOENT") {
-      return cloneDefaults()
+  const candidateFileNames = configFileName ? [configFileName] : [".gosuformatting.jsonc", ".gosuformatting.json5"]
+
+  let configPath: string | null = null
+
+  for (const candidate of candidateFileNames) {
+    const fullPath = path.join(searchDir, candidate)
+    try {
+      await fs.access(fullPath)
+      configPath = fullPath
+      break
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code
+      if (code && code !== "ENOENT") {
+        throw error
+      }
     }
-    throw error
+  }
+
+  if (!configPath) {
+    return cloneDefaults()
   }
 
   const parsed = await readConfigFile(configPath)

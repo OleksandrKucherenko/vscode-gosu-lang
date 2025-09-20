@@ -44,10 +44,10 @@ describe("loadFormattingConfig", () => {
     const configFilePath = path.join(dir, ".gosuformatting.jsonc")
     const fileContents = `{
       // Custom indentation settings
-      indentStyle: "tab",
-      indentSize: 3,
-      continuationIndentSize: 6,
-      maxLineLength: 140,
+      "indentStyle": "tab",
+      "indentSize": 3,
+      "continuationIndentSize": 6,
+      "maxLineLength": 140,
     }`
     await fs.writeFile(configFilePath, fileContents, "utf8")
 
@@ -72,7 +72,7 @@ describe("loadFormattingConfig", () => {
     await fs.writeFile(
       path.join(dir, configFileName),
       `{
-        indentSize: 4,
+        "indentSize": 4,
       }`,
       "utf8",
     )
@@ -90,8 +90,55 @@ describe("loadFormattingConfig", () => {
     const dir = await createTempDir()
     tempDirs.push(dir)
 
-    await fs.writeFile(path.join(dir, ".gosuformatting.jsonc"), "{ indentSize: invalid }", "utf8")
+    await fs.writeFile(
+      path.join(dir, ".gosuformatting.jsonc"),
+      `{
+        "indentSize": invalid,
+      }`,
+      "utf8",
+    )
 
-    await expect(loadFormattingConfig({ searchDir: dir })).rejects.toThrow(/failed to parse formatter configuration/i)
+    await expect(loadFormattingConfig({ searchDir: dir })).rejects.toThrow(/invalid jsonc formatting configuration/i)
+  })
+
+  it("loads .gosuformatting.json5 defaults when JSONC file is absent", async () => {
+    const dir = await createTempDir()
+    tempDirs.push(dir)
+
+    const configFilePath = path.join(dir, ".gosuformatting.json5")
+    const fileContents = `{
+      indentStyle: 'tab',
+      indentSize: 3,
+      continuationIndentSize: 6,
+      maxLineLength: 140,
+    }`
+    await fs.writeFile(configFilePath, fileContents, "utf8")
+
+    const config = await loadFormattingConfig({ searchDir: dir })
+
+    const expected: FormattingConfig = {
+      ...DEFAULT_FORMATTING_CONFIG,
+      indentStyle: "tab",
+      indentSize: 3,
+      continuationIndentSize: 6,
+      maxLineLength: 140,
+    }
+
+    expect(config).toEqual(expected)
+  })
+
+  it("rejects JSON5-only syntax when using .jsonc extension", async () => {
+    const dir = await createTempDir()
+    tempDirs.push(dir)
+
+    await fs.writeFile(
+      path.join(dir, ".gosuformatting.jsonc"),
+      `{
+        indentStyle: 'tab',
+      }`,
+      "utf8",
+    )
+
+    await expect(loadFormattingConfig({ searchDir: dir })).rejects.toThrow(/invalid jsonc formatting configuration/i)
   })
 })

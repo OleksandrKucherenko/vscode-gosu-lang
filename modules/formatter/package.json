@@ -20,7 +20,8 @@
   "author": "OleksandrKucherenko",
   "license": "MIT",
   "dependencies": {
-    "json5": "^2.2.3"
+    "json5": "^2.2.3",
+    "jsonc-parser": "^3.3.1"
   },
   "devDependencies": {
     "rimraf": "^6.0.1",
