@@ -34,9 +34,49 @@
     "workspaceContains:**/*.gs",
     "workspaceContains:**/*.gsx",
     "workspaceContains:**/*.gst",
-    "workspaceContains:**/*.gsp"
+    "workspaceContains:**/*.gsp",
+    "onCommand:gosu.restartLanguageServer",
+    "onCommand:gosu.showLanguageServerOutput",
+    "onCommand:gosu.showLanguageServerStatus"
   ],
   "contributes": {
+    "commands": [
+      {
+        "command": "gosu.restartLanguageServer",
+        "title": "Gosu: Restart Language Server",
+        "category": "Gosu"
+      },
+      {
+        "command": "gosu.showLanguageServerOutput",
+        "title": "Gosu: Show Language Server Output",
+        "category": "Gosu"
+      },
+      {
+        "command": "gosu.showLanguageServerStatus",
+        "title": "Gosu: Show Language Server Status",
+        "category": "Gosu"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "gosu.restartLanguageServer",
+        "key": "ctrl+alt+r",
+        "mac": "cmd+alt+r",
+        "when": "editorTextFocus && editorLangId == 'gosu'"
+      },
+      {
+        "command": "gosu.showLanguageServerOutput",
+        "key": "ctrl+alt+o",
+        "mac": "cmd+alt+o",
+        "when": "editorTextFocus && editorLangId == 'gosu'"
+      },
+      {
+        "command": "gosu.showLanguageServerStatus",
+        "key": "ctrl+alt+s",
+        "mac": "cmd+alt+s",
+        "when": "editorTextFocus && editorLangId == 'gosu'"
+      }
+    ],
     "languages": [
       {
         "id": "gosu",
