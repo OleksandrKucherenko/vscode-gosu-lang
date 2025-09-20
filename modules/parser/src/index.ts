@@ -13,7 +13,9 @@ export { GosuVisitor } from "./GosuVisitor"
 export { GosuParser } from "./parser"
 
 export type {
+  GosuCommentTrivia,
   GosuParseResult,
   GosuParserConfig,
   GosuSyntaxError,
+  GosuToken,
 } from "./types"

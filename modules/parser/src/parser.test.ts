@@ -36,6 +36,38 @@ describe("GosuParser", () => {
         expect(result.ast).toBeDefined()
       })
 
+      test("And it should capture tokens and comments for formatting", () => {
+        const parser = new GosuParser()
+        const code = readFixture("parser/ClassWithComments.gs")
+
+        const result = parser.parseText(code, "ClassWithComments.gs")
+
+        expect(result.isValid).toBe(true)
+        expect(result.tokens).toBeDefined()
+        expect(result.tokens?.length ?? 0).toBeGreaterThan(0)
+
+        const comments = result.comments ?? []
+        const texts = comments.map((comment) => comment.text.trim())
+
+        expect(texts).toContain("// Leading class comment")
+        expect(texts).toContain("// This line says hello")
+        expect(texts).toContain("/* Block comment */")
+
+        const helloComment = comments.find((comment) => comment.text.includes("hello"))
+        expect(helloComment?.commentType).toBe("line")
+      })
+
+      test("And it should build an AST for complex integration fixtures", () => {
+        const parser = new GosuParser()
+        const integrationCode = readFixture("semantic-highlighting/ASTIntegrationClass.gs")
+
+        const result = parser.parseText(integrationCode, "ASTIntegrationClass.gs")
+
+        expect(result.isValid).toBe(true)
+        expect(result.ast).toBeDefined()
+        expect(result.tokens?.length ?? 0).toBeGreaterThan(0)
+      })
+
       test("And it should parse template syntax without errors", () => {
         debug("Testing valid template syntax parsing")
 
@@ -121,6 +153,17 @@ describe("GosuParser", () => {
 
         expect(errors.length).toBeGreaterThan(0)
         expect(parser.getConfig()).toEqual(initialConfig)
+      })
+
+      test("And it should populate tokens when AST building is disabled", () => {
+        const parser = new GosuParser({ buildAst: false })
+        const source = readFixture("parser/SimpleClass.gs")
+
+        const result = parser.parseText(source, "SimpleClass.gs")
+
+        expect(result.ast).toBeUndefined()
+        expect(result.tokens).toBeDefined()
+        expect(result.tokens?.length ?? 0).toBeGreaterThan(0)
       })
     })
 

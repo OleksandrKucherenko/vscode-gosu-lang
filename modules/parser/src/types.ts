@@ -29,12 +29,36 @@ export interface GosuParseResult {
   syntaxErrors: GosuSyntaxError[]
   /** The parsed AST (if parsing succeeded) */
   ast?: ParseTree
+  /** All tokens produced by the lexer */
+  tokens?: GosuToken[]
+  /** Comment trivia extracted from the token stream */
+  comments?: GosuCommentTrivia[]
   /** The file path that was parsed */
   filePath: string
   /** The detected file type */
   fileType: GosuFileType
   /** The source text that was parsed */
   sourceText: string
+}
+
+/**
+ * Lightweight representation of a Gosu token
+ */
+export interface GosuToken {
+  type: number
+  text: string
+  line: number
+  column: number
+  channel: number
+}
+
+export type GosuCommentType = "line" | "block"
+
+/**
+ * Comment trivia token captured from hidden channels
+ */
+export interface GosuCommentTrivia extends GosuToken {
+  commentType: GosuCommentType
 }
 
 /**

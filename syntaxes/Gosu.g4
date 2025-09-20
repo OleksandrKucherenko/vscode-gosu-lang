@@ -634,6 +634,6 @@ DECIMAL_LITERAL
     | DIGIT+ ('.' DIGIT* EXPONENT? FLOAT_TYPE_SUFFIX? | EXPONENT FLOAT_TYPE_SUFFIX? | FLOAT_TYPE_SUFFIX | INTEGER_TYPE_SUFFIX)?
     ;
 
-WS : [ \t\r\n]+ -> skip;
-COMMENT : '/*' .*? '*/' -> skip;
-LINE_COMMENT : '//' ~[\r\n]* -> skip;
+WS : [ \t\r\n]+ -> channel(HIDDEN);
+COMMENT : '/*' .*? '*/' -> channel(HIDDEN);
+LINE_COMMENT : '//' ~[\r\n]* -> channel(HIDDEN);

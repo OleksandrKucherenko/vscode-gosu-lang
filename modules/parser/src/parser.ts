@@ -4,7 +4,7 @@ import Debug from "debug"
 import { GosuErrorListener } from "./error-listener"
 import { GosuLexer } from "./GosuLexer"
 import { GosuParser as AntlrGosuParser } from "./GosuParser"
-import type { GosuParseResult, GosuParserConfig, GosuSyntaxError } from "./types"
+import type { GosuCommentTrivia, GosuParseResult, GosuParserConfig, GosuSyntaxError, GosuToken } from "./types"
 
 const debug = Debug("gosu:lsp:parser")
 
@@ -32,6 +32,9 @@ export class GosuParser {
 
     const fileType = getGosuFileType(filePath) || "class"
     const errorListener = new GosuErrorListener(this.config.maxErrors)
+    let tokenStream: CommonTokenStream | null = null
+    let tokens: GosuToken[] = []
+    let comments: GosuCommentTrivia[] = []
 
     try {
       // Create ANTLR input stream
@@ -43,7 +46,7 @@ export class GosuParser {
       lexer.addErrorListener(errorListener)
 
       // Create token stream
-      const tokenStream = new CommonTokenStream(lexer)
+      tokenStream = new CommonTokenStream(lexer)
 
       // Create parser
       const parser = new AntlrGosuParser(tokenStream)
@@ -59,6 +62,10 @@ export class GosuParser {
         this.parseByFileType(parser, fileType)
       }
 
+      if (tokenStream) {
+        ;({ tokens, comments } = collectTokens(tokenStream))
+      }
+
       const syntaxErrors = errorListener.getErrors()
       const isValid = syntaxErrors.length === 0
 
@@ -68,6 +75,8 @@ export class GosuParser {
         isValid,
         syntaxErrors,
         ast,
+        tokens,
+        comments,
         filePath,
         fileType,
         sourceText,
@@ -86,6 +95,8 @@ export class GosuParser {
       return {
         isValid: false,
         syntaxErrors: [syntaxError],
+        tokens,
+        comments,
         filePath,
         fileType,
         sourceText,
@@ -150,4 +161,32 @@ export class GosuParser {
   getConfig(): Required<GosuParserConfig> {
     return { ...this.config }
   }
+}
+
+function collectTokens(tokenStream: CommonTokenStream): { tokens: GosuToken[]; comments: GosuCommentTrivia[] } {
+  tokenStream.fill()
+  const antlrTokens = tokenStream.getTokens()
+  const tokens: GosuToken[] = []
+  const comments: GosuCommentTrivia[] = []
+
+  for (const token of antlrTokens) {
+    const gosuToken: GosuToken = {
+      type: token.type,
+      text: token.text ?? "",
+      line: token.line,
+      column: token.charPositionInLine,
+      channel: token.channel,
+    }
+
+    tokens.push(gosuToken)
+
+    if (token.type === GosuLexer.LINE_COMMENT || token.type === GosuLexer.COMMENT) {
+      comments.push({
+        ...gosuToken,
+        commentType: token.type === GosuLexer.LINE_COMMENT ? "line" : "block",
+      })
+    }
+  }
+
+  return { tokens, comments }
 }
