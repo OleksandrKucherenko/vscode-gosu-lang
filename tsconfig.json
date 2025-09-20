@@ -23,7 +23,9 @@
       "@gosu-lsp/server": ["./modules/server/src"],
       "@gosu-lsp/server/*": ["./modules/server/src/*"],
       "@gosu-lsp/client": ["./modules/client/src"],
-      "@gosu-lsp/client/*": ["./modules/client/src/*"]
+      "@gosu-lsp/client/*": ["./modules/client/src/*"],
+      "@gosu-lsp/formatter": ["./modules/formatter/src"],
+      "@gosu-lsp/formatter/*": ["./modules/formatter/src/*"]
     }
   },
   "include": [
