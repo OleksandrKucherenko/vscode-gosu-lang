@@ -34,7 +34,7 @@ describe("formatDocument", () => {
 
     const result = await formatDocument(request)
 
-    expect(result.formattedText).toBe(request.text)
+    expect(result.formattedText).toBe("class Example {\n}\n")
     expect(result.config).toEqual({
       indentStyle: "tab",
       indentSize: 3,

@@ -170,7 +170,7 @@ function collectTokens(tokenStream: CommonTokenStream): { tokens: GosuToken[]; c
   const comments: GosuCommentTrivia[] = []
 
   for (const token of antlrTokens) {
-    const gosuToken: GosuToken = {
+    const gosuTokenBase: GosuToken = {
       type: token.type,
       text: token.text ?? "",
       line: token.line,
@@ -180,15 +180,19 @@ function collectTokens(tokenStream: CommonTokenStream): { tokens: GosuToken[]; c
       stopIndex: token.stop ?? token.start ?? 0,
     }
 
-    tokens.push(gosuToken)
-
     if (token.type === GosuLexer.LINE_COMMENT || token.type === GosuLexer.COMMENT) {
-      comments.push({
-        ...gosuToken,
+      const commentToken = {
+        ...gosuTokenBase,
         commentType:
-          token.type === GosuLexer.LINE_COMMENT ? "line" : gosuToken.text.startsWith("/**") ? "doc" : "block",
-      })
+          token.type === GosuLexer.LINE_COMMENT ? "line" : gosuTokenBase.text.startsWith("/**") ? "doc" : "block",
+      }
+
+      tokens.push(commentToken)
+      comments.push(commentToken)
+      continue
     }
+
+    tokens.push(gosuTokenBase)
   }
 
   return { tokens, comments }

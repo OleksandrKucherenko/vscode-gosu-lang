@@ -52,6 +52,7 @@ export interface GosuToken {
   channel: number
   startIndex: number
   stopIndex: number
+  commentType?: GosuCommentType
 }
 
 export type GosuCommentType = "line" | "block" | "doc"

@@ -8,6 +8,8 @@ import {
   type FormattingConfig,
   loadFormattingConfig,
 } from "./config"
+import { renderOps } from "./doc/doc-builder"
+import { buildFormattingOps } from "./ir/op-builder"
 
 export type { FormattingNode } from "./ir/nodes"
 export { buildFormattingTree } from "./ir/visitor"
@@ -73,12 +75,16 @@ async function resolveConfig(request: FormatRequest): Promise<FormattingConfig> 
 export async function formatDocument(request: FormatRequest): Promise<FormatResult> {
   const config = await resolveConfig(request)
   const filePath = resolveFilePath(request)
-  const { syntaxDiagnostics } = parseDocument(request.text, filePath)
+  const { parseResult, syntaxDiagnostics } = parseDocument(request.text, filePath)
   const { ignoredLines, ignoredAnchors, diagnostics: anchorDiagnostics } = collectAnchorRecoveryMetadata(request.text)
   const diagnostics = [...syntaxDiagnostics, ...anchorDiagnostics]
 
+  const formattedText = parseResult.isValid
+    ? renderOps(buildFormattingOps(parseResult), { indentSize: config.indentSize })
+    : request.text
+
   return {
-    formattedText: request.text,
+    formattedText,
     config: cloneConfig(config),
     ignoredLines,
     ignoredAnchors: ignoredAnchors.length > 0 ? ignoredAnchors : undefined,

@@ -26,16 +26,16 @@
 - [x] **Phase 1 – AST Traversal to Formatting IR**
   - [x] Create visitor tests for classes, enhancements, interfaces, properties, functions, control flow
   - [x] Implement `GosuFormattingVisitor` emitting neutral IR nodes (red test first, then implementation)
-- [ ] **Phase 2 – Operation Generation**
-  - [ ] Define OpsBuilder with unit tests covering indentation ops, soft/hard breaks, grouping boundaries
-  - [ ] Emit operations for core statements/expressions with snapshot assertions
-- [ ] **Phase 3 – Doc Construction & Layout**
-  - [ ] Implement Doc tree structure with Oppen-style grouping tests
-  - [ ] Port Derek Oppen algorithm adaptations (priority queue / break width) with algorithmic unit tests
-  - [ ] Add max-line-length regression tests to verify deterministic wrapping
-- [ ] **Phase 4 – Output Rendering**
-  - [ ] Write integration tests ensuring whitespace + comments correctly round-trip for representative files
-  - [ ] Implement renderer writing final text, confirming stability via golden files
+- [x] **Phase 2 – Operation Generation**
+  - [x] Define OpsBuilder with unit tests covering indentation ops, soft/hard breaks, grouping boundaries
+  - [x] Emit operations for core statements/expressions with snapshot assertions
+- [x] **Phase 3 – Doc Construction & Layout**
+  - [x] Implement Doc tree structure with Oppen-style grouping tests
+  - [x] Port Derek Oppen algorithm adaptations (priority queue / break width) with algorithmic unit tests
+  - [x] Add max-line-length regression tests to verify deterministic wrapping
+- [x] **Phase 4 – Output Rendering**
+  - [x] Write integration tests ensuring whitespace + comments correctly round-trip for representative files
+  - [x] Implement renderer writing final text, confirming stability via golden files
 
 ## 4. Language Feature Coverage
 - [ ] **Core Gosu Constructs** – per-feature TDD matrix (class/enhancement/interface, methods, properties, uses statements)
