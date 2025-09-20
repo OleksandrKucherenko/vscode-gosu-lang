@@ -57,6 +57,7 @@ describe("formatDocument", () => {
     expect(result.config).toEqual(DEFAULT_FORMATTING_CONFIG)
     expect(result.ignoredAnchors?.length ?? 0).toBe(0)
     expect(result.ignoredLines?.length ?? 0).toBe(0)
+    expect(result.diagnostics ?? []).toHaveLength(0)
   })
 
   it("allows explicit config override in the request", async () => {
@@ -78,6 +79,7 @@ describe("formatDocument", () => {
     expect(result.config).toEqual(customConfig)
     expect(result.ignoredAnchors?.length ?? 0).toBe(0)
     expect(result.ignoredLines?.length ?? 0).toBe(0)
+    expect(result.diagnostics ?? []).toHaveLength(0)
   })
 
   it("marks broken function anchors as ignored ranges", async () => {
@@ -105,5 +107,13 @@ class Sample {
     expect(brokenAnchor?.isComplete).toBe(false)
     expect(brokenAnchor?.lines.length).toBeGreaterThan(0)
     expect(result.ignoredLines).toEqual(brokenAnchor?.lines)
+
+    expect(result.diagnostics).toBeDefined()
+    const anchorDiagnostic = result.diagnostics?.find((diag) => diag.code === "ANCHOR_RECOVERY")
+    expect(anchorDiagnostic).toBeDefined()
+    expect(anchorDiagnostic?.line).toBe(brokenAnchor?.lines[0])
+    expect(anchorDiagnostic?.severity).toBe("warning")
+    const parserDiagnostic = result.diagnostics?.find((diag) => diag.source === "parser")
+    expect(parserDiagnostic).toBeDefined()
   })
 })

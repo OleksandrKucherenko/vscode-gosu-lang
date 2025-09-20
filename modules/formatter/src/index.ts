@@ -1,3 +1,5 @@
+import type { GosuParseResult } from "@gosu-lsp/parser"
+import { GosuParser } from "@gosu-lsp/parser"
 import { detectFunctionAnchors } from "./anchors"
 import {
   DEFAULT_FORMATTING_CONFIG,
@@ -13,6 +15,7 @@ export {
   type FormatterOptionSchema,
   type FormattingConfig,
   loadFormattingConfig,
+  type FormatterDiagnostic,
 }
 
 export interface FormatResult {
@@ -20,6 +23,7 @@ export interface FormatResult {
   ignoredLines?: number[]
   ignoredAnchors?: RecoverableAnchor[]
   config: FormattingConfig
+  diagnostics?: FormatterDiagnostic[]
 }
 
 export interface FormatRequest {
@@ -27,6 +31,7 @@ export interface FormatRequest {
   text: string
   workspaceDir?: string
   config?: FormattingConfig
+  filePath?: string
 }
 
 export interface RecoverableAnchor {
@@ -35,6 +40,15 @@ export interface RecoverableAnchor {
   end: number
   lines: number[]
   isComplete: boolean
+}
+
+export interface FormatterDiagnostic {
+  message: string
+  line: number
+  column: number
+  severity: "error" | "warning"
+  code?: string
+  source?: "parser" | "anchor"
 }
 
 function cloneConfig(config: FormattingConfig): FormattingConfig {
@@ -55,23 +69,29 @@ async function resolveConfig(request: FormatRequest): Promise<FormattingConfig> 
 
 export async function formatDocument(request: FormatRequest): Promise<FormatResult> {
   const config = await resolveConfig(request)
-  const { ignoredLines, ignoredAnchors } = collectAnchorRecoveryMetadata(request.text)
+  const filePath = resolveFilePath(request)
+  const { syntaxDiagnostics } = parseDocument(request.text, filePath)
+  const { ignoredLines, ignoredAnchors, diagnostics: anchorDiagnostics } = collectAnchorRecoveryMetadata(request.text)
+  const diagnostics = [...syntaxDiagnostics, ...anchorDiagnostics]
 
   return {
     formattedText: request.text,
     config: cloneConfig(config),
     ignoredLines,
     ignoredAnchors: ignoredAnchors.length > 0 ? ignoredAnchors : undefined,
+    diagnostics: diagnostics.length > 0 ? diagnostics : undefined,
   }
 }
 
 function collectAnchorRecoveryMetadata(sourceText: string): {
   ignoredLines?: number[]
   ignoredAnchors: RecoverableAnchor[]
+  diagnostics: FormatterDiagnostic[]
 } {
   const anchors = detectFunctionAnchors(sourceText)
   const recoverable: RecoverableAnchor[] = []
   const ignoredLineSet: Set<number> = new Set()
+  const diagnostics: FormatterDiagnostic[] = []
 
   for (const anchor of anchors) {
     if (anchor.isComplete) continue
@@ -86,11 +106,22 @@ function collectAnchorRecoveryMetadata(sourceText: string): {
       lines,
       isComplete: anchor.isComplete,
     })
+    diagnostics.push({
+      message: anchor.name
+        ? `Skipped formatting for '${anchor.name}' due to unmatched braces`
+        : "Skipped formatting for malformed function scope",
+      line: lines[0] ?? 1,
+      column: 0,
+      severity: "warning",
+      code: "ANCHOR_RECOVERY",
+      source: "anchor",
+    })
   }
 
   return {
     ignoredAnchors: recoverable,
     ignoredLines: recoverable.length > 0 ? Array.from(ignoredLineSet).sort((a, b) => a - b) : undefined,
+    diagnostics,
   }
 }
 
@@ -124,4 +155,39 @@ function getLineNumberForIndex(sourceText: string, index: number): number {
     }
   }
   return line
+}
+
+const sharedParser = new GosuParser()
+
+function parseDocument(
+  sourceText: string,
+  filePath: string,
+): {
+  parseResult: GosuParseResult
+  syntaxDiagnostics: FormatterDiagnostic[]
+} {
+  const parseResult = sharedParser.parseText(sourceText, filePath)
+  const syntaxDiagnostics: FormatterDiagnostic[] = (parseResult.syntaxErrors ?? []).map((error) => ({
+    message: error.message,
+    line: error.line,
+    column: error.column,
+    severity: error.severity,
+    code: error.code,
+    source: "parser" as const,
+  }))
+
+  return { parseResult, syntaxDiagnostics }
+}
+
+function resolveFilePath(request: FormatRequest): string {
+  if (request.filePath) return request.filePath
+
+  const uri = request.uri
+  const segments = uri.split("/").filter((segment) => segment.length > 0)
+  const lastSegment = segments[segments.length - 1]
+  if (lastSegment?.includes(".")) {
+    return decodeURIComponent(lastSegment)
+  }
+
+  return "Document.gs"
 }
