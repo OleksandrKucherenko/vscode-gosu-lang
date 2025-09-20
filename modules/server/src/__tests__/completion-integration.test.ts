@@ -1,3 +1,4 @@
+import path from "node:path"
 import { readFixtureAsync } from "@gosu-lsp/shared"
 import Debug from "debug"
 import { beforeEach, describe, expect, test } from "vitest"
@@ -25,9 +26,9 @@ describe("GosuCompletionProvider Integration", () => {
   // Logging helpers
   const logCompletions = (completions: CompletionItem[], context: string) => {
     debug(`${context}: Found ${completions.length} completions`)
-    completions.forEach((c) =>
-      debug(`  - ${c.label} (${CompletionItemKind[c.kind ?? CompletionItemKind.Text]}): ${c.detail}`),
-    )
+    completions.forEach((c) => {
+      debug(`  - ${c.label} (${CompletionItemKind[c.kind ?? CompletionItemKind.Text]}): ${c.detail}`)
+    })
   }
 
   const logContext = (context: string, position: Position, content: string) => {
@@ -37,9 +38,10 @@ describe("GosuCompletionProvider Integration", () => {
   }
 
   let completionProvider: GosuCompletionProvider
+  const javaFixturePath = path.resolve(__dirname, "../../../test/fixtures/java")
 
   beforeEach(() => {
-    const resolver = new GosuJavaSymbolResolver({ sourcePaths: [], classpath: [] })
+    const resolver = new GosuJavaSymbolResolver({ sourcePaths: [javaFixturePath], classpath: [] })
     completionProvider = new GosuCompletionProvider(resolver)
   })
 
@@ -108,6 +110,23 @@ describe("GosuCompletionProvider Integration", () => {
         // Removed brittle keyword assertions
       })
 
+      test("And it should include documentation extracted from comments", async () => {
+        const document = TextDocument.create(
+          await getFileUrlByFixture(getRealGosuClassContent()),
+          "gosu",
+          1,
+          await getRealGosuClassContent(),
+        )
+        const position: Position = { line: 17, character: 2 }
+
+        const completions = await completionProvider.getCompletions(document, position)
+
+        const documentedCompletion = completions.find((item) => item.label === "documentedFunction")
+        expect(documentedCompletion).toBeDefined()
+        expect(documentedCompletion?.detail?.toLowerCase()).toContain("function")
+        expect(documentedCompletion?.detail?.toLowerCase()).toContain("string")
+      })
+
       test("And it should suggest appropriate keywords with prefix", async () => {
         // Given: Real Gosu class with 'pr' prefix in class body
         const content = (await getRealGosuClassContent()).replace("  private var _name : String", "  pr")
@@ -131,6 +150,9 @@ describe("GosuCompletionProvider Integration", () => {
         expect(prKeywords).toContain("protected")
         expect(prKeywords).toContain("property")
       })
+
+      // Additional integration scenarios can be added here as resolver grows support for
+      // listing custom Java types in completions.
     })
 
     describe("When requesting completions inside function body", () => {

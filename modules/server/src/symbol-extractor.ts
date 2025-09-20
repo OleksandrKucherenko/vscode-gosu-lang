@@ -1,5 +1,5 @@
 /** biome-ignore-all lint/suspicious/noExplicitAny: simplify code */
-import type { GosuParser } from "@gosu-lsp/parser"
+import { AntlrGosuParser, type GosuParser } from "@gosu-lsp/parser"
 import {
   addSymbolToTable,
   createSymbolTable,
@@ -8,7 +8,7 @@ import {
   type GosuParameter,
   type GosuSymbolTable,
 } from "@gosu-lsp/shared"
-import type { ParseTree } from "antlr4ng"
+import { ParserRuleContext, type ParseTree } from "antlr4ng"
 import Debug from "debug"
 
 const debug = Debug("gosu:lsp:symbol-extractor")
@@ -46,78 +46,65 @@ export class GosuSymbolExtractor {
   private traverse(node: ParseTree, symbolTable: GosuSymbolTable, parentScope: string | null): void {
     if (!node) return
 
+    const ruleName = this.getRuleName(node)
     const nodeText = node.getText()
-    const nodeType = node.constructor.name
+    const debugLabel = ruleName ?? node.constructor.name
 
-    debug("Traversing node: %s (%s)", nodeType, nodeText.substring(0, 50))
+    debug("Traversing node: %s (%s)", debugLabel, nodeText.substring(0, 50))
 
-    // Log all node types to debug the AST structure
-    if (
-      nodeType.includes("Class") ||
-      nodeType.includes("Interface") ||
-      nodeType.includes("Enhancement") ||
-      nodeType.includes("Function") ||
-      nodeType.includes("Method") ||
-      nodeType.includes("Field") ||
-      nodeType.includes("Variable") ||
-      nodeType.includes("Property") ||
-      nodeType.includes("Constructor") ||
-      nodeType.includes("Uses") ||
-      nodeType.includes("Import") ||
-      nodeType.includes("Package")
-    ) {
-      debug("*** POTENTIAL SYMBOL NODE: %s -> %s", nodeType, nodeText.substring(0, 100))
+    if (!ruleName) {
+      this.traverseChildren(node, symbolTable, parentScope)
+      return
     }
 
-    // Extract symbols based on node type
-    switch (nodeType) {
-      case "StartContext":
-      case "CompilationUnitContext":
+    switch (ruleName) {
+      case "start":
+      case "header":
         this.extractFromCompilationUnit(node, symbolTable, parentScope)
         break
 
-      case "NamespaceStatementContext":
+      case "namespaceStatement":
         this.extractPackageStatement(node, symbolTable)
         break
 
-      case "UsesStatementContext":
+      case "usesStatement":
         this.extractUsesStatement(node, symbolTable)
         break
 
-      case "GClassContext":
+      case "gClass":
         this.extractClassDeclaration(node, symbolTable, parentScope)
         break
 
-      case "InterfaceDeclarationContext":
+      case "gInterfaceOrStructure":
         this.extractInterfaceDeclaration(node, symbolTable, parentScope)
         break
 
-      case "EnhancementDeclarationContext":
+      case "gEnhancement":
         this.extractEnhancementDeclaration(node, symbolTable, parentScope)
         break
 
-      case "FieldDefnContext":
+      case "fieldDefn":
         this.extractFieldDeclaration(node, symbolTable, parentScope)
         break
 
-      case "ConstructorDefnContext":
+      case "constructorDefn":
         this.extractConstructorDeclaration(node, symbolTable, parentScope)
         break
 
-      case "FunctionDefnContext":
+      case "functionDefn":
         this.extractMethodDeclaration(node, symbolTable, parentScope)
         break
 
-      case "PropertyDeclarationContext":
+      case "propertyDefn":
+      case "fullPropertyDefn":
         this.extractPropertyDeclaration(node, symbolTable, parentScope)
         break
 
-      case "VariableDeclarationContext":
+      case "localVarStatement":
         this.extractVariableDeclaration(node, symbolTable, parentScope)
         break
 
       default:
-        // Continue traversing child nodes
         this.traverseChildren(node, symbolTable, parentScope)
         break
     }
@@ -134,6 +121,20 @@ export class GosuSymbolExtractor {
         this.traverse(child, symbolTable, parentScope)
       }
     }
+  }
+
+  /**
+   * Map a parse tree node to the original grammar rule name
+   */
+  private getRuleName(node: ParseTree): string | null {
+    if (node instanceof ParserRuleContext) {
+      const ruleIndex = node.ruleIndex
+      if (typeof ruleIndex === "number" && ruleIndex >= 0) {
+        return AntlrGosuParser.ruleNames[ruleIndex] ?? null
+      }
+    }
+
+    return null
   }
 
   /**
@@ -206,7 +207,7 @@ export class GosuSymbolExtractor {
       const parentSiblings = parent.getChildCount()
       for (let i = 0; i < parentSiblings; i++) {
         const sibling = parent.getChild(i)
-        if (sibling && sibling.constructor.name === "ModifiersContext") {
+        if (sibling && this.getRuleName(sibling) === "modifiers") {
           const modifierText = sibling.getText().toLowerCase()
           if (["public", "private", "protected", "internal"].includes(modifierText)) {
             visibility = modifierText as any
@@ -241,29 +242,39 @@ export class GosuSymbolExtractor {
    * Extract interface declaration
    */
   private extractInterfaceDeclaration(node: ParseTree, symbolTable: GosuSymbolTable, parentScope: string | null): void {
-    const text = node.getText()
-    debug("Found interface declaration: %s", text.substring(0, 100))
+    debug("Found interface declaration: %s", node.getText().substring(0, 100))
 
-    const interfaceMatch = text.match(/(public|private|protected|internal)?\s*interface\s+([a-zA-Z_][a-zA-Z0-9_]*)/i)
-    if (interfaceMatch) {
-      const visibility = (interfaceMatch[1] as any) || "public"
-      const interfaceName = interfaceMatch[2]
-
-      const interfaceSymbol: GosuASTSymbol = {
-        name: interfaceName,
-        type: "interface",
-        line: this.getLineNumber(node),
-        column: this.getColumnNumber(node),
-        visibility,
-        scope: parentScope || "file",
+    let interfaceName = ""
+    const childCount = node.getChildCount()
+    for (let i = 0; i < childCount; i++) {
+      const child = node.getChild(i)
+      if (this.getRuleName(child) === "id") {
+        interfaceName = child.getText()
+        break
       }
-
-      addSymbolToTable(symbolTable, interfaceSymbol)
-      debug("Added interface symbol: %s (%s)", interfaceName, visibility)
-
-      // Continue traversing with interface as parent scope
-      this.traverseChildren(node, symbolTable, interfaceName)
     }
+
+    if (!interfaceName) {
+      debug("Could not extract interface name from node")
+      this.traverseChildren(node, symbolTable, parentScope)
+      return
+    }
+
+    const visibility = this.resolveVisibility(node, "public")
+
+    const interfaceSymbol: GosuASTSymbol = {
+      name: interfaceName,
+      type: "interface",
+      line: this.getLineNumber(node),
+      column: this.getColumnNumber(node),
+      visibility: visibility as any,
+      scope: parentScope || "file",
+    }
+
+    addSymbolToTable(symbolTable, interfaceSymbol)
+    debug("Added interface symbol: %s (%s)", interfaceName, visibility)
+
+    this.traverseChildren(node, symbolTable, interfaceName)
   }
 
   /**
@@ -277,28 +288,37 @@ export class GosuSymbolExtractor {
     const text = node.getText()
     debug("Found enhancement declaration: %s", text.substring(0, 100))
 
-    const enhancementMatch = text.match(
-      /(public|private|protected|internal)?\s*enhancement\s+([a-zA-Z_][a-zA-Z0-9_]*)/i,
-    )
-    if (enhancementMatch) {
-      const visibility = (enhancementMatch[1] as any) || "public"
-      const enhancementName = enhancementMatch[2]
-
-      const enhancementSymbol: GosuASTSymbol = {
-        name: enhancementName,
-        type: "enhancement",
-        line: this.getLineNumber(node),
-        column: this.getColumnNumber(node),
-        visibility,
-        scope: parentScope || "file",
+    let enhancementName = ""
+    const childCount = node.getChildCount()
+    for (let i = 0; i < childCount; i++) {
+      const child = node.getChild(i)
+      if (this.getRuleName(child) === "id") {
+        enhancementName = child.getText()
+        break
       }
-
-      addSymbolToTable(symbolTable, enhancementSymbol)
-      debug("Added enhancement symbol: %s (%s)", enhancementName, visibility)
-
-      // Continue traversing with enhancement as parent scope
-      this.traverseChildren(node, symbolTable, enhancementName)
     }
+
+    if (!enhancementName) {
+      debug("Could not extract enhancement name from node")
+      this.traverseChildren(node, symbolTable, parentScope)
+      return
+    }
+
+    const visibility = this.resolveVisibility(node, "public")
+
+    const enhancementSymbol: GosuASTSymbol = {
+      name: enhancementName,
+      type: "enhancement",
+      line: this.getLineNumber(node),
+      column: this.getColumnNumber(node),
+      visibility: visibility as any,
+      scope: parentScope || "file",
+    }
+
+    addSymbolToTable(symbolTable, enhancementSymbol)
+    debug("Added enhancement symbol: %s (%s)", enhancementName, visibility)
+
+    this.traverseChildren(node, symbolTable, enhancementName)
   }
 
   /**
@@ -579,6 +599,29 @@ export class GosuSymbolExtractor {
 
     // Continue traversing
     this.traverseChildren(node, symbolTable, parentScope)
+  }
+
+  /**
+   * Determine visibility modifier from the surrounding context
+   */
+  private resolveVisibility(node: ParseTree, defaultVisibility: string): string {
+    const parent = node instanceof ParserRuleContext ? (node as ParserRuleContext).parent : undefined
+    if (!parent) {
+      return defaultVisibility
+    }
+
+    const childCount = parent.getChildCount()
+    for (let i = 0; i < childCount; i++) {
+      const sibling = parent.getChild(i)
+      if (this.getRuleName(sibling) === "modifiers") {
+        const modifierText = sibling.getText().toLowerCase()
+        if (["public", "private", "protected", "internal"].includes(modifierText)) {
+          return modifierText
+        }
+      }
+    }
+
+    return defaultVisibility
   }
 
   /**

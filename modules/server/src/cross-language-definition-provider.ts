@@ -1,3 +1,4 @@
+import { pathToFileURL } from "node:url"
 import { GosuParser } from "@gosu-lsp/parser"
 import type { GosuASTSymbol, GosuSymbolTable, JavaResolverConfig } from "@gosu-lsp/shared"
 import Debug from "debug"
@@ -218,11 +219,15 @@ export class GosuCrossLanguageDefinitionProvider {
 
     try {
       let targetTypeName: string | null = null
+      let resolvedJavaType: Awaited<ReturnType<GosuJavaSymbolResolver["resolveJavaType"]>> | null = null
 
       // Determine the Java type to resolve
       if (symbol.type === "import") {
         debug(`Processing import symbol`)
         targetTypeName = symbol.dataType || null
+        if (targetTypeName) {
+          resolvedJavaType = await this.javaSymbolResolver.resolveJavaType(targetTypeName)
+        }
       } else if (symbol.type === "function" && symbol.dataType) {
         // For member access (methods), resolve the containing type
         debug(`Processing member access: ${symbol.name} on type ${symbol.dataType}`)
@@ -255,6 +260,7 @@ export class GosuCrossLanguageDefinitionProvider {
         if (directType) {
           debug(`Resolved dataType ${symbol.dataType} to ${directType.fullyQualifiedName}`)
           targetTypeName = directType.fullyQualifiedName
+          resolvedJavaType = directType
         } else {
           debug(`Failed to resolve dataType ${fullyQualifiedTypeName}`)
         }
@@ -265,11 +271,13 @@ export class GosuCrossLanguageDefinitionProvider {
         const resolvedType = await this.javaSymbolResolver.resolveImportedType(symbol.name, imports)
         if (resolvedType) {
           targetTypeName = resolvedType.fullyQualifiedName
+          resolvedJavaType = resolvedType
         } else if (symbol.dataType) {
           // Try direct resolution of the data type
           const directType = await this.javaSymbolResolver.resolveJavaType(symbol.dataType)
           if (directType) {
             targetTypeName = directType.fullyQualifiedName
+            resolvedJavaType = directType
           }
         }
       }
@@ -281,17 +289,25 @@ export class GosuCrossLanguageDefinitionProvider {
 
       debug(`Target type name: ${targetTypeName}`)
 
-      // For now, create a virtual Java definition location
-      // In a real implementation, this would point to actual Java source files
+      if (!resolvedJavaType) {
+        resolvedJavaType = await this.javaSymbolResolver.resolveJavaType(targetTypeName)
+      }
+
+      const uri = resolvedJavaType?.sourceFilePath
+        ? pathToFileURL(resolvedJavaType.sourceFilePath).href
+        : `java:///${targetTypeName.replace(/\./g, "/")}.java`
+
+      const nameLength = targetTypeName.split(".").pop()?.length || 0
+
       const javaDefinition: Definition = {
-        uri: `java:///${targetTypeName.replace(/\./g, "/")}.java`,
+        uri,
         range: {
           start: { line: 0, character: 0 },
-          end: { line: 0, character: targetTypeName.split(".").pop()?.length || 0 },
+          end: { line: 0, character: nameLength },
         },
       }
 
-      debug(`Created Java definition for ${targetTypeName} (originally ${symbol.name})`)
+      debug(`Created Java definition for ${targetTypeName} (originally ${symbol.name}) -> ${uri}`)
       return javaDefinition
     } catch (error) {
       debug(`Error resolving Java definition for ${symbol.name}:`, error)
@@ -358,11 +374,6 @@ export class GosuCrossLanguageDefinitionProvider {
     // First try exact name match
     let matchedSymbol = allSymbols.find((symbol) => symbol.name === word)
 
-    // If no exact match, try partial matches for member access
-    if (!matchedSymbol) {
-      matchedSymbol = allSymbols.find((symbol) => symbol.name?.includes(word))
-    }
-
     // If still no match, check imports and convert to AST symbol
     if (!matchedSymbol) {
       const importMatch = symbolTable.imports.find((imp) => {
@@ -380,6 +391,11 @@ export class GosuCrossLanguageDefinitionProvider {
           dataType: importMatch.path,
         } as GosuASTSymbol
       }
+    }
+
+    // If no exact or import match, try partial matches for member access
+    if (!matchedSymbol) {
+      matchedSymbol = allSymbols.find((symbol) => symbol.name?.includes(word))
     }
 
     // Create a symbol for potential Java types even if not explicitly imported

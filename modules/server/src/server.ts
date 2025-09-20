@@ -212,6 +212,9 @@ export function createServer(): GosuLanguageServer {
     // Update reference provider index for changed document
     await server.referenceProvider.addDocument(change.document)
 
+    // Invalidate completion provider cache for changed document
+    server.completionProvider.clearDocumentCache(change.document.uri)
+
     // Invalidate semantic highlighting cache for changed document
     server.semanticHighlightingProvider.onDocumentChange(change.document)
 
@@ -230,6 +233,9 @@ export function createServer(): GosuLanguageServer {
 
     // Remove document from reference provider index
     server.referenceProvider.removeDocument(event.document.uri)
+
+    // Clear completion provider cache for closed document
+    server.completionProvider.clearDocumentCache(event.document.uri)
 
     // Clear diagnostics for closed document
     connection.sendDiagnostics({ uri: event.document.uri, diagnostics: [] })
@@ -296,8 +302,13 @@ export function createServer(): GosuLanguageServer {
   connection.onCompletionResolve((item: CompletionItem): CompletionItem => {
     debugCompletion(`Resolving completion item: ${item.label}`)
 
-    // For now, just return the item as-is
-    // Later we can add more detailed documentation, import statements, etc.
+    if (!item.documentation && item.detail) {
+      item.documentation = {
+        kind: "markdown",
+        value: `**${item.label}**\n\n${item.detail}`,
+      }
+    }
+
     return item
   })
 

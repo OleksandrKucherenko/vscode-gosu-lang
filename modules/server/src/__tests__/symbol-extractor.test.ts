@@ -198,7 +198,7 @@ describe("GosuSymbolExtractor", () => {
     })
 
     describe("When extracting symbols from interface definition", () => {
-      test.skip("Then it should extract interface and method signatures", () => {
+      test("Then it should extract interface and method signatures", () => {
         // ANTLR grammar issue - advanced feature: Interface syntax not yet implemented
         // TODO: Implement interface definitions in ANTLR grammar
         // Given: Interface definition

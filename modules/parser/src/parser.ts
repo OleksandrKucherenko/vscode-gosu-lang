@@ -120,10 +120,20 @@ export class GosuParser {
    * Validate syntax without building AST (faster for quick validation)
    */
   validateSyntax(sourceText: string, filePath: string): GosuSyntaxError[] {
-    const config = { ...this.config, buildAst: false }
-    const tempParser = new GosuParser(config)
-    const result = tempParser.parseText(sourceText, filePath)
-    return result.syntaxErrors
+    const previousBuildAst = this.config.buildAst
+
+    if (previousBuildAst === false) {
+      return this.parseText(sourceText, filePath).syntaxErrors
+    }
+
+    this.config = { ...this.config, buildAst: false }
+
+    try {
+      const result = this.parseText(sourceText, filePath)
+      return result.syntaxErrors
+    } finally {
+      this.config = { ...this.config, buildAst: previousBuildAst }
+    }
   }
 
   /**

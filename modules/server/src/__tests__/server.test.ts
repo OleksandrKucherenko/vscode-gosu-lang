@@ -2,6 +2,7 @@
 import Debug from "debug"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import {
+  type CompletionItem,
   createConnection,
   type InitializeParams,
   type InitializeResult,
@@ -135,6 +136,27 @@ describe("GosuLanguageServer", () => {
 
       debug("Document event handlers registration verified")
     })
+
+    it("should enrich completion items when resolved", () => {
+      const resolveHandler = mockConnection.onCompletionResolve.mock.calls[0][0]
+      const item = { label: "foo", detail: "Sample detail" } as CompletionItem
+
+      const resolved = resolveHandler({ ...item })
+
+      expect(resolved.documentation).toEqual({
+        kind: "markdown",
+        value: "**foo**\n\nSample detail",
+      })
+
+      const preDocumentedItem = {
+        label: "bar",
+        detail: "Existing detail",
+        documentation: { kind: "markdown", value: "custom" },
+      } as CompletionItem
+
+      const resolvedPreDocumented = resolveHandler({ ...preDocumentedItem })
+      expect(resolvedPreDocumented.documentation).toBe(preDocumentedItem.documentation)
+    })
   })
 
   describe("initialize request", () => {
@@ -243,6 +265,34 @@ describe("GosuLanguageServer", () => {
       )
 
       debug("Initialization logging validation completed")
+    })
+  })
+
+  describe("document change handling", () => {
+    it("should invalidate completion cache when document content changes", async () => {
+      // Given: the change handler registered during server construction
+      const changeHandler = mockDocuments.onDidChangeContent.mock.calls[0][0]
+
+      // And: a document with basic Gosu content
+      const document = {
+        uri: "file:///test.gs",
+        version: 2,
+        getText: () => "package test\nclass Test {}",
+      }
+
+      // And: spies to avoid exercising heavy dependencies during the test
+      const completionSpy = vi.spyOn(server.completionProvider, "clearDocumentCache").mockImplementation(() => {})
+      vi.spyOn(server.referenceProvider, "addDocument").mockResolvedValue()
+      vi.spyOn(server.semanticHighlightingProvider, "onDocumentChange").mockImplementation(() => {})
+      vi.spyOn(server.definitionProvider, "onDocumentChange").mockImplementation(() => {})
+      vi.spyOn(server.hoverProvider, "onDocumentChange").mockImplementation(() => {})
+      vi.spyOn(server.diagnosticsProvider, "validateDocument").mockReturnValue([])
+
+      // When: the document change handler is invoked
+      await changeHandler({ document })
+
+      // Then: the completion provider cache should be invalidated
+      expect(completionSpy).toHaveBeenCalledWith(document.uri)
     })
   })
 

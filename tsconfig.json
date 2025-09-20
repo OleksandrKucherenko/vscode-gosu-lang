@@ -16,8 +16,8 @@
     "esModuleInterop": true,
     "isolatedModules": true,
     "paths": {
-      "@gosu-lsp/shared": ["./modules/shared/dist"],
-      "@gosu-lsp/shared/*": ["./modules/shared/dist/*"],
+      "@gosu-lsp/shared": ["./modules/shared/src"],
+      "@gosu-lsp/shared/*": ["./modules/shared/src/*"],
       "@gosu-lsp/parser": ["./modules/parser/src"],
       "@gosu-lsp/parser/*": ["./modules/parser/src/*"],
       "@gosu-lsp/server": ["./modules/server/src"],

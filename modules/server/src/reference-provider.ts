@@ -187,6 +187,7 @@ export class GosuReferenceProvider {
     const usages: WorkspaceSymbol[] = []
     const text = document.getText()
     const lines = text.split("\n")
+    let inBlockComment = false
 
     // Search for all symbol names in the document text
     for (const [symbolName, symbols] of symbolTable.symbols) {
@@ -200,6 +201,7 @@ export class GosuReferenceProvider {
       // Find all occurrences of this symbol name
       for (let lineNum = 0; lineNum < lines.length; lineNum++) {
         const line = lines[lineNum]
+        const { mask, inBlockComment: nextBlockComment } = this.computeLineMask(line, inBlockComment)
         let columnIndex = 0
 
         while (true) {
@@ -210,7 +212,9 @@ export class GosuReferenceProvider {
           const beforeChar = index > 0 ? line[index - 1] : " "
           const afterChar = index + symbolName.length < line.length ? line[index + symbolName.length] : " "
 
-          if (!/[a-zA-Z0-9_]/.test(beforeChar) && !/[a-zA-Z0-9_]/.test(afterChar)) {
+          const isMasked = mask.slice(index, index + symbolName.length).some(Boolean)
+
+          if (!isMasked && !/[a-zA-Z0-9_]/.test(beforeChar) && !/[a-zA-Z0-9_]/.test(afterChar)) {
             // Check if this is not the declaration line
             const isDeclarationLine = symbols.some((s) => s.line === lineNum + 1)
 
@@ -237,6 +241,8 @@ export class GosuReferenceProvider {
 
           columnIndex = index + 1
         }
+
+        inBlockComment = nextBlockComment
       }
     }
 
@@ -465,5 +471,70 @@ export class GosuReferenceProvider {
         symbol.type === "variable" ||
         symbol.type === "field")
     )
+  }
+
+  private computeLineMask(line: string, initialBlockComment: boolean): { mask: boolean[]; inBlockComment: boolean } {
+    const mask = new Array<boolean>(line.length).fill(false)
+    let inBlockComment = initialBlockComment
+    let stringQuote: '"' | "'" | null = null
+
+    let i = 0
+    while (i < line.length) {
+      const char = line[i]
+      const nextChar = i + 1 < line.length ? line[i + 1] : ""
+
+      if (!stringQuote && !inBlockComment && char === "/" && nextChar === "/") {
+        for (let j = i; j < line.length; j++) {
+          mask[j] = true
+        }
+        break
+      }
+
+      if (!stringQuote && char === "/" && nextChar === "*") {
+        mask[i] = true
+        if (i + 1 < line.length) {
+          mask[i + 1] = true
+        }
+        inBlockComment = true
+        i += 2
+        continue
+      }
+
+      if (!stringQuote && inBlockComment && char === "*" && nextChar === "/") {
+        mask[i] = true
+        if (i + 1 < line.length) {
+          mask[i + 1] = true
+        }
+        inBlockComment = false
+        i += 2
+        continue
+      }
+
+      if (inBlockComment) {
+        mask[i] = true
+        i += 1
+        continue
+      }
+
+      if (!stringQuote && (char === '"' || char === "'")) {
+        stringQuote = char
+        mask[i] = true
+        i += 1
+        continue
+      }
+
+      if (stringQuote) {
+        mask[i] = true
+        if (char === stringQuote && line[i - 1] !== "\\") {
+          stringQuote = null
+        }
+        i += 1
+        continue
+      }
+
+      i += 1
+    }
+
+    return { mask, inBlockComment }
   }
 }
