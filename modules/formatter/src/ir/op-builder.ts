@@ -71,33 +71,52 @@ export function buildFormattingOps(parseResult: GosuParseResult, options: BuildO
 
       if (isCommentToken(token)) {
         flushPendingEmptyLines()
-        if (!atLineStart) {
-          ops.push(hardLine)
-          atLineStart = true
-        }
-        const commentLines = token.text.split(/\r?\n/)
-        commentLines.forEach((line, index) => {
-          let trimmedLine = line.trim()
-          if (trimmedLine.startsWith("*")) {
-            if (trimmedLine.startsWith("*/")) {
-              // Handle closing comment marker - add space before */
-              trimmedLine = ` ${trimmedLine}`
-            } else {
-              // Handle regular comment lines - add space before *
-              trimmedLine = ` ${trimmedLine}`
-            }
+
+        // Handle different comment types
+        if (token.commentType === "line") {
+          // Line comments - preserve on same line if not at line start
+          if (!atLineStart) {
+            ops.push(space)
           }
-          if (trimmedLine.length > 0) {
-            ops.push(text(trimmedLine))
-            atLineStart = false
-          }
-          if (index < commentLines.length - 1) {
+          ops.push(text(token.text))
+          atLineStart = false
+        } else if (token.commentType === "block" || token.commentType === "doc") {
+          // Block/doc comments - format with proper indentation
+          if (!atLineStart) {
             ops.push(hardLine)
             atLineStart = true
           }
-        })
-        ops.push(hardLine)
-        atLineStart = true
+
+          const commentLines = token.text.split(/\r?\n/)
+          commentLines.forEach((line, index) => {
+            let trimmedLine = line.trim()
+            if (trimmedLine.startsWith("*")) {
+              if (trimmedLine.startsWith("*/")) {
+                // Handle closing comment marker
+                trimmedLine = ` ${trimmedLine}`
+              } else {
+                // Handle regular comment lines
+                trimmedLine = ` ${trimmedLine}`
+              }
+            } else if (trimmedLine.startsWith("/**") || trimmedLine.startsWith("/*")) {
+              // Opening comment markers stay as-is
+            }
+
+            if (trimmedLine.length > 0) {
+              ops.push(text(trimmedLine))
+              atLineStart = false
+            }
+
+            if (index < commentLines.length - 1) {
+              ops.push(hardLine)
+              atLineStart = true
+            }
+          })
+
+          ops.push(hardLine)
+          atLineStart = true
+        }
+
         prevText = null
       }
 
@@ -139,11 +158,6 @@ export function buildFormattingOps(parseResult: GosuParseResult, options: BuildO
     prevText = currentText
   }
 
-  // Strip any trailing newlines to match test expectations
-  while (ops.length > 0 && ops[ops.length - 1].kind === "hardLine") {
-    ops.pop()
-  }
-
   return ops
 }
 
@@ -163,6 +177,10 @@ function shouldInsertSpace(prevText: string | null, currentText: string): boolea
   if (prevText === BRACE_OPEN) return false
   if (currentText === BRACE_CLOSE) return false
   if (prevText === "") return false
+
+  // No space before @ for annotations, and no space after @
+  if (currentText === "@") return false
+  if (prevText === "@") return false
 
   const prevIdentifier = isIdentifierLike(prevText)
   const currentIdentifier = isIdentifierLike(currentText)

@@ -68,9 +68,9 @@
     - [x] Add special handling for template comments and whitespace
 
 ## 5. Comment & Annotation Handling
-- [ ] Tests for inline, block, documentation comments placement
-- [ ] Implement comment attachment heuristics (leading/trailing/own-line) with deterministic ordering
-- [ ] Ensure annotations, generics, and modifiers align per Java-style rectangle rule (tests + implementation)
+- [x] Tests for inline, block, documentation comments placement
+- [x] Implement comment attachment heuristics (leading/trailing/own-line) with deterministic ordering
+- [x] Ensure annotations, generics, and modifiers align per Java-style rectangle rule (tests + implementation)
 
 ## 6. Error Handling & Diagnostics
 - [ ] Ensure formatter emits structured diagnostics (line, column, reason) when failing
