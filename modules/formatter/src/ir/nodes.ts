@@ -12,6 +12,11 @@ export type FormattingNodeKind =
   | "type"
   | "uses"
   | "package"
+  | "if"
+  | "while"
+  | "doWhile"
+  | "switch"
+  | "try"
 
 export interface SourcePosition {
   line: number

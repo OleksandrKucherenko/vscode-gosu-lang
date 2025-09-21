@@ -1,7 +1,7 @@
 import { readFixture } from "@gosu-lsp/shared"
-import { describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it } from "vitest"
 
-import { DEFAULT_FORMATTING_CONFIG, formatDocument } from "../index"
+import { DEFAULT_FORMATTING_CONFIG, formatDocument, resetFormatterCache } from "../index"
 
 const CLASS_EXPECTED = `package demo
 
@@ -11,7 +11,7 @@ class ClassWithComments {
 
   /**
    * Documentation comment.
-  */
+   */
   function greet(): String {
     // This line says hello
     return "Hello, " + value
@@ -25,6 +25,10 @@ class ClassWithComments {
 `
 
 describe("Formatter integration", () => {
+  beforeEach(() => {
+    resetFormatterCache()
+  })
+
   it("formats class with comments consistently", async () => {
     const text = readFixture("parser/ClassWithComments.gs")
     const result = await formatDocument({

@@ -20,7 +20,6 @@ export {
   type FormatterOptionSchema,
   type FormattingConfig,
   loadFormattingConfig,
-  type FormatterDiagnostic,
 }
 
 export interface FormatResult {
@@ -75,7 +74,9 @@ async function resolveConfig(request: FormatRequest): Promise<FormattingConfig> 
 export async function formatDocument(request: FormatRequest): Promise<FormatResult> {
   const config = await resolveConfig(request)
   const filePath = resolveFilePath(request)
-  const { parseResult, syntaxDiagnostics } = parseDocument(request.text, filePath)
+  // Strip trailing whitespace to ensure consistent formatting
+  const cleanText = request.text.replace(/[ \t]+$/gm, "").replace(/\n+$/, "")
+  const { parseResult, syntaxDiagnostics } = parseDocument(cleanText, filePath)
   const { ignoredLines, ignoredAnchors, diagnostics: anchorDiagnostics } = collectAnchorRecoveryMetadata(request.text)
   const diagnostics = [...syntaxDiagnostics, ...anchorDiagnostics]
 
@@ -166,7 +167,11 @@ function getLineNumberForIndex(sourceText: string, index: number): number {
   return line
 }
 
-const sharedParser = new GosuParser()
+let sharedParser = new GosuParser()
+
+export function resetFormatterCache(): void {
+  sharedParser = new GosuParser()
+}
 
 function parseDocument(
   sourceText: string,

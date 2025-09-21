@@ -23,3 +23,6 @@ tsconfig.tsbuildinfo
 coverage/
 reports/
 .turbo/
+
+# exclude temporary MCP setup
+.vscode/mcp.json

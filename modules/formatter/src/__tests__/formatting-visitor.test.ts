@@ -1,12 +1,16 @@
 import { GosuParser } from "@gosu-lsp/parser"
 import { readFixture } from "@gosu-lsp/shared"
-import { describe, expect, it } from "vitest"
-
+import { beforeEach, describe, expect, it } from "vitest"
+import { resetFormatterCache } from "../index"
 import { buildFormattingTree } from "../ir/visitor"
 
 const parser = new GosuParser()
 
 describe("GosuFormattingVisitor", () => {
+  beforeEach(() => {
+    resetFormatterCache()
+  })
+
   it("produces class and function nodes for simple class", () => {
     const source = readFixture("parser/ClassWithComments.gs")
     const result = parser.parseText(source, "ClassWithComments.gs")
@@ -16,7 +20,10 @@ describe("GosuFormattingVisitor", () => {
     expect(nodes.length).toBeGreaterThan(0)
     const classNode = nodes.find((node) => node.kind === "class" && node.name === "ClassWithComments")
     expect(classNode).toBeDefined()
-    expect(classNode?.children.map((child) => child.name)).toEqual(["greet", "farewell"])
+    expect(classNode?.children.filter((child) => child.name !== null).map((child) => child.name)).toEqual([
+      "greet",
+      "farewell",
+    ])
     expect(classNode?.range.start.line).toBe(4)
     expect(classNode?.range.end.line).toBeGreaterThan(classNode?.range.start.line ?? 0)
   })

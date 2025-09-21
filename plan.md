@@ -12,7 +12,7 @@
 - [ ] **Parser Contract** – write tests around `@gosu-lsp/parser` output to guarantee full AST availability (`ASTIntegrationClass` fixtures, malformed fixtures)
   - [x] Validate comments/trivia retention requirements and add parser hooks/tests if missing
   - [ ] Expose dual-pass (top-down / bottom-up) parse helpers with red-green tests for recovery metadata *(Stage 3 low priority; tackle last)*
-    - [x] Stage 1: implement “anchor” detection using regex to locate function/method scopes and mark them as parse start points
+    - [x] Stage 1: implement "anchor" detection using regex to locate function/method scopes and mark them as parse start points
     - [x] Stage 1 tests: prove anchors isolate broken function bodies while the rest of file formats correctly
     - [x] Stage 2: integrate anchors into top-down pass, skipping segments flagged as errored and emitting recovery metadata
 - [x] **Syntax Diagnostics** – design fail-fast behaviour with optional fallback
@@ -34,17 +34,38 @@
   - [x] Port Derek Oppen algorithm adaptations (priority queue / break width) with algorithmic unit tests
   - [x] Add max-line-length regression tests to verify deterministic wrapping
 - [x] **Phase 4 – Output Rendering**
-  - [x] Write integration tests ensuring whitespace + comments correctly round-trip for representative files
-  - [x] Implement renderer writing final text, confirming stability via golden files
+  - [x] Write integration tests ensuring whitespace + comments correctly round-trip for representative files *(COMPLETED: Language feature coverage tests passing)*
+  - [x] Implement renderer writing final text, confirming stability via golden files *(COMPLETED: Golden format tests working)*
 
 ## 4. Language Feature Coverage
-- [ ] **Core Gosu Constructs** – per-feature TDD matrix (class/enhancement/interface, methods, properties, uses statements)
-  - [ ] Add golden-format fixtures for each construct
-  - [ ] Expand visitor/ops generation to satisfy fixtures
-- [ ] **Expressions & Statements** – loops, conditionals, switch, try/catch, lambdas
-  - [ ] Add failing tests for each scenario before implementation
-- [ ] **Templates & Special Files** – `.gst`, `.gsx`, `.gsp` formatting behaviour
-  - [ ] Define tests ensuring file-type-sensitive rules
+- [x] **Core Gosu Constructs** – per-feature TDD matrix (class/enhancement/interface, methods, properties, uses statements)
+  - [x] Add golden-format fixtures for each construct (ComplexClass.gs, ComplexInterface.gs, ComplexEnhancement.gsx)
+  - [x] Expand visitor/ops generation to satisfy fixtures (enhanced with generics spacing, token processing)
+    - [x] Enhanced visitor with control flow statement recognition (if/else, loops, switch, try/catch)
+    - [x] Added op-builder logic for generics spacing (no space before < after identifiers)
+    - [x] Fixed trailing newline handling across all constructs
+    - [x] Improved AST range computation and token processing
+- [x] **Expressions & Statements** – loops, conditionals, switch, try/catch, lambdas
+  - [x] Add failing tests for each scenario (ControlFlowStatements.gs fixture exists with expected output)
+  - [x] Implement formatting logic for control flow statements (if/else, loops, switch, try/catch)
+    - [x] Add visitor cases for ifStatement, whileStatement, doWhileStatement, switchStatement, tryCatchFinallyStatement
+    - [x] Enhanced op-builder with control flow specific spacing and indentation
+    - [x] Implement consistent indentation for nested control structures
+    - [x] Add proper formatting for else-if chains and switch case statements
+  - [x] Add lambda expression formatting support
+    - [x] Handle lambda syntax (\param ->) with proper spacing preservation
+    - [x] Support both explicit and implicit parameter types
+    - [x] Format multi-statement lambdas with proper indentation
+- [x] **Templates & Special Files** – `.gst`, `.gsx`, `.gsp` formatting behaviour
+  - [x] Add golden-format fixture for templates (ComplexTemplate.gst)
+  - [x] Define tests ensuring file-type-sensitive rules (template syntax handling)
+    - [x] Fixed template syntax preservation (<%= %> vs <%@ %>)
+    - [x] Maintained proper template structure formatting
+  - [x] Implement template-specific formatting rules (<%= %> expressions, <% %> blocks)
+    - [x] Handle <%= %> output expressions with proper spacing
+    - [x] Format <% %> code blocks with Gosu formatting rules
+    - [x] Preserve template structure while formatting embedded code
+    - [x] Add special handling for template comments and whitespace
 
 ## 5. Comment & Annotation Handling
 - [ ] Tests for inline, block, documentation comments placement

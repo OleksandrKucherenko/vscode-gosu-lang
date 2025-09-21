@@ -52,9 +52,6 @@ export function renderOps(ops: FormattingOp[], options: RenderOptions = {}): str
     }
   }
 
-  if (!output.endsWith("\n")) {
-    output += "\n"
-  }
-
-  return output
+  // Ensure exactly one trailing newline
+  return `${output.replace(/\n+$/, "")}\n`
 }
