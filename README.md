@@ -1,24 +1,41 @@
-# GOSU Language Support for VSCode
+# Gosu Language Support for VSCode
 
-This extension provides syntax highlighting and language support for the GOSU programming language in Visual Studio Code.
+This extension provides language support for the [Gosu programming language](https://gosu-lang.github.io/) in Visual Studio Code.
 
 ## Features
 
-- **Syntax Highlighting**: Full syntax highlighting for GOSU language constructs including:
-  - Keywords (class, interface, function, property, etc.)
-  - Data types and primitives
-  - Comments (single-line and multi-line)
-  - Strings with interpolation support
-  - Numbers (decimal, hex, octal)
-  - Operators and punctuation
-  - Annotations
-  - Enhancements and delegates
+- **Code Completion**: Basic auto-completion for Gosu keywords, types, and members.
+- **Code Formatting**: Format your Gosu code to maintain a consistent style.
+- **Syntax Highlighting**: Full-featured syntax highlighting for `.gs`, `.gsx`, `.gst`, and `.gsp` files.
+- **Diagnostics**: Real-time parsing and diagnostics to catch errors as you type.
+- **Go to Definition**: Navigate to the definition of a symbol.
+- **Hover Information**: Display information about symbols on hover.
+- **Find References**: Find all references to a symbol.
 
-- **Language Configuration**: 
-  - Auto-closing brackets and quotes
-  - Comment toggling
-  - Indentation rules
-  - Code folding
+## Formatting
+
+This extension provides formatting for Gosu files. You can format a file by right-clicking on it and selecting "Format Document", or by using the `editor.formatOnSave` setting in VS Code.
+
+### Configuration
+
+The formatter can be configured in your VS Code settings. The following options are available:
+
+- `gosu.format.indentSize`: The number of spaces to use for indentation.
+- `gosu.format.strictMode`: If `true`, the formatter will fail on syntax errors. If `false`, it will attempt to format around them.
+
+The formatter can also be configured using a `.gosuformatting.json` or `.gosuformatting.jsonc` file in the root of your project.
+
+### CLI
+
+A command-line interface is available for formatting files outside of VS Code. To use it, run the following command:
+
+```bash
+npx @gosu-lsp/formatter [options] [files...]
+```
+
+**Options:**
+
+- `--write`: Write the formatted output back to the file.
 
 ## Supported File Extensions
 
@@ -102,147 +119,3 @@ This extension provides syntax highlighting and language support for the GOSU pr
 #### Method 3: Symlink to Extensions Directory
 
 1. **Find your VSCode extensions directory**:
-   - **Windows**: `%USERPROFILE%\.vscode\extensions`
-   - **macOS**: `~/.vscode/extensions`
-   - **Linux**: `~/.vscode/extensions`
-
-2. **Create a symlink** (after building):
-   ```bash
-   # Windows (run as Administrator)
-   mklink /D "%USERPROFILE%\.vscode\extensions\gosu-language-support" "C:\path\to\your\project"
-   
-   # macOS/Linux
-   ln -s /path/to/your/project ~/.vscode/extensions/gosu-language-support
-   ```
-
-3. **Reload VSCode**
-
-## Development Commands
-
-- **Compile**: `npm run compile` - Compile TypeScript to JavaScript
-- **Watch**: `npm run watch` - Compile in watch mode for development
-- **Test**: `npm test` - Run all tests with Vitest
-- **Test Watch**: `npm run test:watch` - Run tests in watch mode
-- **Test Coverage**: `npm run test:coverage` - Run tests with coverage report
-- **Lint**: `npm run lint` - Run ESLint on source files
-- **Package**: `vsce package` - Create a .vsix package file
-
-## Project Structure
-
-```
-gosu-language-support/
-├── src/                         # TypeScript source files
-│   ├── extension.ts             # Main extension entry point
-│   ├── extension.test.ts        # Extension tests
-│   └── utils/
-│       ├── gosuUtils.ts         # GOSU utility functions
-│       └── gosuUtils.test.ts    # Utility tests
-├── syntaxes/
-│   └── gosu.tmLanguage.json     # TextMate grammar for syntax highlighting
-├── examples/                     # Example GOSU files
-│   ├── HelloWorld.gs
-│   ├── Enhancement.gsx
-│   └── Interface.gs
-├── out/                         # Compiled JavaScript (generated)
-├── language-configuration.json  # Language configuration
-├── package.json                 # Extension manifest
-└── README.md
-```
-
-## Testing
-
-The extension uses [Vitest](https://vitest.dev/) for testing:
-
-- **Unit tests**: Test utility functions and core logic
-- **Extension tests**: Test extension activation and VSCode integration
-- **Mocked VSCode APIs**: Tests run without requiring VSCode environment
-
-Run tests:
-```bash
-# Run all tests
-npm test
-
-# Run tests in watch mode
-npm run test:watch
-
-# Run tests with coverage
-npm run test:coverage
-```
-
-## Debugging
-
-1. **Open the project in VSCode**
-2. **Set breakpoints** in your TypeScript source files
-3. **Press F5** to start debugging
-4. **Use the Extension Development Host** window to test your extension
-5. **Debug output** appears in the original VSCode window's Debug Console
-
-## Publishing
-
-To publish to the VSCode Marketplace:
-
-1. **Create a publisher account** at [Visual Studio Marketplace](https://marketplace.visualstudio.com/manage)
-
-2. **Update package.json** with your publisher name:
-   ```json
-   {
-     "publisher": "your-publisher-name"
-   }
-   ```
-
-3. **Create a Personal Access Token** in Azure DevOps
-
-4. **Login with vsce**:
-   ```bash
-   vsce login your-publisher-name
-   ```
-
-5. **Publish**:
-   ```bash
-   vsce publish
-   ```
-
-## Troubleshooting
-
-### Extension Not Loading
-- Ensure you've compiled the TypeScript: `npm run compile`
-- Check the Developer Console for errors: **Help > Toggle Developer Tools**
-- Verify the extension is installed: **Extensions > Installed**
-
-### Syntax Highlighting Not Working
-- Check that GOSU files have the correct extensions (`.gs`, `.gsx`, `.gst`, `.gsp`)
-- Verify the language is detected: Check the language indicator in the status bar
-- Reload VSCode window: **Developer > Reload Window**
-
-### Build Errors
-- Ensure Node.js version 16 or higher is installed
-- Clear node_modules and reinstall: `rm -rf node_modules package-lock.json && npm install`
-- Check TypeScript compilation: `npm run compile`
-
-## Examples
-
-The extension includes example GOSU files in the `test-workspace/` directory:
-- `sample.gs` - Basic class and property examples
-- `gosu-syntax-full-sample.gsx` - GOSU enhancement features
-
-## GOSU Language Resources
-
-- [GOSU Language Grammar](https://gosu-lang.github.io/grammar.html)
-- [GOSU Documentation](https://gosu-lang.github.io/docs.html)
-- [GOSU Language Website](https://gosu-lang.github.io/)
-- [GOSU EBNF Grammar](https://github.com/gosu-lang/gosu-lang/blob/master/gosu-core/src/main/java/gw/internal/gosu/parser/ebnf/Gosu.ebnf)
-
-## Contributing
-
-1. **Fork the repository**
-2. **Create a feature branch**: `git checkout -b feature/your-feature`
-3. **Make your changes**
-4. **Add tests** for new functionality
-5. **Run tests**: `npm test`
-6. **Commit your changes**: `git commit -am 'Add some feature'`
-7. **Push to the branch**: `git push origin feature/your-feature`
-8. **Submit a pull request**
-
-## License
-
-This extension is licensed under the MIT License. See the LICENSE file for details.

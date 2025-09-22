@@ -52,6 +52,6 @@ export function renderOps(ops: FormattingOp[], options: RenderOptions = {}): str
     }
   }
 
-  // Ensure exactly one trailing newline
+  // Ensure exactly one trailing newline to match expected format
   return `${output.replace(/\n+$/, "")}\n`
 }

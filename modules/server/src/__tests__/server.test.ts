@@ -49,6 +49,7 @@ describe("GosuLanguageServer", () => {
       onCompletionResolve: vi.fn(),
       onDefinition: vi.fn(),
       onHover: vi.fn(),
+      onDocumentFormatting: vi.fn(),
       onRequest: vi.fn(),
       sendDiagnostics: vi.fn(),
       listen: vi.fn(),
@@ -186,6 +187,7 @@ describe("GosuLanguageServer", () => {
           hoverProvider: true,
           definitionProvider: true,
           referencesProvider: true,
+          documentFormattingProvider: true,
           semanticTokensProvider: {
             legend: {
               tokenTypes: [

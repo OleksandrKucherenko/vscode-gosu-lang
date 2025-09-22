@@ -1,0 +1,133 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`GosuFormattingVisitor > produces a stable formatting tree for a simple class 1`] = `
+[
+  {
+    "children": [],
+    "kind": "package",
+    "name": "demo",
+    "range": {
+      "end": {
+        "column": 8,
+        "line": 1,
+      },
+      "start": {
+        "column": 0,
+        "line": 1,
+      },
+    },
+  },
+  {
+    "children": [
+      {
+        "children": [],
+        "kind": "function",
+        "name": "greet",
+        "range": {
+          "end": {
+            "column": 20,
+            "line": 10,
+          },
+          "start": {
+            "column": 0,
+            "line": 10,
+          },
+        },
+      },
+      {
+        "children": [],
+        "kind": "statement",
+        "name": null,
+        "range": {
+          "end": {
+            "column": 23,
+            "line": 12,
+          },
+          "start": {
+            "column": 0,
+            "line": 12,
+          },
+        },
+      },
+      {
+        "children": [],
+        "kind": "function",
+        "name": "farewell",
+        "range": {
+          "end": {
+            "column": 23,
+            "line": 15,
+          },
+          "start": {
+            "column": 0,
+            "line": 15,
+          },
+        },
+      },
+      {
+        "children": [],
+        "kind": "statement",
+        "name": null,
+        "range": {
+          "end": {
+            "column": 11,
+            "line": 17,
+          },
+          "start": {
+            "column": 0,
+            "line": 17,
+          },
+        },
+      },
+    ],
+    "kind": "class",
+    "name": "ClassWithComments",
+    "range": {
+      "end": {
+        "column": 0,
+        "line": 19,
+      },
+      "start": {
+        "column": 0,
+        "line": 4,
+      },
+    },
+  },
+]
+`;
+
+exports[`GosuFormattingVisitor > produces a stable formatting tree for the integration fixture 1`] = `
+[
+  {
+    "children": [
+      {
+        "children": [],
+        "kind": "function",
+        "name": "abc",
+        "range": {
+          "end": {
+            "column": 15,
+            "line": 2,
+          },
+          "start": {
+            "column": 0,
+            "line": 2,
+          },
+        },
+      },
+    ],
+    "kind": "class",
+    "name": "ASTClass",
+    "range": {
+      "end": {
+        "column": 0,
+        "line": 3,
+      },
+      "start": {
+        "column": 0,
+        "line": 1,
+      },
+    },
+  },
+]
+`;

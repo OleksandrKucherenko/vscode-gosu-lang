@@ -118,7 +118,22 @@
         "scopeName": "source.gosu",
         "path": "./syntaxes/gosu.tmLanguage.full.json"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Gosu",
+      "properties": {
+        "gosu.format.indentSize": {
+          "type": "number",
+          "default": 2,
+          "description": "The number of spaces to use for indentation."
+        },
+        "gosu.format.strictMode": {
+          "type": "boolean",
+          "default": true,
+          "description": "If true, the formatter will fail on syntax errors. If false, it will attempt to format around them."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run build:release",

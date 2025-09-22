@@ -48,11 +48,12 @@ describe("Formatter integration", () => {
     expect(secondPass.formattedText).toBe(result.formattedText)
   })
 
-  it("returns original text when parser fails", async () => {
+  it("handles incomplete code gracefully", async () => {
     const text = "function broken() { if (true) {"
     const result = await formatDocument({ uri: "file:///Broken.gs", text })
 
-    expect(result.formattedText).toBe(text)
+    // Should format what it can
+    expect(result.formattedText).not.toBe(text)
     expect(result.diagnostics?.some((diag) => diag.source === "parser")).toBe(true)
   })
 })

@@ -1,3 +1,4 @@
+import { formatDocument } from "@gosu-lsp/formatter"
 import Debug from "debug"
 import {
   type CompletionItem,
@@ -5,15 +6,19 @@ import {
   type Connection,
   createConnection,
   type DefinitionParams,
+  type DocumentFormattingParams,
   type HoverParams,
   type InitializeParams,
   type InitializeResult,
+  Position,
   ProposedFeatures,
+  Range,
   type ReferenceParams,
   type SemanticTokensParams,
   type SemanticTokensRangeParams,
   TextDocumentSyncKind,
   TextDocuments,
+  TextEdit,
 } from "vscode-languageserver/node"
 import { TextDocument } from "vscode-languageserver-textdocument"
 import { GosuASTCompletionProvider } from "./ast-completion"
@@ -175,7 +180,7 @@ export function createServer(): GosuLanguageServer {
         // - workspaceSymbolProvider
         // - codeActionProvider
         // - codeLensProvider
-        // - documentFormattingProvider
+        documentFormattingProvider: true,
         // - documentRangeFormattingProvider
         // - documentOnTypeFormattingProvider
         // - renameProvider
@@ -435,7 +440,44 @@ export function createServer(): GosuLanguageServer {
     debugLog("Watched file changed")
   })
 
+  // Document formatting handler
+  connection.onDocumentFormatting(async (params: DocumentFormattingParams): Promise<TextEdit[]> => {
+    const { textDocument } = params
+    const document = documents.get(textDocument.uri)
+    if (!document) {
+      return []
+    }
+
+    try {
+      const result = await formatDocument({
+        text: document.getText(),
+        uri: document.uri,
+      })
+
+      return [TextEdit.replace(fullDocumentRange(document), result.formattedText)]
+    } catch (error) {
+      debugLog(`Error formatting document ${textDocument.uri}:`, error)
+      return []
+    }
+  })
+
   return server
+}
+
+function fullDocumentRange(document: TextDocument): Range {
+  const lastLine = document.lineCount - 1
+  return Range.create(
+    Position.create(0, 0),
+    document.positionAt(
+      document.offsetAt(
+        Position.create(
+          lastLine,
+          document.getText({ start: { line: lastLine, character: 0 }, end: { line: lastLine, character: 9999 } })
+            .length,
+        ),
+      ),
+    ),
+  )
 }
 
 // Export main function for CLI usage

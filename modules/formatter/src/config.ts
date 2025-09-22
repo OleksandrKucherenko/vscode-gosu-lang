@@ -11,6 +11,7 @@ export interface FormattingConfig {
   indentSize: number
   continuationIndentSize: number
   maxLineLength: number
+  strictMode: boolean
 }
 
 interface FormatterOptionSchemaBase {
@@ -31,13 +32,19 @@ export interface NumberOptionSchema extends FormatterOptionSchemaBase {
   maximum?: number
 }
 
-export type FormatterOptionSchema = StringOptionSchema | NumberOptionSchema
+export interface BooleanOptionSchema extends FormatterOptionSchemaBase {
+  type: "boolean"
+  default: boolean
+}
+
+export type FormatterOptionSchema = StringOptionSchema | NumberOptionSchema | BooleanOptionSchema
 
 export const DEFAULT_FORMATTING_CONFIG: FormattingConfig = Object.freeze({
   indentStyle: "space" as IndentStyle,
   indentSize: 2,
   continuationIndentSize: 4,
   maxLineLength: 100,
+  strictMode: false,
 })
 
 export const FORMATTER_CONFIG_SCHEMA: FormatterOptionSchema[] = [
@@ -68,6 +75,13 @@ export const FORMATTER_CONFIG_SCHEMA: FormatterOptionSchema[] = [
     default: DEFAULT_FORMATTING_CONFIG.maxLineLength,
     minimum: 40,
     description: "Target maximum line length before the formatter introduces line breaks.",
+  },
+  {
+    key: "strictMode",
+    type: "boolean",
+    default: DEFAULT_FORMATTING_CONFIG.strictMode,
+    description:
+      "When enabled, formatting fails on syntax errors. When disabled, attempts recovery and partial formatting.",
   },
 ]
 
@@ -120,6 +134,14 @@ function normalizeConfigValue(partial: Record<string, unknown>): FormattingConfi
       result.maxLineLength = Math.floor(partial.maxLineLength)
     } else {
       throw new Error("Invalid maxLineLength in formatter configuration. Expected a positive number.")
+    }
+  }
+
+  if (partial.strictMode !== undefined) {
+    if (typeof partial.strictMode === "boolean") {
+      result.strictMode = partial.strictMode
+    } else {
+      throw new Error("Invalid strictMode in formatter configuration. Expected a boolean.")
     }
   }
 

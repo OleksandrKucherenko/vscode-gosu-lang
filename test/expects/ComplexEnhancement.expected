@@ -96,10 +96,10 @@ enhancement ComplexEnhancement: String {
    */
   public function toSlug(): String {
     return this.toLowerCase()
-               .replaceAll("[^a-z0-9\\s-]", "")
-               .replaceAll("\\s+", "-")
-               .replaceAll("-+", "-")
-               .replaceAll("^-|-$", "")
+      .replaceAll("[^a-z0-9\\s-]", "")
+      .replaceAll("\\s+", "-")
+      .replaceAll("-+", "-")
+      .replaceAll("^-|-$", "")
   }
 
   /**
@@ -128,7 +128,9 @@ enhancement ComplexEnhancement: String {
   public function toCurrency(currencySymbol: String = "$"): String {
     try {
       var value: double = Double.parseDouble(this)
-      return currencySymbol + String.format("%.2f", {value})
+      return currencySymbol + String.format("%.2f", {
+        value
+      })
     } catch (e: Exception) {
       return this
     }

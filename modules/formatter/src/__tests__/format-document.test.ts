@@ -40,6 +40,7 @@ describe("formatDocument", () => {
       indentSize: 3,
       continuationIndentSize: 6,
       maxLineLength: 140,
+      strictMode: false,
     })
   })
 
@@ -66,6 +67,7 @@ describe("formatDocument", () => {
       indentSize: 4,
       continuationIndentSize: 8,
       maxLineLength: 120,
+      strictMode: false,
     }
 
     const request: FormatRequest = {

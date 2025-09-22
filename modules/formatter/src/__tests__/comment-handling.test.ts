@@ -150,7 +150,8 @@ class TestController {
 class TestController {
   @Autowired
   var service: TestService
-}`)
+}
+`)
     })
   })
 

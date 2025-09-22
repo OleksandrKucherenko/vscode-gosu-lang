@@ -4,6 +4,9 @@
   "description": "Gosu language formatter module",
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "bin": {
+    "gosu-format": "src/cli.ts"
+  },
   "scripts": {
     "clean": "rimraf coverage",
     "lint": "biome check --write --unsafe --no-errors-on-unmatched",

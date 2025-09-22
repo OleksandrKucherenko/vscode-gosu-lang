@@ -1,12 +1,27 @@
 # Gosu Formatter Configuration
 
-The Gosu formatter reads workspace-level configuration from `.gosuformatting.jsonc` or `.gosuformatting.json5`. Each option is optional; omitted values fall back to the defaults listed below.
+The Gosu formatter is designed to be flexible and configurable to suit your project's coding style. This document outlines the available configuration options and how to use them.
 
-| Option | Type | Allowed Values | Default | Description |
-| --- | --- | --- | --- | --- |
-| `indentStyle` | string | `"space"` \| `"tab"` | `"space"` | Controls whether indentation uses spaces or tabs. |
-| `indentSize` | number | positive integer | `2` | Number of spaces or tab columns used for each indentation level. |
-| `continuationIndentSize` | number | positive integer | `4` | Indent width applied when a statement wraps across multiple lines. |
-| `maxLineLength` | number | integer ≥ 40 | `100` | Target line length; the formatter inserts breaks when lines would exceed this width. |
+## Configuration File
 
-Configuration files may include comments and trailing commas when using the `.jsonc` extension. When using `.json5`, the full JSON5 syntax (single quoted strings, bare keys, etc.) is available. The formatter automatically resolves the first matching file in the workspace root, preferring `.gosuformatting.jsonc` when both extensions are present.
+The formatter is configured using a file named `.gosuformatting.json` or `.gosuformatting.jsonc` in the root of your project.
+
+## Available Options
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `indentSize` | `number` | `2` | The number of spaces to use for indentation. |
+| `strictMode` | `boolean` | `true` | If `true`, the formatter will fail on syntax errors. If `false`, it will attempt to format around them. |
+
+## Example Configuration
+
+Here is an example `.gosuformatting.jsonc` file:
+
+```jsonc
+{
+  // Use 4 spaces for indentation
+  "indentSize": 4,
+
+  // Attempt to format files even if they contain syntax errors
+  "strictMode": false
+}

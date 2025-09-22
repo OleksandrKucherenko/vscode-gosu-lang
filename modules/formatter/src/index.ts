@@ -71,18 +71,43 @@ async function resolveConfig(request: FormatRequest): Promise<FormattingConfig> 
   return DEFAULT_FORMATTING_CONFIG
 }
 
+const parseResultCache = new Map<string, GosuParseResult>()
+
 export async function formatDocument(request: FormatRequest): Promise<FormatResult> {
   const config = await resolveConfig(request)
   const filePath = resolveFilePath(request)
-  // Strip trailing whitespace to ensure consistent formatting
-  const cleanText = request.text.replace(/[ \t]+$/gm, "").replace(/\n+$/, "")
-  const { parseResult, syntaxDiagnostics } = parseDocument(cleanText, filePath)
-  const { ignoredLines, ignoredAnchors, diagnostics: anchorDiagnostics } = collectAnchorRecoveryMetadata(request.text)
-  const diagnostics = [...syntaxDiagnostics, ...anchorDiagnostics]
 
-  const formattedText = parseResult.isValid
-    ? renderOps(buildFormattingOps(parseResult), { indentSize: config.indentSize })
-    : request.text
+  // For template files (.gst), return original content unchanged
+  // as they contain HTML mixed with Gosu code that can't be properly parsed
+  if (filePath.endsWith(".gst")) {
+    return {
+      formattedText: request.text,
+      config: cloneConfig(config),
+    }
+  }
+
+  const cacheKey = `${request.uri}:${request.text}`
+  let parseResult: GosuParseResult
+  if (parseResultCache.has(cacheKey)) {
+    parseResult = parseResultCache.get(cacheKey)!
+  } else {
+    // Strip trailing whitespace to ensure consistent formatting
+    const cleanText = request.text.replace(/[ \t]+$/gm, "").replace(/\n+$/, "")
+    const { parseResult: newParseResult, syntaxDiagnostics } = parseDocument(cleanText, filePath)
+    parseResult = newParseResult
+    parseResultCache.set(cacheKey, parseResult)
+  }
+
+  const { ignoredLines, ignoredAnchors, diagnostics: anchorDiagnostics } = collectAnchorRecoveryMetadata(request.text)
+  const diagnostics = [
+    ...(parseResult.syntaxErrors || []).map((e) => ({ ...e, source: "parser" as const })),
+    ...anchorDiagnostics,
+  ]
+
+  const formattedText =
+    parseResult.isValid || !config.strictMode
+      ? renderOps(buildFormattingOps(parseResult), { indentSize: config.indentSize })
+      : request.text
 
   return {
     formattedText,
@@ -171,6 +196,7 @@ let sharedParser = new GosuParser()
 
 export function resetFormatterCache(): void {
   sharedParser = new GosuParser()
+  parseResultCache.clear()
 }
 
 function parseDocument(

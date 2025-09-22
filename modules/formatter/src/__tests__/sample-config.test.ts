@@ -15,6 +15,7 @@ describe("sample formatter configuration", () => {
       indentSize: 4,
       continuationIndentSize: 8,
       maxLineLength: 120,
+      strictMode: false,
     })
   })
 })

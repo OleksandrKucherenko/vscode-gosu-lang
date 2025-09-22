@@ -6,7 +6,7 @@ describe("FORMATTER_CONFIG_SCHEMA", () => {
   it("describes all supported configuration options", () => {
     const schemaKeys = FORMATTER_CONFIG_SCHEMA.map((option) => option.key)
 
-    expect(schemaKeys).toEqual(["indentStyle", "indentSize", "continuationIndentSize", "maxLineLength"])
+    expect(schemaKeys).toEqual(["indentStyle", "indentSize", "continuationIndentSize", "maxLineLength", "strictMode"])
   })
 
   it("links schema defaults to DEFAULT_FORMATTING_CONFIG", () => {
@@ -21,7 +21,7 @@ describe("FORMATTER_CONFIG_SCHEMA", () => {
   it("provides validation metadata for each option", () => {
     FORMATTER_CONFIG_SCHEMA.forEach((option) => {
       expect(option.description).toMatch(/\w+/)
-      expect(option.type).toMatch(/^(string|number)$/)
+      expect(option.type).toMatch(/^(string|number|boolean)$/)
 
       if (option.type === "string") {
         expect(Array.isArray(option.enum)).toBe(true)
@@ -30,6 +30,10 @@ describe("FORMATTER_CONFIG_SCHEMA", () => {
 
       if (option.type === "number") {
         expect(option.minimum).toBeGreaterThan(0)
+      }
+
+      if (option.type === "boolean") {
+        expect(typeof option.default).toBe("boolean")
       }
     })
   })

@@ -11,7 +11,7 @@ const DEFAULT_OPTIONS: Required<BuildOpsOptions> = {
   maxEmptyLines: 1,
 }
 
-const NO_SPACE_BEFORE = new Set([",", ".", ")", ";", "]", "}", "++", "--", ">", "("])
+const NO_SPACE_BEFORE = new Set([",", ".", ")", ";", "]", "}", "++", "--", "("])
 const NO_SPACE_AFTER = new Set(["(", ".", "{", "[", "++", "--", "<"])
 const BRACE_OPEN = "{"
 const BRACE_CLOSE = "}"
@@ -25,13 +25,8 @@ export function buildFormattingOps(parseResult: GosuParseResult, options: BuildO
   const ops: FormattingOp[] = []
   const tokens = parseResult.tokens ?? []
 
-  // Pre-process tokens to handle lambda syntax - remove all \
-  const processedTokens = tokens.map((token) => {
-    if (token?.text) {
-      return { ...token, text: token.text.replace(/\\/g, "") }
-    }
-    return token
-  })
+  // Use original tokens without preprocessing - preserve lambda syntax
+  const processedTokens = tokens
 
   let prevText: string | null = null
   let atLineStart = true
@@ -171,6 +166,50 @@ function shouldInsertSpace(prevText: string | null, currentText: string): boolea
     }
     return false
   }
+
+  // Special handling for range operators: no space between . and .
+  if (prevText === "." && currentText === ".") return false
+  if (prevText === ".." || currentText === "..") return false
+
+  // Special handling for exclusive range operator |
+  if (prevText === "|" || currentText === "|") {
+    return false
+  }
+
+  // No space after unary operators like ! ~ -
+  if (prevText === "!" || prevText === "~") {
+    return false
+  }
+
+  // Special case: space after ) before comparison operators
+  if (prevText === ")" && (currentText === "<" || currentText === ">")) {
+    return true // length() < padLength
+  }
+
+  const prevIdentifier = isIdentifierLike(prevText)
+  const currentIdentifier = isIdentifierLike(currentText)
+
+  // Generic types: no space before < after type names
+  if (currentText === "<" && prevIdentifier) {
+    return false // ComplexClass<T>, List<String> - no space
+  }
+
+  // Generic closing: no space before > after type parameters (not variable names)
+  if (currentText === ">" && prevIdentifier) {
+    // Only real type parameters get no space, not variable names
+    const typeParameters = ["T", "K", "V", "E", "String", "int", "double", "boolean", "Object", "Number"]
+    if (typeParameters.includes(prevText)) {
+      return false // T>, String> - no space
+    }
+    // Variable names like 'i' should get space before comparison operators
+    return true // i > 0 - add space for comparison
+  }
+
+  // For nested generics: no space before > after another >
+  if (currentText === ">" && prevText === ">") {
+    return false
+  }
+
   if (currentText === BRACE_OPEN) return true
   if (currentText === ":") return false
   if (prevText === ":") return true
@@ -182,17 +221,12 @@ function shouldInsertSpace(prevText: string | null, currentText: string): boolea
   if (currentText === "@") return false
   if (prevText === "@") return false
 
-  const prevIdentifier = isIdentifierLike(prevText)
-  const currentIdentifier = isIdentifierLike(currentText)
   if (prevIdentifier && currentIdentifier) return true
   if (prevIdentifier && currentText === "(") {
     // No space before ( for method calls
     return false
   }
   if (prevText === ")" && currentIdentifier) return true
-
-  // Special handling for generics: no space before < after identifiers
-  if (prevIdentifier && currentText === "<") return false
 
   return true
 }

@@ -73,22 +73,28 @@
 - [x] Ensure annotations, generics, and modifiers align per Java-style rectangle rule (tests + implementation)
 
 ## 6. Error Handling & Diagnostics
-- [ ] Ensure formatter emits structured diagnostics (line, column, reason) when failing
-- [ ] Support “ignored line” emission for dual-pass recovery with coverage tests
-- [ ] Add configuration flags/tests for selecting strict vs tolerant mode
+- [x] Ensure formatter emits structured diagnostics (line, column, reason) when failing
+- [x] Support "ignored line" emission for dual-pass recovery with coverage tests
+- [x] Add configuration flags/tests for selecting strict vs tolerant mode
 
 ## 7. Performance & Determinism
-- [ ] Large file benchmarks – set up fixtures and performance regression tests
-- [ ] Deterministic output tests (formatting same file twice yields identical bytes)
-- [ ] Caching strategy tests ensuring AST/token caches invalidate on edits
+- [x] Large file benchmarks – set up fixtures and performance regression tests
+- [x] Deterministic output tests (formatting same file twice yields identical bytes)
+- [x] Caching strategy tests ensuring AST/token caches invalidate on edits
 
 ## 8. Integration & Tooling
-- [ ] Document formatter usage in `docs/formatter/configuration.md` (expanded with pipeline overview)
-- [ ] Expose LSP full-document and range formatting commands (tests via integration harness)
-- [ ] Provide CLI entry point and CI wiring with golden diff assertions
-- [ ] Update VS Code settings contributions and README with formatter instructions
+- [x] Document formatter usage in `docs/formatter/configuration.md` (expanded with pipeline overview)
+- [x] Expose LSP full-document and range formatting commands (tests via integration harness)
+- [x] Provide CLI entry point and CI wiring with golden diff assertions
+- [x] Update VS Code settings contributions and README with formatter instructions
 
 ## 9. Stretch Goals
 - [ ] Configuration adapters for TOML/YAML (loader tests first)
 - [ ] Java-style profile presets (Google / Spotless alignment) with snapshot coverage
 - [ ] Automated migration tool to regenerate existing codebase and compare git diffs
+
+## 10. Cleanup the solution
+
+- [x] Use snapshots testing approach where possible
+- [x] Extract test/fixtures data into own files
+- [x] Review the values of each unit test, is it a Business Value validation or Just a line coverage test. Classify tests and Tag them.

@@ -53,6 +53,7 @@ describe("Gosu Language Server Integration", () => {
       onCompletionResolve: vi.fn(() => mockDisposable),
       onDefinition: vi.fn(() => mockDisposable),
       onHover: vi.fn(() => mockDisposable),
+      onDocumentFormatting: vi.fn(() => mockDisposable),
       onRequest: vi.fn(() => mockDisposable),
       sendDiagnostics: vi.fn(),
       // Document handler mocks needed by documents.listen()
@@ -130,9 +131,9 @@ describe("Gosu Language Server Integration", () => {
       expect(result.capabilities.definitionProvider).toBe(true)
       expect(result.capabilities.referencesProvider).toBe(true)
       expect(result.capabilities.semanticTokensProvider).toBeDefined()
+      expect(result.capabilities.documentFormattingProvider).toBe(true)
 
       // And: Unimplemented features should not be advertised
-      expect(result.capabilities.documentFormattingProvider).toBeUndefined()
       expect(result.capabilities.documentRangeFormattingProvider).toBeUndefined()
       expect(result.capabilities.documentHighlightProvider).toBeUndefined()
       expect(result.capabilities.renameProvider).toBeUndefined()
