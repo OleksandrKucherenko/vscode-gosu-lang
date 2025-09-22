@@ -2,13 +2,16 @@ import { describe, expect, it } from "vitest"
 
 import { DEFAULT_FORMATTING_CONFIG, FORMATTER_CONFIG_SCHEMA } from "../config"
 
+// Classification: Unit
 describe("FORMATTER_CONFIG_SCHEMA", () => {
+  // Classification: Unit
   it("describes all supported configuration options", () => {
     const schemaKeys = FORMATTER_CONFIG_SCHEMA.map((option) => option.key)
 
     expect(schemaKeys).toEqual(["indentStyle", "indentSize", "continuationIndentSize", "maxLineLength", "strictMode"])
   })
 
+  // Classification: Unit
   it("links schema defaults to DEFAULT_FORMATTING_CONFIG", () => {
     const defaultsFromSchema = FORMATTER_CONFIG_SCHEMA.reduce<Partial<Record<string, unknown>>>((acc, option) => {
       acc[option.key] = option.default
@@ -18,6 +21,7 @@ describe("FORMATTER_CONFIG_SCHEMA", () => {
     expect(defaultsFromSchema).toEqual(DEFAULT_FORMATTING_CONFIG)
   })
 
+  // Classification: Unit
   it("provides validation metadata for each option", () => {
     FORMATTER_CONFIG_SCHEMA.forEach((option) => {
       expect(option.description).toMatch(/\w+/)

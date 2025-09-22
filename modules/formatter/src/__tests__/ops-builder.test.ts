@@ -6,7 +6,9 @@ import { buildFormattingOps } from "../ir/op-builder"
 
 const parser = new GosuParser()
 
+// Classification: Unit
 describe("Formatting Ops Builder", () => {
+  // Classification: Unit
   it("emits indentation ops for braces", () => {
     const source = readFixture("parser/SimpleClass.gs")
     const result = parser.parseText(source, "SimpleClass.gs")
@@ -18,6 +20,7 @@ describe("Formatting Ops Builder", () => {
     expect(kinds.filter((kind) => kind === "hardLine").length).toBeGreaterThan(0)
   })
 
+  // Classification: Unit
   it("includes comment text as hard-lined sequences", () => {
     const source = readFixture("parser/ClassWithComments.gs")
     const result = parser.parseText(source, "ClassWithComments.gs")

@@ -16,6 +16,7 @@ describe("Language Feature Coverage - Golden Format Tests", () => {
     resetFormatterCache()
   })
 
+  // Golden Tests (Snapshot)
   it.each(GOLDEN_FIXTURES)("formats %s according to snapshot", async (fixture) => {
     const inputText = readFixture(`formatter/${fixture}`)
     const result = await formatDocument({
@@ -26,6 +27,7 @@ describe("Language Feature Coverage - Golden Format Tests", () => {
     expect(result.formattedText).toMatchSnapshot()
   })
 
+  // Business Value (Idempotency)
   it("formats all constructs consistently across multiple passes", async () => {
     // Test that formatting is idempotent
     for (const fixture of GOLDEN_FIXTURES) {
@@ -47,6 +49,7 @@ describe("Language Feature Coverage - Golden Format Tests", () => {
     }
   })
 
+  // Business Value (Error Handling)
   it("handles malformed input gracefully", async () => {
     const malformedInput = `package test
 

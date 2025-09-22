@@ -24,11 +24,13 @@ class ClassWithComments {
 }
 `
 
+// Classification: Integration
 describe("Formatter integration", () => {
   beforeEach(() => {
     resetFormatterCache()
   })
 
+  // Classification: Unit
   it("formats class with comments consistently", async () => {
     const text = readFixture("parser/ClassWithComments.gs")
     const result = await formatDocument({
@@ -48,6 +50,7 @@ describe("Formatter integration", () => {
     expect(secondPass.formattedText).toBe(result.formattedText)
   })
 
+  // Classification: Unit
   it("handles incomplete code gracefully", async () => {
     const text = "function broken() { if (true) {"
     const result = await formatDocument({ uri: "file:///Broken.gs", text })

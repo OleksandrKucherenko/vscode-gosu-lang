@@ -16,6 +16,7 @@ async function removeDir(dir: string): Promise<void> {
   await fs.rm(dir, { recursive: true, force: true })
 }
 
+// Classification: Unit
 describe("loadFormattingConfig", () => {
   const tempDirs: string[] = []
 
@@ -28,6 +29,7 @@ describe("loadFormattingConfig", () => {
     }
   })
 
+  // Classification: Unit
   it("returns defaults when config file is absent", async () => {
     const dir = await createTempDir()
     tempDirs.push(dir)
@@ -37,6 +39,7 @@ describe("loadFormattingConfig", () => {
     expect(config).toEqual(DEFAULT_FORMATTING_CONFIG)
   })
 
+  // Classification: Unit
   it("merges values from .gosuformatting.jsonc using JSON5 syntax", async () => {
     const dir = await createTempDir()
     tempDirs.push(dir)
@@ -64,6 +67,7 @@ describe("loadFormattingConfig", () => {
     expect(config).toEqual(expected)
   })
 
+  // Classification: Unit
   it("supports custom config file names when provided", async () => {
     const dir = await createTempDir()
     tempDirs.push(dir)
@@ -86,6 +90,7 @@ describe("loadFormattingConfig", () => {
     expect(config.maxLineLength).toBe(DEFAULT_FORMATTING_CONFIG.maxLineLength)
   })
 
+  // Classification: Unit
   it("throws a descriptive error for invalid configuration content", async () => {
     const dir = await createTempDir()
     tempDirs.push(dir)
@@ -101,6 +106,7 @@ describe("loadFormattingConfig", () => {
     await expect(loadFormattingConfig({ searchDir: dir })).rejects.toThrow(/invalid jsonc formatting configuration/i)
   })
 
+  // Classification: Unit
   it("loads .gosuformatting.json5 defaults when JSONC file is absent", async () => {
     const dir = await createTempDir()
     tempDirs.push(dir)
@@ -127,6 +133,7 @@ describe("loadFormattingConfig", () => {
     expect(config).toEqual(expected)
   })
 
+  // Classification: Unit
   it("rejects JSON5-only syntax when using .jsonc extension", async () => {
     const dir = await createTempDir()
     tempDirs.push(dir)

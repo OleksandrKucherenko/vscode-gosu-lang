@@ -4,7 +4,9 @@ import { describe, expect, it } from "vitest"
 
 import { loadFormattingConfig } from "../config"
 
+// Classification: Unit
 describe("sample formatter configuration", () => {
+  // Classification: Unit
   it("matches documented expectations", async () => {
     const samplesDir = path.resolve(__dirname, "..", "..", "samples")
 

@@ -11,6 +11,7 @@ describe("GosuFormattingVisitor", () => {
     resetFormatterCache()
   })
 
+  // Golden Tests (Snapshot)
   it("produces a stable formatting tree for a simple class", () => {
     const source = readFixture("parser/ClassWithComments.gs")
     const result = parser.parseText(source, "ClassWithComments.gs")
@@ -18,6 +19,7 @@ describe("GosuFormattingVisitor", () => {
     expect(nodes).toMatchSnapshot()
   })
 
+  // Golden Tests (Snapshot)
   it("produces a stable formatting tree for the integration fixture", () => {
     const source = readFixture("semantic-highlighting/ASTIntegrationClass.gs")
     const result = parser.parseText(source, "ASTIntegrationClass.gs")

@@ -3,7 +3,9 @@ import { describe, expect, it } from "vitest"
 import { renderOps } from "../doc/doc-builder"
 import { hardLine, indent, text } from "../ir/ops"
 
+// Classification: Unit
 describe("Doc builder", () => {
+  // Classification: Unit
   it("applies indentation after line breaks", () => {
     const ops = [
       text("function"),

@@ -3,7 +3,9 @@ import { readFixture } from "@gosu-lsp/shared/test-utils"
 import { describe, expect, it, vi } from "vitest"
 import { formatDocument, resetFormatterCache } from "../index"
 
+// Classification: Unit
 describe("Formatter Caching", () => {
+  // Classification: Unit
   it("re-parses the document after the cache is reset", async () => {
     const source = readFixture("formatter/ComplexClass.gs")
     const request = {

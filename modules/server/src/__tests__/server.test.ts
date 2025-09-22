@@ -29,6 +29,7 @@ vi.mock("vscode-languageserver-textdocument", () => ({
   },
 }))
 
+// Classification: Unit
 describe("GosuLanguageServer", () => {
   let mockConnection: any
   let mockDocuments: any
@@ -76,7 +77,9 @@ describe("GosuLanguageServer", () => {
     debug("Created server instance for testing")
   })
 
+  // Classification: Unit
   describe("initialization", () => {
+    // Classification: Unit
     it("should create server with connection and documents", () => {
       // Given: Server has been created in beforeEach
       debug("Testing server creation with proper components")
@@ -95,6 +98,7 @@ describe("GosuLanguageServer", () => {
       debug("Server creation validation completed")
     })
 
+    // Classification: Unit
     it("should register onInitialize handler", () => {
       // Given: Server has been created
       debug("Testing onInitialize handler registration")
@@ -108,6 +112,7 @@ describe("GosuLanguageServer", () => {
       debug("onInitialize handler registration verified")
     })
 
+    // Classification: Unit
     it("should register onInitialized handler", () => {
       // Given: Server has been created
       debug("Testing onInitialized handler registration")
@@ -121,6 +126,7 @@ describe("GosuLanguageServer", () => {
       debug("onInitialized handler registration verified")
     })
 
+    // Classification: Unit
     it("should register document event handlers", () => {
       // Given: Server has been created
       debug("Testing document event handlers registration")
@@ -138,6 +144,7 @@ describe("GosuLanguageServer", () => {
       debug("Document event handlers registration verified")
     })
 
+    // Classification: Unit
     it("should enrich completion items when resolved", () => {
       const resolveHandler = mockConnection.onCompletionResolve.mock.calls[0][0]
       const item = { label: "foo", detail: "Sample detail" } as CompletionItem
@@ -160,7 +167,9 @@ describe("GosuLanguageServer", () => {
     })
   })
 
+  // Classification: Unit
   describe("initialize request", () => {
+    // Classification: Unit
     it("should return correct capabilities", () => {
       // Given: Initialize handler has been registered
       const initializeHandler = mockConnection.onInitialize.mock.calls[0][0]
@@ -241,6 +250,7 @@ describe("GosuLanguageServer", () => {
       debug("LSP capabilities validation completed")
     })
 
+    // Classification: Unit
     it("should log initialization with workspace info", () => {
       // Given: Initialize handler has been registered
       const initializeHandler = mockConnection.onInitialize.mock.calls[0][0]
@@ -270,7 +280,9 @@ describe("GosuLanguageServer", () => {
     })
   })
 
+  // Classification: Unit
   describe("document change handling", () => {
+    // Classification: Unit
     it("should invalidate completion cache when document content changes", async () => {
       // Given: the change handler registered during server construction
       const changeHandler = mockDocuments.onDidChangeContent.mock.calls[0][0]
@@ -298,7 +310,9 @@ describe("GosuLanguageServer", () => {
     })
   })
 
+  // Classification: Unit
   describe("start method", () => {
+    // Classification: Unit
     it("should start connection and documents listening", () => {
       // Given: Server has been created
       debug("Testing server start method")
@@ -316,7 +330,9 @@ describe("GosuLanguageServer", () => {
     })
   })
 
+  // Classification: Unit
   describe("logging", () => {
+    // Classification: Unit
     it("should have debug logging enabled", () => {
       // Given: Server has been created with debug logging
       debug("Testing debug logging functionality")

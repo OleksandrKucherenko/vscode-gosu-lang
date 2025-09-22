@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest"
 
 import { detectFunctionAnchors } from "../anchors"
 
+// Classification: Unit
 describe("detectFunctionAnchors", () => {
+  // Classification: Unit
   it("finds function scopes within a class using brace matching", () => {
     const gosuSource = `
 class Sample {
@@ -29,6 +31,7 @@ class Sample {
     expect(second.isComplete).toBe(true)
   })
 
+  // Classification: Unit
   it("marks anchors with unmatched braces as incomplete", () => {
     const gosuSource = `
 class Broken {

@@ -22,12 +22,92 @@ const getRealGosuClassContent = () => readFixtureAsync("completion-integration/R
 const getRealGosuInterfaceContent = () => readFixtureAsync("completion-integration/RealGosuInterface.gs")
 const getRealGosuEnhancementContent = () => readFixtureAsync("completion-integration/RealGosuEnhancement.gs")
 
+// Classification: Integration
 describe("GosuCompletionProvider Integration", () => {
   // Logging helpers
   const logCompletions = (completions: CompletionItem[], context: string) => {
     debug(`${context}: Found ${completions.length} completions`)
     completions.forEach((c) => {
-      debug(`  - ${c.label} (${CompletionItemKind[c.kind ?? CompletionItemKind.Text]}): ${c.detail}`)
+      const kind = c.kind || 1
+      let kindString = ""
+      switch (kind) {
+        case CompletionItemKind.Text:
+          kindString = "Text"
+          break
+        case CompletionItemKind.Method:
+          kindString = "Method"
+          break
+        case CompletionItemKind.Function:
+          kindString = "Function"
+          break
+        case CompletionItemKind.Constructor:
+          kindString = "Constructor"
+          break
+        case CompletionItemKind.Field:
+          kindString = "Field"
+          break
+        case CompletionItemKind.Variable:
+          kindString = "Variable"
+          break
+        case CompletionItemKind.Class:
+          kindString = "Class"
+          break
+        case CompletionItemKind.Interface:
+          kindString = "Interface"
+          break
+        case CompletionItemKind.Module:
+          kindString = "Module"
+          break
+        case CompletionItemKind.Property:
+          kindString = "Property"
+          break
+        case CompletionItemKind.Unit:
+          kindString = "Unit"
+          break
+        case CompletionItemKind.Value:
+          kindString = "Value"
+          break
+        case CompletionItemKind.Enum:
+          kindString = "Enum"
+          break
+        case CompletionItemKind.Keyword:
+          kindString = "Keyword"
+          break
+        case CompletionItemKind.Snippet:
+          kindString = "Snippet"
+          break
+        case CompletionItemKind.Color:
+          kindString = "Color"
+          break
+        case CompletionItemKind.File:
+          kindString = "File"
+          break
+        case CompletionItemKind.Reference:
+          kindString = "Reference"
+          break
+        case CompletionItemKind.Folder:
+          kindString = "Folder"
+          break
+        case CompletionItemKind.EnumMember:
+          kindString = "EnumMember"
+          break
+        case CompletionItemKind.Constant:
+          kindString = "Constant"
+          break
+        case CompletionItemKind.Struct:
+          kindString = "Struct"
+          break
+        case CompletionItemKind.Event:
+          kindString = "Event"
+          break
+        case CompletionItemKind.Operator:
+          kindString = "Operator"
+          break
+        case CompletionItemKind.TypeParameter:
+          kindString = "TypeParameter"
+          break
+      }
+      debug(`  - ${c.label} (${kindString}): ${c.detail}`)
     })
   }
 
@@ -45,8 +125,11 @@ describe("GosuCompletionProvider Integration", () => {
     completionProvider = new GosuCompletionProvider(resolver)
   })
 
+  // Classification: Business Value
   describe("Given real Gosu class files", () => {
+    // Classification: Business Value
     describe("When requesting completions at file start", () => {
+      // Classification: Unit
       test("Then it should suggest package and imports for empty file", async () => {
         // Given: An empty Gosu file
         const document = TextDocument.create("file:///test.gs", "gosu", 1, "")
@@ -66,6 +149,7 @@ describe("GosuCompletionProvider Integration", () => {
         expect(keywords).toContain("public")
       })
 
+      // Classification: Unit
       test("And it should suggest class keywords after package declaration", async () => {
         // Given: A file with package declaration
         const content = "package com.example.test\n\n"
@@ -87,7 +171,9 @@ describe("GosuCompletionProvider Integration", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When requesting completions inside class body", () => {
+      // Classification: Unit
       test("Then it should suggest class member keywords", async () => {
         // Given: Real Gosu class with cursor in class body
         const document = TextDocument.create(
@@ -110,6 +196,7 @@ describe("GosuCompletionProvider Integration", () => {
         // Removed brittle keyword assertions
       })
 
+      // Classification: Unit
       test("And it should include documentation extracted from comments", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getRealGosuClassContent()),
@@ -127,6 +214,7 @@ describe("GosuCompletionProvider Integration", () => {
         expect(documentedCompletion?.detail?.toLowerCase()).toContain("string")
       })
 
+      // Classification: Unit
       test("And it should suggest appropriate keywords with prefix", async () => {
         // Given: Real Gosu class with 'pr' prefix in class body
         const content = (await getRealGosuClassContent()).replace("  private var _name : String", "  pr")
@@ -155,7 +243,9 @@ describe("GosuCompletionProvider Integration", () => {
       // listing custom Java types in completions.
     })
 
+    // Classification: Business Value
     describe("When requesting completions inside function body", () => {
+      // Classification: Unit
       test("Then it should suggest control flow and literal keywords", async () => {
         // Given: Real Gosu class with cursor inside function body (empty line)
         const document = TextDocument.create(
@@ -178,6 +268,7 @@ describe("GosuCompletionProvider Integration", () => {
         // Removed brittle keyword assertions
       })
 
+      // Classification: Unit
       test("And it should provide correct completion items with metadata", async () => {
         // Given: Real Gosu class with cursor inside function body
         const document = TextDocument.create(
@@ -218,7 +309,9 @@ describe("GosuCompletionProvider Integration", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When working with different Gosu file types", () => {
+      // Classification: Unit
       test("Then it should work with interface files", async () => {
         // Given: Real Gosu interface file
         const document = TextDocument.create(
@@ -241,6 +334,7 @@ describe("GosuCompletionProvider Integration", () => {
         expect(keywords).toContain("public") // interfaces can have visibility modifiers
       })
 
+      // Classification: Unit
       test("And it should work with enhancement files", async () => {
         // Given: Real Gosu enhancement file
         const document = TextDocument.create(
@@ -269,7 +363,9 @@ describe("GosuCompletionProvider Integration", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When testing edge cases", () => {
+      // Classification: Unit
       test("Then it should handle malformed Gosu files gracefully", async () => {
         // Given: Malformed Gosu file
         const malformedContent = `package com.test
@@ -294,6 +390,7 @@ describe("GosuCompletionProvider Integration", () => {
         expect(keywords).toContain("if")
       })
 
+      // Classification: Unit
       test("And it should handle very large files efficiently", async () => {
         // Given: Large Gosu file (simulate by repeating content)
         let largeContent = await getRealGosuClassContent()

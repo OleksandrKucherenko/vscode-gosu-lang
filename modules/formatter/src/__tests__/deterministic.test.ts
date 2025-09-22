@@ -2,7 +2,9 @@ import { readFixture } from "@gosu-lsp/shared/test-utils"
 import { describe, expect, it } from "vitest"
 import { formatDocument } from "../index"
 
+// Classification: Unit
 describe("Formatter Determinism", () => {
+  // Classification: Unit
   it("produces the same output when formatting a file multiple times", async () => {
     const source = readFixture("formatter/ComplexClass.gs")
     const request = {

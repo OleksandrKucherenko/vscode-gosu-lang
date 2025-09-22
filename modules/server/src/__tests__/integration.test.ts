@@ -27,6 +27,7 @@ vi.mock("vscode-languageserver/node", async () => {
   }
 })
 
+// Classification: Integration
 describe("Gosu Language Server Integration", () => {
   let mockConnection: Partial<Connection>
   let server: GosuLanguageServer
@@ -89,7 +90,9 @@ describe("Gosu Language Server Integration", () => {
     vi.restoreAllMocks()
   })
 
+  // Classification: Business Value
   describe("Server Initialization", () => {
+    // Classification: Unit
     it("should handle initialization request and return capabilities", () => {
       // Given: Full client capabilities for LSP features
       debug("Testing initialization with full client capabilities")
@@ -149,6 +152,7 @@ describe("Gosu Language Server Integration", () => {
       debug("Full capabilities initialization test completed")
     })
 
+    // Classification: Unit
     it("should handle initialization with minimal client capabilities", () => {
       // Given: Minimal client capabilities
       debug("Testing initialization with minimal client capabilities")
@@ -175,7 +179,9 @@ describe("Gosu Language Server Integration", () => {
     })
   })
 
+  // Classification: Business Value
   describe("Server Lifecycle", () => {
+    // Classification: Unit
     it("should register initialization handlers on creation", () => {
       // Given: Server has been created and started
       debug("Testing server lifecycle handler registration")
@@ -189,6 +195,7 @@ describe("Gosu Language Server Integration", () => {
       debug("Server lifecycle handler registration verified")
     })
 
+    // Classification: Unit
     it("should start listening for connections", () => {
       // Given: Server has been started in beforeEach
       debug("Testing server connection listening")
@@ -200,7 +207,9 @@ describe("Gosu Language Server Integration", () => {
     })
   })
 
+  // Classification: Business Value
   describe("LSP Protocol Compliance", () => {
+    // Classification: Unit
     it("should return initialize result in correct format", () => {
       // Given: Standard LSP initialization parameters
       debug("Testing LSP protocol compliance")
@@ -232,6 +241,7 @@ describe("Gosu Language Server Integration", () => {
       debug("LSP protocol compliance verification completed")
     })
 
+    // Classification: Unit
     it("should support multiple Gosu file types", () => {
       // Given: Different Gosu file type extensions
       debug("Testing support for multiple Gosu file types")

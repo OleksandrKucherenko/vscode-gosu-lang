@@ -2,12 +2,15 @@ import { beforeEach, describe, expect, it } from "vitest"
 
 import { DEFAULT_FORMATTING_CONFIG, formatDocument, resetFormatterCache } from "../index"
 
+// Classification: Unit
 describe("Comment & Annotation Handling", () => {
   beforeEach(() => {
     resetFormatterCache()
   })
 
+  // Classification: Unit
   describe("Comment Placement", () => {
+    // Classification: Unit
     it("preserves leading comments before class declarations", async () => {
       const input = `// Leading comment
 class TestClass {
@@ -37,6 +40,7 @@ class TestClass {
 `)
     })
 
+    // Classification: Unit
     it("handles block comments correctly", async () => {
       const input = `class TestClass {
   /* Block comment
@@ -65,6 +69,7 @@ class TestClass {
 `)
     })
 
+    // Classification: Unit
     it("preserves documentation comments", async () => {
       const input = `/**
  * Documentation comment
@@ -103,7 +108,9 @@ class TestClass {
     })
   })
 
+  // Classification: Unit
   describe("Annotation Alignment", () => {
+    // Classification: Unit
     it("aligns multiple annotations in rectangle rule", async () => {
       const input = `@Deprecated
 @Since("1.0")
@@ -133,6 +140,7 @@ class TestClass {
 `)
     })
 
+    // Classification: Unit
     it("handles annotations with parameters", async () => {
       const input = `@RequestMapping(path = "/test", method = RequestMethod.GET)
 class TestController {
@@ -155,7 +163,9 @@ class TestController {
     })
   })
 
+  // Classification: Unit
   describe("Modifier Alignment", () => {
+    // Classification: Unit
     it("aligns modifiers in rectangle rule", async () => {
       const input = `public static final class Constants {
   public static final var MAX_SIZE: int = 100

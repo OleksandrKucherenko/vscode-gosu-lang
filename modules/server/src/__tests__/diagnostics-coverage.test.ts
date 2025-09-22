@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest"
 import { createDiagnosticsProvider } from "../diagnostics"
 
+// Classification: Unit
 describe("GosuDiagnosticsProvider Coverage Tests", () => {
+  // Classification: Unit
   describe("Cache statistics method", () => {
+    // Classification: Unit
     it("should return cache statistics", () => {
       // Given: a diagnostics provider
       const provider = createDiagnosticsProvider()
@@ -18,6 +21,7 @@ describe("GosuDiagnosticsProvider Coverage Tests", () => {
       expect(typeof stats.maxSize).toBe("number")
     })
 
+    // Classification: Unit
     it("should return correct cache statistics with custom config", () => {
       // Given: a diagnostics provider with custom cache size
       const provider = createDiagnosticsProvider({ cacheSize: 50 })
@@ -31,7 +35,9 @@ describe("GosuDiagnosticsProvider Coverage Tests", () => {
     })
   })
 
+  // Classification: Unit
   describe("Configuration update method", () => {
+    // Classification: Unit
     it("should update configuration", () => {
       // Given: a diagnostics provider with default config
       const provider = createDiagnosticsProvider()
@@ -48,6 +54,7 @@ describe("GosuDiagnosticsProvider Coverage Tests", () => {
       expect(stats.maxSize).toBe(25)
     })
 
+    // Classification: Unit
     it("should partially update configuration", () => {
       // Given: a diagnostics provider
       const provider = createDiagnosticsProvider({ cacheSize: 200 })
@@ -62,6 +69,7 @@ describe("GosuDiagnosticsProvider Coverage Tests", () => {
       expect(stats.maxSize).toBe(200) // Original value preserved
     })
 
+    // Classification: Unit
     it("should handle empty configuration update", () => {
       // Given: a diagnostics provider
       const provider = createDiagnosticsProvider()

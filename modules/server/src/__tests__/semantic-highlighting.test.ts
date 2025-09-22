@@ -55,6 +55,7 @@ const getForceParserFailureContent = () => readFixtureAsync("semantic-highlighti
 const getAllKeywordTypesInIsKeywordMethodContent = () =>
   readFixtureAsync("semantic-highlighting/AllKeywordTypesInIsKeywordMethod.gs")
 
+// Classification: Integration
 describe("GosuSemanticHighlightingProvider", () => {
   let provider: GosuSemanticHighlightingProvider
 
@@ -62,13 +63,16 @@ describe("GosuSemanticHighlightingProvider", () => {
     provider = new GosuSemanticHighlightingProvider()
   })
 
+  // Classification: Business Value
   describe("Given a semantic highlighting provider instance", () => {
+    // Classification: Unit
     describe("When creating the provider", () => {
       it("Then it should be instantiated successfully", () => {
         expect(provider).toBeDefined()
         expect(provider).toBeInstanceOf(GosuSemanticHighlightingProvider)
       })
 
+      // Classification: Unit
       it("And it should have the correct token legend", () => {
         const legend = provider.getTokenLegend()
 
@@ -86,7 +90,9 @@ describe("GosuSemanticHighlightingProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When processing a simple Gosu class", () => {
+      // Classification: Unit
       it("Then it should identify class keywords", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getSimpleClassWithPackageAndFunctionContent()),
@@ -100,6 +106,7 @@ describe("GosuSemanticHighlightingProvider", () => {
         expect(tokens.data.length).toBeGreaterThan(0)
       })
 
+      // Classification: Unit
       it("And it should identify package declarations", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getSimplePackageDeclarationContent()),
@@ -115,6 +122,7 @@ describe("GosuSemanticHighlightingProvider", () => {
         expect(tokens.data.length).toBeGreaterThan(0)
       })
 
+      // Classification: Unit
       it("And it should identify class declarations", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getSimpleClassDeclarationContent()),
@@ -128,6 +136,7 @@ describe("GosuSemanticHighlightingProvider", () => {
         expect(tokens.data.length).toBeGreaterThan(0)
       })
 
+      // Classification: Unit
       it("And it should identify function declarations", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getFunctionDeclarationContent()),
@@ -142,7 +151,9 @@ describe("GosuSemanticHighlightingProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When processing different token types", () => {
+      // Classification: Unit
       it("Then it should identify string literals", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getStringLiteralContent()),
@@ -156,6 +167,7 @@ describe("GosuSemanticHighlightingProvider", () => {
         expect(tokens.data.length).toBeGreaterThan(0)
       })
 
+      // Classification: Unit
       it("And it should identify numeric literals", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getNumericLiteralContent()),
@@ -169,6 +181,7 @@ describe("GosuSemanticHighlightingProvider", () => {
         expect(tokens.data.length).toBeGreaterThan(0)
       })
 
+      // Classification: Unit
       it("And it should identify variable declarations", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getVariableDeclarationContent()),
@@ -182,6 +195,7 @@ describe("GosuSemanticHighlightingProvider", () => {
         expect(tokens.data.length).toBeGreaterThan(0)
       })
 
+      // Classification: Unit
       it("And it should identify type references", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getTypeReferenceContent()),
@@ -196,7 +210,9 @@ describe("GosuSemanticHighlightingProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When processing semantic token ranges", () => {
+      // Classification: Unit
       it("Then it should provide tokens for specific ranges", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getComplexClassForRangeTestContent()),
@@ -215,6 +231,7 @@ describe("GosuSemanticHighlightingProvider", () => {
         expect(tokens.data.length).toBeGreaterThan(0)
       })
 
+      // Classification: Unit
       it("And it should handle empty ranges gracefully", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getEmptyClassContent()),
@@ -234,7 +251,9 @@ describe("GosuSemanticHighlightingProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When handling error cases", () => {
+      // Classification: Unit
       it("Then it should handle malformed Gosu code gracefully", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getMalformedCodeContent()),
@@ -249,6 +268,7 @@ describe("GosuSemanticHighlightingProvider", () => {
         expect(tokens.data.length).toBeGreaterThan(0)
       })
 
+      // Classification: Unit
       it("And it should handle empty documents", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getEmptyDocumentContent()),
@@ -262,6 +282,7 @@ describe("GosuSemanticHighlightingProvider", () => {
         expect(tokens.data.length).toBe(0)
       })
 
+      // Classification: Unit
       it("And it should handle documents with only whitespace", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getWhitespaceOnlyDocumentContent()),
@@ -276,7 +297,9 @@ describe("GosuSemanticHighlightingProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When processing advanced Gosu constructs", () => {
+      // Classification: Unit
       it("Then it should identify enhancement declarations", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getEnhancementDeclarationContent()),
@@ -290,6 +313,7 @@ describe("GosuSemanticHighlightingProvider", () => {
         expect(tokens.data.length).toBeGreaterThan(0)
       })
 
+      // Classification: Unit
       it("And it should identify interface declarations", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getInterfaceDeclarationContent()),
@@ -303,6 +327,7 @@ describe("GosuSemanticHighlightingProvider", () => {
         expect(tokens.data.length).toBeGreaterThan(0)
       })
 
+      // Classification: Unit
       it("And it should identify property declarations", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getPropertyDeclarationContent()),
@@ -317,7 +342,9 @@ describe("GosuSemanticHighlightingProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When processing token modifiers", () => {
+      // Classification: Unit
       it("Then it should identify static modifiers", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getStaticModifierContent()),
@@ -331,6 +358,7 @@ describe("GosuSemanticHighlightingProvider", () => {
         expect(tokens.data.length).toBeGreaterThan(0)
       })
 
+      // Classification: Unit
       it("And it should identify readonly modifiers", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getReadonlyModifierContent()),
@@ -344,6 +372,7 @@ describe("GosuSemanticHighlightingProvider", () => {
         expect(tokens.data.length).toBeGreaterThan(0)
       })
 
+      // Classification: Unit
       it("And it should identify access modifiers", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getAccessModifiersContent()),
@@ -358,7 +387,9 @@ describe("GosuSemanticHighlightingProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When integrating with AST analysis", () => {
+      // Classification: Unit
       it("Then it should leverage existing symbol extraction", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getASTIntegrationClassContent()),
@@ -372,6 +403,7 @@ describe("GosuSemanticHighlightingProvider", () => {
         expect(tokens.data.length).toBeGreaterThan(0)
       })
 
+      // Classification: Unit
       it("And it should provide consistent token positioning", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getConsistentTokenPositioningClassContent()),
@@ -387,7 +419,9 @@ describe("GosuSemanticHighlightingProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When caching semantic tokens", () => {
+      // Classification: Unit
       it("Then it should cache tokens for unchanged documents", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getEmptyClassContent()),
@@ -411,6 +445,7 @@ describe("GosuSemanticHighlightingProvider", () => {
         expect(duration2).toBeLessThanOrEqual(duration1 + 50)
       })
 
+      // Classification: Unit
       it("And it should clear cache when document changes", async () => {
         const document1 = TextDocument.create(
           await getFileUrlByFixture(getEmptyClassContent()),
@@ -433,6 +468,7 @@ describe("GosuSemanticHighlightingProvider", () => {
         expect(tokens2.data.length).toBeGreaterThan(tokens1.data.length)
       })
 
+      // Classification: Unit
       it("And it should clear all caches", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getEmptyClassContent()),
@@ -451,7 +487,9 @@ describe("GosuSemanticHighlightingProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When testing range filtering edge cases", () => {
+      // Classification: Unit
       it("Then it should handle tokens that extend past range end character", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getRangeExtendedTokenContent()),
@@ -471,6 +509,7 @@ describe("GosuSemanticHighlightingProvider", () => {
         // Should filter out tokens that extend past the end character
       })
 
+      // Classification: Unit
       it("And it should handle range filtering with character boundaries", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getRangeCharacterBoundaryContent()),
@@ -490,7 +529,9 @@ describe("GosuSemanticHighlightingProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When testing keyword identification coverage", () => {
+      // Classification: Unit
       it("Then it should correctly identify all keyword types", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getKeywordIdentificationCoverageContent()),
@@ -505,6 +546,7 @@ describe("GosuSemanticHighlightingProvider", () => {
         expect(tokens.data.length).toBeGreaterThan(0)
       })
 
+      // Classification: Unit
       it("And it should handle capitalized identifiers vs keywords", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getCapitalizedIdentifiersContent()),
@@ -519,7 +561,9 @@ describe("GosuSemanticHighlightingProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When testing comment highlighting edge cases", () => {
+      // Classification: Unit
       it("Then it should handle block comments correctly", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getBlockCommentsContent()),
@@ -533,6 +577,7 @@ describe("GosuSemanticHighlightingProvider", () => {
         expect(tokens.data.length).toBeGreaterThan(0)
       })
 
+      // Classification: Unit
       it("And it should handle incomplete block comments", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getIncompleteBlockCommentsContent()),
@@ -547,7 +592,9 @@ describe("GosuSemanticHighlightingProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When testing string literal edge cases", () => {
+      // Classification: Unit
       it("Then it should handle both single and double quoted strings", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getStringLiteralEdgeCasesContent()),
@@ -562,7 +609,9 @@ describe("GosuSemanticHighlightingProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When testing error handling during token computation", () => {
+      // Classification: Unit
       it("Then it should handle parsing errors gracefully", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getParsingErrorsGracefullyContent()),
@@ -576,6 +625,7 @@ describe("GosuSemanticHighlightingProvider", () => {
         // Should still return tokens even with parsing errors
       })
 
+      // Classification: Unit
       it("And it should handle range errors gracefully", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getEmptyClassContent()),
@@ -595,7 +645,9 @@ describe("GosuSemanticHighlightingProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When testing basic identifier highlighting fallback", () => {
+      // Classification: Unit
       it("Then it should trigger basic identifier highlighting on parser failure", async () => {
         // Create a document that will cause parser failure but has recognizable patterns
         const document = TextDocument.create(
@@ -610,6 +662,7 @@ describe("GosuSemanticHighlightingProvider", () => {
         expect(tokens.data.length).toBeGreaterThan(0)
       })
 
+      // Classification: Unit
       it("And it should identify function declarations in basic mode", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getFunctionDeclarationsInBasicModeContent()),
@@ -623,6 +676,7 @@ describe("GosuSemanticHighlightingProvider", () => {
         expect(tokens.data.length).toBeGreaterThan(0)
       })
 
+      // Classification: Unit
       it("And it should skip keywords when identifying class names", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getSkipKeywordsWhenIdentifyingClassNamesContent()),
@@ -636,6 +690,7 @@ describe("GosuSemanticHighlightingProvider", () => {
         expect(tokens.data.length).toBeGreaterThan(0)
       })
 
+      // Classification: Unit
       it("And it should properly identify all Gosu keywords", async () => {
         const document = TextDocument.create(
           await getFileUrlByFixture(getAllGosuKeywordsContent()),
@@ -649,6 +704,7 @@ describe("GosuSemanticHighlightingProvider", () => {
         expect(tokens.data.length).toBeGreaterThan(0)
       })
 
+      // Classification: Unit
       it("And it should force parser failure for basic highlighting", async () => {
         // Create document with extremely malformed syntax that will definitely cause parser failure
         const document = TextDocument.create(
@@ -664,6 +720,7 @@ describe("GosuSemanticHighlightingProvider", () => {
         expect(tokens.data.length).toBeGreaterThan(0)
       })
 
+      // Classification: Unit
       it("And it should handle all keyword types in isKeyword method", async () => {
         // Create content that will force parser failure but still generate tokens via basic highlighting
         const document = TextDocument.create(

@@ -77,6 +77,7 @@ vi.mock("./hover-provider", () => ({
   })),
 }))
 
+// Classification: Unit
 describe("Server Core Functions", () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -86,7 +87,9 @@ describe("Server Core Functions", () => {
     vi.restoreAllMocks()
   })
 
+  // Classification: Unit
   describe("server creation", () => {
+    // Classification: Unit
     it("should create server with all required components", () => {
       // When: creating a server
       const server = serverModule.createServer()
@@ -101,6 +104,7 @@ describe("Server Core Functions", () => {
       expect(typeof server.start).toBe("function")
     })
 
+    // Classification: Unit
     it("should configure connection handlers", () => {
       // When: creating a server
       const server = serverModule.createServer()
@@ -114,6 +118,7 @@ describe("Server Core Functions", () => {
       expect(server.connection.onDidChangeWatchedFiles).toHaveBeenCalled()
     })
 
+    // Classification: Unit
     it("should configure document handlers", () => {
       // When: creating a server
       const server = serverModule.createServer()
@@ -125,7 +130,9 @@ describe("Server Core Functions", () => {
     })
   })
 
+  // Classification: Unit
   describe("server start method", () => {
+    // Classification: Unit
     it("should start connection and documents listening", () => {
       // Given: a server instance
       const server = serverModule.createServer()

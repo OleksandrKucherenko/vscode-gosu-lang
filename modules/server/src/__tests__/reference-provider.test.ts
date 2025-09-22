@@ -4,6 +4,7 @@ import type { Position } from "vscode-languageserver/node"
 import { TextDocument } from "vscode-languageserver-textdocument"
 import { GosuReferenceProvider } from "../reference-provider"
 
+// Classification: Unit
 describe("GosuReferenceProvider", () => {
   let referenceProvider: GosuReferenceProvider
 
@@ -11,7 +12,9 @@ describe("GosuReferenceProvider", () => {
     referenceProvider = new GosuReferenceProvider()
   })
 
+  // Classification: Business Value
   describe("Given a reference provider instance", () => {
+    // Classification: Unit
     describe("When creating the provider", () => {
       it("Then it should be instantiated successfully", () => {
         expect(referenceProvider).toBeDefined()
@@ -21,7 +24,9 @@ describe("GosuReferenceProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When finding references for a simple class", () => {
+      // Classification: Unit
       it("Then it should find class references across multiple files", async () => {
         // Arrange: Create documents with class definition and usage
         const classDoc = TextDocument.create("file:///MyClass.gs", "gosu", 1, readFixture("classes/MyClass.gs"))
@@ -43,6 +48,7 @@ describe("GosuReferenceProvider", () => {
         expect(references?.some((ref) => ref.uri === "file:///MyClass.gs")).toBe(true)
       })
 
+      // Classification: Unit
       it("And it should find method references across files", async () => {
         // Arrange: Create documents with method definition and usage
         const classDoc = TextDocument.create("file:///Helper.gs", "gosu", 1, readFixture("classes/Helper.gs"))
@@ -64,6 +70,7 @@ describe("GosuReferenceProvider", () => {
         }
       })
 
+      // Classification: Unit
       it("And it should ignore occurrences inside strings and comments", async () => {
         const doc = TextDocument.create(
           "file:///CountExample.gs",
@@ -88,7 +95,9 @@ describe("GosuReferenceProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When handling workspace changes", () => {
+      // Classification: Unit
       it("Then it should update index when documents are added", async () => {
         // Arrange: Start with empty workspace
         const newDoc = TextDocument.create("file:///NewClass.gs", "gosu", 1, readFixture("classes/NewClass.gs"))
@@ -102,6 +111,7 @@ describe("GosuReferenceProvider", () => {
         expect(stats.symbolCount).toBeGreaterThan(0)
       })
 
+      // Classification: Unit
       it("And it should update index when documents are modified", async () => {
         // Arrange: Add initial document
         const originalDoc = TextDocument.create(
@@ -130,6 +140,7 @@ describe("GosuReferenceProvider", () => {
         // Note: We're not strictly checking symbol count increase since parsing might fail
       })
 
+      // Classification: Unit
       it("And it should remove documents from index", async () => {
         // Arrange: Add document then remove it
         const doc = TextDocument.create("file:///RemoveTest.gs", "gosu", 1, readFixture("classes/RemoveTest.gs"))
@@ -145,7 +156,9 @@ describe("GosuReferenceProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When handling edge cases", () => {
+      // Classification: Unit
       it("Then it should handle references to non-existent symbols gracefully", async () => {
         // Arrange: Create document
         const doc = TextDocument.create("file:///EdgeCase.gs", "gosu", 1, readFixture("classes/EdgeCase.gs"))
@@ -160,6 +173,7 @@ describe("GosuReferenceProvider", () => {
         expect(references).toBeNull()
       })
 
+      // Classification: Unit
       it("And it should handle malformed Gosu code", async () => {
         // Arrange: Create malformed document
         const malformedDoc = TextDocument.create(
@@ -182,6 +196,7 @@ describe("GosuReferenceProvider", () => {
         expect(references === null || Array.isArray(references)).toBe(true)
       })
 
+      // Classification: Unit
       it("And it should handle empty workspace", async () => {
         // Act: Try to find references in empty workspace
         const doc = TextDocument.create("file:///Empty.gs", "gosu", 1, "")
@@ -195,7 +210,9 @@ describe("GosuReferenceProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When excluding declaration from results", () => {
+      // Classification: Unit
       it("Then it should only return usage references", async () => {
         // Arrange: Create documents with definition and usage
         const defDoc = TextDocument.create(
@@ -225,7 +242,9 @@ describe("GosuReferenceProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When providing index statistics", () => {
+      // Classification: Unit
       it("Then it should return accurate workspace statistics", async () => {
         // Arrange: Add multiple documents
         const docs = [

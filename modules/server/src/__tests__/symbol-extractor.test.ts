@@ -21,6 +21,7 @@ const getComplexClassContent = () => readFixture("classes/ComplexClass.gs")
 const getInterfaceDefinitionContent = () => readFixture("interfaces/ITestInterface.gs")
 const getEnhancementDefinitionContent = () => readFixture("enhancements/StringUtils.gsx")
 
+// Classification: Unit
 describe("GosuSymbolExtractor", () => {
   let parser: GosuParser
   let symbolExtractor: GosuSymbolExtractor
@@ -30,8 +31,11 @@ describe("GosuSymbolExtractor", () => {
     symbolExtractor = new GosuSymbolExtractor(parser)
   })
 
+  // Classification: Business Value
   describe("Given an AST symbol extractor", () => {
+    // Classification: Business Value
     describe("When extracting symbols from simple class", () => {
+      // Classification: Unit
       test("Then it should extract class symbol", () => {
         // Given: Simple class definition
         const parseResult = parser.parseText(getSimpleClassContent(), "SimpleClass.gs")
@@ -49,6 +53,7 @@ describe("GosuSymbolExtractor", () => {
         expect(classSymbols[0].visibility).toBe("public")
       })
 
+      // Classification: Unit
       test("And it should extract import statements", () => {
         // Given: Simple class with imports
         const parseResult = parser.parseText(getSimpleClassContent(), "SimpleClass.gs")
@@ -65,6 +70,7 @@ describe("GosuSymbolExtractor", () => {
         expect(symbolTable.imports[1].path).toBe("java.lang.String")
       })
 
+      // Classification: Unit
       test("And it should extract field variables", () => {
         // Given: Simple class with fields
         const parseResult = parser.parseText(getSimpleClassContent(), "SimpleClass.gs")
@@ -86,6 +92,7 @@ describe("GosuSymbolExtractor", () => {
         expect(countField.visibility).toBe("private")
       })
 
+      // Classification: Unit
       test("And it should extract constructor with parameters", () => {
         // Given: Simple class with constructor
         const parseResult = parser.parseText(getSimpleClassContent(), "SimpleClass.gs")
@@ -104,6 +111,7 @@ describe("GosuSymbolExtractor", () => {
         expect(ctor.parameters?.[0].type).toBe("String")
       })
 
+      // Classification: Unit
       test("And it should extract function symbols with parameters", () => {
         // Given: Simple class with functions
         const parseResult = parser.parseText(getSimpleClassContent(), "SimpleClass.gs")
@@ -128,7 +136,9 @@ describe("GosuSymbolExtractor", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When extracting symbols from complex class", () => {
+      // Classification: Unit
       test("Then it should extract static and instance fields", () => {
         // Given: Complex class with static and instance fields
         const parseResult = parser.parseText(getComplexClassContent(), "ComplexClass.gs")
@@ -148,6 +158,7 @@ describe("GosuSymbolExtractor", () => {
         expect(instanceFields).toHaveLength(2)
       })
 
+      // Classification: Unit
       test.skip("And it should extract properties", () => {
         // ANTLR grammar issue - advanced feature: Property syntax not yet implemented
         // TODO: Implement property get/set syntax in ANTLR grammar
@@ -163,6 +174,7 @@ describe("GosuSymbolExtractor", () => {
         expect(properties).toHaveLength(2) // ItemCount, Status
       })
 
+      // Classification: Unit
       test("And it should extract methods with local variables", () => {
         // Given: Complex class with methods containing local variables
         const parseResult = parser.parseText(getComplexClassContent(), "ComplexClass.gs")
@@ -183,6 +195,7 @@ describe("GosuSymbolExtractor", () => {
         expect(privateMethod?.visibility).toBe("private")
       })
 
+      // Classification: Unit
       test("And it should extract function parameters and local variables", () => {
         // Given: Complex class with function containing parameters and locals
         const parseResult = parser.parseText(getComplexClassContent(), "ComplexClass.gs")
@@ -197,7 +210,9 @@ describe("GosuSymbolExtractor", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When extracting symbols from interface definition", () => {
+      // Classification: Unit
       test("Then it should extract interface and method signatures", () => {
         // ANTLR grammar issue - advanced feature: Interface syntax not yet implemented
         // TODO: Implement interface definitions in ANTLR grammar
@@ -219,7 +234,9 @@ describe("GosuSymbolExtractor", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When extracting symbols from enhancement definition", () => {
+      // Classification: Unit
       test.skip("Then it should extract enhancement and its methods", () => {
         // ANTLR grammar issue - advanced feature: Enhancement syntax not yet implemented
         // TODO: Implement enhancement definitions in ANTLR grammar
@@ -241,7 +258,9 @@ describe("GosuSymbolExtractor", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When using symbol table lookup functions", () => {
+      // Classification: Unit
       test("Then it should find symbols by name correctly", () => {
         // Given: A symbol table with test symbols
         const symbolTable = createSymbolTable("file:///test.gs")
@@ -263,6 +282,7 @@ describe("GosuSymbolExtractor", () => {
         expect(found[0]).toEqual(testSymbol)
       })
 
+      // Classification: Unit
       test("And it should find symbols by prefix correctly", () => {
         // Given: A symbol table with multiple symbols
         const symbolTable = createSymbolTable("file:///test.gs")
@@ -271,7 +291,9 @@ describe("GosuSymbolExtractor", () => {
           { name: "testVar2", type: "variable", line: 2, column: 0 },
           { name: "otherVar", type: "variable", line: 3, column: 0 },
         ]
-        symbols.forEach((s) => addSymbolToTable(symbolTable, s))
+        symbols.forEach((s) => {
+          addSymbolToTable(symbolTable, s)
+        })
 
         // When: Finding symbols by prefix
         const found = findSymbolsByPrefix(symbolTable, "test")
@@ -282,6 +304,7 @@ describe("GosuSymbolExtractor", () => {
         expect(found.map((s) => s.name)).toContain("testVar2")
       })
 
+      // Classification: Unit
       test("And it should find symbols by type correctly", () => {
         // Given: A symbol table with different symbol types
         const symbolTable = createSymbolTable("file:///test.gs")
@@ -290,7 +313,9 @@ describe("GosuSymbolExtractor", () => {
           { name: "myFunction", type: "function", line: 5, column: 0 },
           { name: "myVariable", type: "variable", line: 10, column: 0 },
         ]
-        symbols.forEach((s) => addSymbolToTable(symbolTable, s))
+        symbols.forEach((s) => {
+          addSymbolToTable(symbolTable, s)
+        })
 
         // When: Finding symbols by type
         const functions = findSymbolsByType(symbolTable, "function")

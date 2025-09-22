@@ -10,7 +10,9 @@ async function createTempWorkspace(): Promise<string> {
   return fs.mkdtemp(path.join(os.tmpdir(), "gosu-formatter-format-test-"))
 }
 
+// Classification: Unit
 describe("formatDocument", () => {
+  // Classification: Unit
   it("loads workspace configuration before formatting", async () => {
     const workspaceDir = await createTempWorkspace()
 
@@ -44,6 +46,7 @@ describe("formatDocument", () => {
     })
   })
 
+  // Classification: Unit
   it("falls back to defaults when no configuration file is present", async () => {
     const workspaceDir = await createTempWorkspace()
 
@@ -61,6 +64,7 @@ describe("formatDocument", () => {
     expect(result.diagnostics ?? []).toHaveLength(0)
   })
 
+  // Classification: Unit
   it("allows explicit config override in the request", async () => {
     const customConfig = {
       indentStyle: "space" as const,
@@ -84,6 +88,7 @@ describe("formatDocument", () => {
     expect(result.diagnostics ?? []).toHaveLength(0)
   })
 
+  // Classification: Unit
   it("marks broken function anchors as ignored ranges", async () => {
     const gosuSource = `
 class Sample {
