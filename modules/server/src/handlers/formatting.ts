@@ -26,26 +26,15 @@ export class FormattingHandler {
     const startTime = Date.now()
 
     try {
-      // Create progress token for long-running operations
-      const progressToken = `format-${Date.now()}`
-
       // Start progress reporting
-      await this.connection.window.createWorkDoneProgress()
+      const progress = await this.connection.window.createWorkDoneProgress()
 
-      this.connection.sendProgress("$/progress", progressToken, {
-        kind: "begin",
-        title: "Formatting Gosu file",
-        message: "Processing...",
-        cancellable: true,
-      })
+      progress.begin("Formatting Gosu file", undefined, "Processing...", true)
 
       // Check for cancellation
       if (token.isCancellationRequested) {
         logger.info("Formatting cancelled by user")
-        this.connection.sendProgress("$/progress", progressToken, {
-          kind: "end",
-          message: "Cancelled",
-        })
+        progress.done()
         return null
       }
 
@@ -67,10 +56,7 @@ export class FormattingHandler {
       }
 
       // End progress reporting
-      this.connection.sendProgress("$/progress", progressToken, {
-        kind: "end",
-        message: `Completed in ${duration}ms`,
-      })
+      progress.done()
 
       // Return empty array for now (no changes)
       return []
@@ -98,19 +84,12 @@ export class FormattingHandler {
     logger.info(`Batch formatting ${uris.length} documents`)
 
     const results = new Map<string, TextEdit[]>()
-    const progressToken = `batch-format-${Date.now()}`
 
     try {
       // Create progress
-      await this.connection.window.createWorkDoneProgress()
+      const progress = await this.connection.window.createWorkDoneProgress()
 
-      this.connection.sendProgress("$/progress", progressToken, {
-        kind: "begin",
-        title: "Formatting Gosu files",
-        message: `0/${uris.length}`,
-        percentage: 0,
-        cancellable: true,
-      })
+      progress.begin("Formatting Gosu files", 0, `0/${uris.length}`, true)
 
       // Process each file
       for (let i = 0; i < uris.length; i++) {
@@ -124,11 +103,7 @@ export class FormattingHandler {
         const percentage = Math.round(((i + 1) / uris.length) * 100)
 
         // Update progress
-        this.connection.sendProgress("$/progress", progressToken, {
-          kind: "report",
-          message: `${i + 1}/${uris.length}`,
-          percentage,
-        })
+        progress.report(percentage, `${i + 1}/${uris.length}`)
 
         // Format document
         try {
@@ -142,10 +117,7 @@ export class FormattingHandler {
       }
 
       // End progress
-      this.connection.sendProgress("$/progress", progressToken, {
-        kind: "end",
-        message: `Completed ${results.size}/${uris.length} files`,
-      })
+      progress.done()
 
       logger.info(`Batch formatting completed: ${results.size}/${uris.length} successful`)
 

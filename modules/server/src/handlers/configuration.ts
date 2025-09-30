@@ -24,7 +24,7 @@ export class ConfigurationHandler {
     logger.info("Initializing configuration handler")
 
     // Register for configuration changes
-    this.connection.workspace.onDidChangeConfiguration((change) => {
+    this.connection.onDidChangeConfiguration((change: any) => {
       logger.info("Configuration changed", { settings: change.settings })
       this.handleConfigurationChange(change.settings)
     })

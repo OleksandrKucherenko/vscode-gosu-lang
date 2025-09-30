@@ -4,7 +4,14 @@ import Debug from "debug"
 import { GosuErrorListener } from "./error-listener"
 import { GosuLexer } from "./GosuLexer"
 import { GosuParser as AntlrGosuParser } from "./GosuParser"
-import type { GosuCommentTrivia, GosuParseResult, GosuParserConfig, GosuSyntaxError, GosuToken } from "./types"
+import type {
+  GosuCommentTrivia,
+  GosuCommentType,
+  GosuParseResult,
+  GosuParserConfig,
+  GosuSyntaxError,
+  GosuToken,
+} from "./types"
 
 const debug = Debug("gosu:lsp:parser")
 
@@ -174,17 +181,19 @@ function collectTokens(tokenStream: CommonTokenStream): { tokens: GosuToken[]; c
       type: token.type,
       text: token.text ?? "",
       line: token.line,
-      column: token.charPositionInLine,
+      column: token.column,
       channel: token.channel,
       startIndex: token.start ?? 0,
       stopIndex: token.stop ?? token.start ?? 0,
     }
 
     if (token.type === GosuLexer.LINE_COMMENT || token.type === GosuLexer.COMMENT) {
-      const commentToken = {
+      const commentType: GosuCommentType =
+        token.type === GosuLexer.LINE_COMMENT ? "line" : gosuTokenBase.text.startsWith("/**") ? "doc" : "block"
+
+      const commentToken: GosuCommentTrivia = {
         ...gosuTokenBase,
-        commentType:
-          token.type === GosuLexer.LINE_COMMENT ? "line" : gosuTokenBase.text.startsWith("/**") ? "doc" : "block",
+        commentType,
       }
 
       tokens.push(commentToken)

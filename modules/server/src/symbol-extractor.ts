@@ -248,7 +248,7 @@ export class GosuSymbolExtractor {
     const childCount = node.getChildCount()
     for (let i = 0; i < childCount; i++) {
       const child = node.getChild(i)
-      if (this.getRuleName(child) === "id") {
+      if (child && this.getRuleName(child) === "id") {
         interfaceName = child.getText()
         break
       }
@@ -292,7 +292,7 @@ export class GosuSymbolExtractor {
     const childCount = node.getChildCount()
     for (let i = 0; i < childCount; i++) {
       const child = node.getChild(i)
-      if (this.getRuleName(child) === "id") {
+      if (child && this.getRuleName(child) === "id") {
         enhancementName = child.getText()
         break
       }
@@ -613,7 +613,7 @@ export class GosuSymbolExtractor {
     const childCount = parent.getChildCount()
     for (let i = 0; i < childCount; i++) {
       const sibling = parent.getChild(i)
-      if (this.getRuleName(sibling) === "modifiers") {
+      if (sibling && this.getRuleName(sibling) === "modifiers") {
         const modifierText = sibling.getText().toLowerCase()
         if (["public", "private", "protected", "internal"].includes(modifierText)) {
           return modifierText

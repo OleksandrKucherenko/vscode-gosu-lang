@@ -15,7 +15,9 @@ import { executeShowConfigCommand } from "./cli/show-config.js"
 // Read package.json for version
 let version = "0.0.1"
 try {
-  const packageJson = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf-8"))
+  const { join } = require("node:path")
+  const packageJsonPath = join(__dirname, "../package.json")
+  const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"))
   version = packageJson.version
 } catch {
   // Use default version if package.json not found

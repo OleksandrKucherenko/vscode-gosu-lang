@@ -3,7 +3,7 @@
  * Uses @vscode-logging/logger for structured logging to VSCode output channel
  */
 
-import { getLogger, type IVSCodeExtLogger } from "@vscode-logging/logger"
+import { getExtensionLogger, type IVSCodeExtLogger } from "@vscode-logging/logger"
 
 /**
  * Log levels supported by the logger
@@ -43,8 +43,8 @@ export function initializeLogger(config: Partial<LoggerConfig> = {}): IVSCodeExt
   }
 
   if (!loggerInstance) {
-    loggerInstance = getLogger({
-      label: "Gosu Language Server",
+    loggerInstance = getExtensionLogger({
+      extName: "Gosu Language Server",
       level: currentConfig.level,
       // File logging configuration
       ...(currentConfig.logFile && {
@@ -54,7 +54,7 @@ export function initializeLogger(config: Partial<LoggerConfig> = {}): IVSCodeExt
     })
   }
 
-  return loggerInstance
+  return loggerInstance!
 }
 
 /**

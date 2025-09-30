@@ -192,7 +192,7 @@
     "oniguruma": "^7.2.3",
     "rimraf": "^6.0.1",
     "tsx": "^4.20.5",
-    "turbo": "^2.5.6",
+    "turbo": "^2.5.8",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4",
     "vscode-textmate": "^9.2.0"

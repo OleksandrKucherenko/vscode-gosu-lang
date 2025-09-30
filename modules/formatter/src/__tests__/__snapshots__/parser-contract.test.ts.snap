@@ -26728,6 +26728,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 82,
       "text": "package",
       "line": 1,
+      "column": 0,
       "channel": 0,
       "startIndex": 0,
       "stopIndex": 6
@@ -26736,6 +26737,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 160,
       "text": " ",
       "line": 1,
+      "column": 7,
       "channel": 1,
       "startIndex": 7,
       "stopIndex": 7
@@ -26744,6 +26746,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 154,
       "text": "test",
       "line": 1,
+      "column": 8,
       "channel": 0,
       "startIndex": 8,
       "stopIndex": 11
@@ -26752,6 +26755,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 160,
       "text": "\\n\\n",
       "line": 1,
+      "column": 12,
       "channel": 1,
       "startIndex": 12,
       "stopIndex": 13
@@ -26760,6 +26764,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 136,
       "text": "public",
       "line": 3,
+      "column": 0,
       "channel": 0,
       "startIndex": 14,
       "stopIndex": 19
@@ -26768,6 +26773,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 160,
       "text": " ",
       "line": 3,
+      "column": 6,
       "channel": 1,
       "startIndex": 20,
       "stopIndex": 20
@@ -26776,6 +26782,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 110,
       "text": "class",
       "line": 3,
+      "column": 7,
       "channel": 0,
       "startIndex": 21,
       "stopIndex": 25
@@ -26784,6 +26791,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 160,
       "text": " ",
       "line": 3,
+      "column": 12,
       "channel": 1,
       "startIndex": 26,
       "stopIndex": 26
@@ -26792,6 +26800,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 154,
       "text": "SimpleClass",
       "line": 3,
+      "column": 13,
       "channel": 0,
       "startIndex": 27,
       "stopIndex": 37
@@ -26800,6 +26809,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 160,
       "text": " ",
       "line": 3,
+      "column": 24,
       "channel": 1,
       "startIndex": 38,
       "stopIndex": 38
@@ -26808,6 +26818,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 7,
       "text": "{",
       "line": 3,
+      "column": 25,
       "channel": 0,
       "startIndex": 39,
       "stopIndex": 39
@@ -26816,6 +26827,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 160,
       "text": "\\n  ",
       "line": 3,
+      "column": 26,
       "channel": 1,
       "startIndex": 40,
       "stopIndex": 42
@@ -26824,6 +26836,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 75,
       "text": "var",
       "line": 4,
+      "column": 2,
       "channel": 0,
       "startIndex": 43,
       "stopIndex": 45
@@ -26832,6 +26845,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 160,
       "text": " ",
       "line": 4,
+      "column": 5,
       "channel": 1,
       "startIndex": 46,
       "stopIndex": 46
@@ -26840,6 +26854,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 154,
       "text": "_field",
       "line": 4,
+      "column": 6,
       "channel": 0,
       "startIndex": 47,
       "stopIndex": 52
@@ -26848,6 +26863,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 160,
       "text": " ",
       "line": 4,
+      "column": 12,
       "channel": 1,
       "startIndex": 53,
       "stopIndex": 53
@@ -26856,6 +26872,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 4,
       "text": ":",
       "line": 4,
+      "column": 13,
       "channel": 0,
       "startIndex": 54,
       "stopIndex": 54
@@ -26864,6 +26881,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 160,
       "text": " ",
       "line": 4,
+      "column": 14,
       "channel": 1,
       "startIndex": 55,
       "stopIndex": 55
@@ -26872,6 +26890,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 154,
       "text": "String",
       "line": 4,
+      "column": 15,
       "channel": 0,
       "startIndex": 56,
       "stopIndex": 61
@@ -26880,6 +26899,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 160,
       "text": " ",
       "line": 4,
+      "column": 21,
       "channel": 1,
       "startIndex": 62,
       "stopIndex": 62
@@ -26888,6 +26908,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 10,
       "text": "=",
       "line": 4,
+      "column": 22,
       "channel": 0,
       "startIndex": 63,
       "stopIndex": 63
@@ -26896,6 +26917,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 160,
       "text": " ",
       "line": 4,
+      "column": 23,
       "channel": 1,
       "startIndex": 64,
       "stopIndex": 64
@@ -26904,6 +26926,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 156,
       "text": "\\"hello\\"",
       "line": 4,
+      "column": 24,
       "channel": 0,
       "startIndex": 65,
       "stopIndex": 71
@@ -26912,6 +26935,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 160,
       "text": "\\n  \\n  ",
       "line": 4,
+      "column": 31,
       "channel": 1,
       "startIndex": 72,
       "stopIndex": 77
@@ -26920,6 +26944,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 94,
       "text": "construct",
       "line": 6,
+      "column": 2,
       "channel": 0,
       "startIndex": 78,
       "stopIndex": 86
@@ -26928,6 +26953,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 14,
       "text": "(",
       "line": 6,
+      "column": 11,
       "channel": 0,
       "startIndex": 87,
       "stopIndex": 87
@@ -26936,6 +26962,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 15,
       "text": ")",
       "line": 6,
+      "column": 12,
       "channel": 0,
       "startIndex": 88,
       "stopIndex": 88
@@ -26944,6 +26971,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 160,
       "text": " ",
       "line": 6,
+      "column": 13,
       "channel": 1,
       "startIndex": 89,
       "stopIndex": 89
@@ -26952,6 +26980,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 7,
       "text": "{",
       "line": 6,
+      "column": 14,
       "channel": 0,
       "startIndex": 90,
       "stopIndex": 90
@@ -26960,6 +26989,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 160,
       "text": "\\n    ",
       "line": 6,
+      "column": 15,
       "channel": 1,
       "startIndex": 91,
       "stopIndex": 95
@@ -26968,6 +26998,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 162,
       "text": "// empty constructor",
       "line": 7,
+      "column": 4,
       "channel": 1,
       "startIndex": 96,
       "stopIndex": 115,
@@ -26977,6 +27008,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 160,
       "text": "\\n  ",
       "line": 7,
+      "column": 24,
       "channel": 1,
       "startIndex": 116,
       "stopIndex": 118
@@ -26985,6 +27017,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 8,
       "text": "}",
       "line": 8,
+      "column": 2,
       "channel": 0,
       "startIndex": 119,
       "stopIndex": 119
@@ -26993,6 +27026,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 160,
       "text": "\\n  \\n  ",
       "line": 8,
+      "column": 3,
       "channel": 1,
       "startIndex": 120,
       "stopIndex": 125
@@ -27001,6 +27035,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 95,
       "text": "function",
       "line": 10,
+      "column": 2,
       "channel": 0,
       "startIndex": 126,
       "stopIndex": 133
@@ -27009,6 +27044,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 160,
       "text": " ",
       "line": 10,
+      "column": 10,
       "channel": 1,
       "startIndex": 134,
       "stopIndex": 134
@@ -27017,6 +27053,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 154,
       "text": "getField",
       "line": 10,
+      "column": 11,
       "channel": 0,
       "startIndex": 135,
       "stopIndex": 142
@@ -27025,6 +27062,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 14,
       "text": "(",
       "line": 10,
+      "column": 19,
       "channel": 0,
       "startIndex": 143,
       "stopIndex": 143
@@ -27033,6 +27071,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 15,
       "text": ")",
       "line": 10,
+      "column": 20,
       "channel": 0,
       "startIndex": 144,
       "stopIndex": 144
@@ -27041,6 +27080,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 160,
       "text": " ",
       "line": 10,
+      "column": 21,
       "channel": 1,
       "startIndex": 145,
       "stopIndex": 145
@@ -27049,6 +27089,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 4,
       "text": ":",
       "line": 10,
+      "column": 22,
       "channel": 0,
       "startIndex": 146,
       "stopIndex": 146
@@ -27057,6 +27098,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 160,
       "text": " ",
       "line": 10,
+      "column": 23,
       "channel": 1,
       "startIndex": 147,
       "stopIndex": 147
@@ -27065,6 +27107,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 154,
       "text": "String",
       "line": 10,
+      "column": 24,
       "channel": 0,
       "startIndex": 148,
       "stopIndex": 153
@@ -27073,6 +27116,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 160,
       "text": " ",
       "line": 10,
+      "column": 30,
       "channel": 1,
       "startIndex": 154,
       "stopIndex": 154
@@ -27081,6 +27125,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 7,
       "text": "{",
       "line": 10,
+      "column": 31,
       "channel": 0,
       "startIndex": 155,
       "stopIndex": 155
@@ -27089,6 +27134,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 160,
       "text": "\\n    ",
       "line": 10,
+      "column": 32,
       "channel": 1,
       "startIndex": 156,
       "stopIndex": 160
@@ -27097,6 +27143,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 93,
       "text": "return",
       "line": 11,
+      "column": 4,
       "channel": 0,
       "startIndex": 161,
       "stopIndex": 166
@@ -27105,6 +27152,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 160,
       "text": " ",
       "line": 11,
+      "column": 10,
       "channel": 1,
       "startIndex": 167,
       "stopIndex": 167
@@ -27113,6 +27161,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 154,
       "text": "_field",
       "line": 11,
+      "column": 11,
       "channel": 0,
       "startIndex": 168,
       "stopIndex": 173
@@ -27121,6 +27170,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 160,
       "text": "\\n  ",
       "line": 11,
+      "column": 17,
       "channel": 1,
       "startIndex": 174,
       "stopIndex": 176
@@ -27129,6 +27179,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 8,
       "text": "}",
       "line": 12,
+      "column": 2,
       "channel": 0,
       "startIndex": 177,
       "stopIndex": 177
@@ -27137,6 +27188,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 160,
       "text": "\\n",
       "line": 12,
+      "column": 3,
       "channel": 1,
       "startIndex": 178,
       "stopIndex": 178
@@ -27145,6 +27197,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": 8,
       "text": "}",
       "line": 13,
+      "column": 0,
       "channel": 0,
       "startIndex": 179,
       "stopIndex": 179
@@ -27153,6 +27206,7 @@ exports[`Parser Contract > produces a stable AST for a simple class 1`] = `
       "type": -1,
       "text": "<EOF>",
       "line": 13,
+      "column": 1,
       "channel": 0,
       "startIndex": 180,
       "stopIndex": 179
@@ -61476,6 +61530,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 82,
       "text": "package",
       "line": 1,
+      "column": 0,
       "channel": 0,
       "startIndex": 0,
       "stopIndex": 6
@@ -61484,6 +61539,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 160,
       "text": " ",
       "line": 1,
+      "column": 7,
       "channel": 1,
       "startIndex": 7,
       "stopIndex": 7
@@ -61492,6 +61548,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 154,
       "text": "test",
       "line": 1,
+      "column": 8,
       "channel": 0,
       "startIndex": 8,
       "stopIndex": 11
@@ -61500,6 +61557,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 160,
       "text": "\\n\\n",
       "line": 1,
+      "column": 12,
       "channel": 1,
       "startIndex": 12,
       "stopIndex": 13
@@ -61508,6 +61566,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 149,
       "text": "enhancement",
       "line": 3,
+      "column": 0,
       "channel": 0,
       "startIndex": 14,
       "stopIndex": 24
@@ -61516,6 +61575,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 160,
       "text": " ",
       "line": 3,
+      "column": 11,
       "channel": 1,
       "startIndex": 25,
       "stopIndex": 25
@@ -61524,6 +61584,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 154,
       "text": "MyStringEnhancement",
       "line": 3,
+      "column": 12,
       "channel": 0,
       "startIndex": 26,
       "stopIndex": 44
@@ -61532,6 +61593,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 160,
       "text": " ",
       "line": 3,
+      "column": 31,
       "channel": 1,
       "startIndex": 45,
       "stopIndex": 45
@@ -61540,6 +61602,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 4,
       "text": ":",
       "line": 3,
+      "column": 32,
       "channel": 0,
       "startIndex": 46,
       "stopIndex": 46
@@ -61548,6 +61611,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 160,
       "text": " ",
       "line": 3,
+      "column": 33,
       "channel": 1,
       "startIndex": 47,
       "stopIndex": 47
@@ -61556,6 +61620,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 154,
       "text": "String",
       "line": 3,
+      "column": 34,
       "channel": 0,
       "startIndex": 48,
       "stopIndex": 53
@@ -61564,6 +61629,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 160,
       "text": " ",
       "line": 3,
+      "column": 40,
       "channel": 1,
       "startIndex": 54,
       "stopIndex": 54
@@ -61572,6 +61638,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 7,
       "text": "{",
       "line": 3,
+      "column": 41,
       "channel": 0,
       "startIndex": 55,
       "stopIndex": 55
@@ -61580,6 +61647,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 160,
       "text": "\\n  ",
       "line": 3,
+      "column": 42,
       "channel": 1,
       "startIndex": 56,
       "stopIndex": 58
@@ -61588,6 +61656,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 95,
       "text": "function",
       "line": 4,
+      "column": 2,
       "channel": 0,
       "startIndex": 59,
       "stopIndex": 66
@@ -61596,6 +61665,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 160,
       "text": " ",
       "line": 4,
+      "column": 10,
       "channel": 1,
       "startIndex": 67,
       "stopIndex": 67
@@ -61604,6 +61674,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 154,
       "text": "printWarning",
       "line": 4,
+      "column": 11,
       "channel": 0,
       "startIndex": 68,
       "stopIndex": 79
@@ -61612,6 +61683,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 14,
       "text": "(",
       "line": 4,
+      "column": 23,
       "channel": 0,
       "startIndex": 80,
       "stopIndex": 80
@@ -61620,6 +61692,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 15,
       "text": ")",
       "line": 4,
+      "column": 24,
       "channel": 0,
       "startIndex": 81,
       "stopIndex": 81
@@ -61628,6 +61701,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 160,
       "text": " ",
       "line": 4,
+      "column": 25,
       "channel": 1,
       "startIndex": 82,
       "stopIndex": 82
@@ -61636,6 +61710,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 7,
       "text": "{",
       "line": 4,
+      "column": 26,
       "channel": 0,
       "startIndex": 83,
       "stopIndex": 83
@@ -61644,6 +61719,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 160,
       "text": "\\n    ",
       "line": 4,
+      "column": 27,
       "channel": 1,
       "startIndex": 84,
       "stopIndex": 88
@@ -61652,6 +61728,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 154,
       "text": "print",
       "line": 5,
+      "column": 4,
       "channel": 0,
       "startIndex": 89,
       "stopIndex": 93
@@ -61660,6 +61737,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 14,
       "text": "(",
       "line": 5,
+      "column": 9,
       "channel": 0,
       "startIndex": 94,
       "stopIndex": 94
@@ -61668,6 +61746,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 156,
       "text": "\\"WARNING: \\"",
       "line": 5,
+      "column": 10,
       "channel": 0,
       "startIndex": 95,
       "stopIndex": 105
@@ -61676,6 +61755,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 160,
       "text": " ",
       "line": 5,
+      "column": 21,
       "channel": 1,
       "startIndex": 106,
       "stopIndex": 106
@@ -61684,6 +61764,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 21,
       "text": "+",
       "line": 5,
+      "column": 22,
       "channel": 0,
       "startIndex": 107,
       "stopIndex": 107
@@ -61692,6 +61773,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 160,
       "text": " ",
       "line": 5,
+      "column": 23,
       "channel": 1,
       "startIndex": 108,
       "stopIndex": 108
@@ -61700,6 +61782,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 152,
       "text": "this",
       "line": 5,
+      "column": 24,
       "channel": 0,
       "startIndex": 109,
       "stopIndex": 112
@@ -61708,6 +61791,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 15,
       "text": ")",
       "line": 5,
+      "column": 28,
       "channel": 0,
       "startIndex": 113,
       "stopIndex": 113
@@ -61716,6 +61800,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 160,
       "text": "\\n  ",
       "line": 5,
+      "column": 29,
       "channel": 1,
       "startIndex": 114,
       "stopIndex": 116
@@ -61724,6 +61809,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 8,
       "text": "}",
       "line": 6,
+      "column": 2,
       "channel": 0,
       "startIndex": 117,
       "stopIndex": 117
@@ -61732,6 +61818,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 160,
       "text": "\\n",
       "line": 6,
+      "column": 3,
       "channel": 1,
       "startIndex": 118,
       "stopIndex": 118
@@ -61740,6 +61827,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": 8,
       "text": "}",
       "line": 7,
+      "column": 0,
       "channel": 0,
       "startIndex": 119,
       "stopIndex": 119
@@ -61748,6 +61836,7 @@ exports[`Parser Contract > produces a stable AST for an enhancement 1`] = `
       "type": -1,
       "text": "<EOF>",
       "line": 7,
+      "column": 1,
       "channel": 0,
       "startIndex": 120,
       "stopIndex": 119
@@ -95109,6 +95198,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 82,
       "text": "package",
       "line": 1,
+      "column": 0,
       "channel": 0,
       "startIndex": 0,
       "stopIndex": 6
@@ -95117,6 +95207,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": " ",
       "line": 1,
+      "column": 7,
       "channel": 1,
       "startIndex": 7,
       "stopIndex": 7
@@ -95125,6 +95216,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 154,
       "text": "com",
       "line": 1,
+      "column": 8,
       "channel": 0,
       "startIndex": 8,
       "stopIndex": 10
@@ -95133,6 +95225,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 2,
       "text": ".",
       "line": 1,
+      "column": 11,
       "channel": 0,
       "startIndex": 11,
       "stopIndex": 11
@@ -95141,6 +95234,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 154,
       "text": "example",
       "line": 1,
+      "column": 12,
       "channel": 0,
       "startIndex": 12,
       "stopIndex": 18
@@ -95149,6 +95243,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 2,
       "text": ".",
       "line": 1,
+      "column": 19,
       "channel": 0,
       "startIndex": 19,
       "stopIndex": 19
@@ -95157,6 +95252,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 154,
       "text": "interfaces",
       "line": 1,
+      "column": 20,
       "channel": 0,
       "startIndex": 20,
       "stopIndex": 29
@@ -95165,6 +95261,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": "\\n\\n",
       "line": 1,
+      "column": 30,
       "channel": 1,
       "startIndex": 30,
       "stopIndex": 31
@@ -95173,6 +95270,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 83,
       "text": "uses",
       "line": 3,
+      "column": 0,
       "channel": 0,
       "startIndex": 32,
       "stopIndex": 35
@@ -95181,6 +95279,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": " ",
       "line": 3,
+      "column": 4,
       "channel": 1,
       "startIndex": 36,
       "stopIndex": 36
@@ -95189,6 +95288,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 154,
       "text": "java",
       "line": 3,
+      "column": 5,
       "channel": 0,
       "startIndex": 37,
       "stopIndex": 40
@@ -95197,6 +95297,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 2,
       "text": ".",
       "line": 3,
+      "column": 9,
       "channel": 0,
       "startIndex": 41,
       "stopIndex": 41
@@ -95205,6 +95306,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 154,
       "text": "util",
       "line": 3,
+      "column": 10,
       "channel": 0,
       "startIndex": 42,
       "stopIndex": 45
@@ -95213,6 +95315,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 2,
       "text": ".",
       "line": 3,
+      "column": 14,
       "channel": 0,
       "startIndex": 46,
       "stopIndex": 46
@@ -95221,6 +95324,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 154,
       "text": "List",
       "line": 3,
+      "column": 15,
       "channel": 0,
       "startIndex": 47,
       "stopIndex": 50
@@ -95229,6 +95333,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": "\\n\\n",
       "line": 3,
+      "column": 19,
       "channel": 1,
       "startIndex": 51,
       "stopIndex": 52
@@ -95237,6 +95342,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 161,
       "text": "/**\\n * Sample interface definition\\n */",
       "line": 5,
+      "column": 0,
       "channel": 1,
       "startIndex": 53,
       "stopIndex": 90,
@@ -95246,6 +95352,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": "\\n",
       "line": 7,
+      "column": 3,
       "channel": 1,
       "startIndex": 91,
       "stopIndex": 91
@@ -95254,6 +95361,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 136,
       "text": "public",
       "line": 8,
+      "column": 0,
       "channel": 0,
       "startIndex": 92,
       "stopIndex": 97
@@ -95262,6 +95370,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": " ",
       "line": 8,
+      "column": 6,
       "channel": 1,
       "startIndex": 98,
       "stopIndex": 98
@@ -95270,6 +95379,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 111,
       "text": "interface",
       "line": 8,
+      "column": 7,
       "channel": 0,
       "startIndex": 99,
       "stopIndex": 107
@@ -95278,6 +95388,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": " ",
       "line": 8,
+      "column": 16,
       "channel": 1,
       "startIndex": 108,
       "stopIndex": 108
@@ -95286,6 +95397,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 154,
       "text": "ITestInterface",
       "line": 8,
+      "column": 17,
       "channel": 0,
       "startIndex": 109,
       "stopIndex": 122
@@ -95294,6 +95406,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": " ",
       "line": 8,
+      "column": 31,
       "channel": 1,
       "startIndex": 123,
       "stopIndex": 123
@@ -95302,6 +95415,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 7,
       "text": "{",
       "line": 8,
+      "column": 32,
       "channel": 0,
       "startIndex": 124,
       "stopIndex": 124
@@ -95310,6 +95424,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": "\\n  \\n  ",
       "line": 8,
+      "column": 33,
       "channel": 1,
       "startIndex": 125,
       "stopIndex": 130
@@ -95318,6 +95433,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 161,
       "text": "/**\\n   * Get items method\\n   */",
       "line": 10,
+      "column": 2,
       "channel": 1,
       "startIndex": 131,
       "stopIndex": 161,
@@ -95327,6 +95443,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": "\\n  ",
       "line": 12,
+      "column": 5,
       "channel": 1,
       "startIndex": 162,
       "stopIndex": 164
@@ -95335,6 +95452,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 95,
       "text": "function",
       "line": 13,
+      "column": 2,
       "channel": 0,
       "startIndex": 165,
       "stopIndex": 172
@@ -95343,6 +95461,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": " ",
       "line": 13,
+      "column": 10,
       "channel": 1,
       "startIndex": 173,
       "stopIndex": 173
@@ -95351,6 +95470,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 154,
       "text": "getItems",
       "line": 13,
+      "column": 11,
       "channel": 0,
       "startIndex": 174,
       "stopIndex": 181
@@ -95359,6 +95479,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 14,
       "text": "(",
       "line": 13,
+      "column": 19,
       "channel": 0,
       "startIndex": 182,
       "stopIndex": 182
@@ -95367,6 +95488,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 15,
       "text": ")",
       "line": 13,
+      "column": 20,
       "channel": 0,
       "startIndex": 183,
       "stopIndex": 183
@@ -95375,6 +95497,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": " ",
       "line": 13,
+      "column": 21,
       "channel": 1,
       "startIndex": 184,
       "stopIndex": 184
@@ -95383,6 +95506,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 4,
       "text": ":",
       "line": 13,
+      "column": 22,
       "channel": 0,
       "startIndex": 185,
       "stopIndex": 185
@@ -95391,6 +95515,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": " ",
       "line": 13,
+      "column": 23,
       "channel": 1,
       "startIndex": 186,
       "stopIndex": 186
@@ -95399,6 +95524,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 154,
       "text": "List",
       "line": 13,
+      "column": 24,
       "channel": 0,
       "startIndex": 187,
       "stopIndex": 190
@@ -95407,6 +95533,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 12,
       "text": "<",
       "line": 13,
+      "column": 28,
       "channel": 0,
       "startIndex": 191,
       "stopIndex": 191
@@ -95415,6 +95542,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 154,
       "text": "String",
       "line": 13,
+      "column": 29,
       "channel": 0,
       "startIndex": 192,
       "stopIndex": 197
@@ -95423,6 +95551,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 13,
       "text": ">",
       "line": 13,
+      "column": 35,
       "channel": 0,
       "startIndex": 198,
       "stopIndex": 198
@@ -95431,6 +95560,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": "\\n  \\n  ",
       "line": 13,
+      "column": 36,
       "channel": 1,
       "startIndex": 199,
       "stopIndex": 204
@@ -95439,6 +95569,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 161,
       "text": "/**\\n   * Process item method\\n   */",
       "line": 15,
+      "column": 2,
       "channel": 1,
       "startIndex": 205,
       "stopIndex": 238,
@@ -95448,6 +95579,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": "\\n  ",
       "line": 17,
+      "column": 5,
       "channel": 1,
       "startIndex": 239,
       "stopIndex": 241
@@ -95456,6 +95588,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 95,
       "text": "function",
       "line": 18,
+      "column": 2,
       "channel": 0,
       "startIndex": 242,
       "stopIndex": 249
@@ -95464,6 +95597,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": " ",
       "line": 18,
+      "column": 10,
       "channel": 1,
       "startIndex": 250,
       "stopIndex": 250
@@ -95472,6 +95606,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 154,
       "text": "processItem",
       "line": 18,
+      "column": 11,
       "channel": 0,
       "startIndex": 251,
       "stopIndex": 261
@@ -95480,6 +95615,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 14,
       "text": "(",
       "line": 18,
+      "column": 22,
       "channel": 0,
       "startIndex": 262,
       "stopIndex": 262
@@ -95488,6 +95624,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 154,
       "text": "item",
       "line": 18,
+      "column": 23,
       "channel": 0,
       "startIndex": 263,
       "stopIndex": 266
@@ -95496,6 +95633,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": " ",
       "line": 18,
+      "column": 27,
       "channel": 1,
       "startIndex": 267,
       "stopIndex": 267
@@ -95504,6 +95642,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 4,
       "text": ":",
       "line": 18,
+      "column": 28,
       "channel": 0,
       "startIndex": 268,
       "stopIndex": 268
@@ -95512,6 +95651,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": " ",
       "line": 18,
+      "column": 29,
       "channel": 1,
       "startIndex": 269,
       "stopIndex": 269
@@ -95520,6 +95660,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 154,
       "text": "String",
       "line": 18,
+      "column": 30,
       "channel": 0,
       "startIndex": 270,
       "stopIndex": 275
@@ -95528,6 +95669,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 3,
       "text": ",",
       "line": 18,
+      "column": 36,
       "channel": 0,
       "startIndex": 276,
       "stopIndex": 276
@@ -95536,6 +95678,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": " ",
       "line": 18,
+      "column": 37,
       "channel": 1,
       "startIndex": 277,
       "stopIndex": 277
@@ -95544,6 +95687,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 154,
       "text": "options",
       "line": 18,
+      "column": 38,
       "channel": 0,
       "startIndex": 278,
       "stopIndex": 284
@@ -95552,6 +95696,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": " ",
       "line": 18,
+      "column": 45,
       "channel": 1,
       "startIndex": 285,
       "stopIndex": 285
@@ -95560,6 +95705,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 4,
       "text": ":",
       "line": 18,
+      "column": 46,
       "channel": 0,
       "startIndex": 286,
       "stopIndex": 286
@@ -95568,6 +95714,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": " ",
       "line": 18,
+      "column": 47,
       "channel": 1,
       "startIndex": 287,
       "stopIndex": 287
@@ -95576,6 +95723,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 154,
       "text": "Map",
       "line": 18,
+      "column": 48,
       "channel": 0,
       "startIndex": 288,
       "stopIndex": 290
@@ -95584,6 +95732,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 12,
       "text": "<",
       "line": 18,
+      "column": 51,
       "channel": 0,
       "startIndex": 291,
       "stopIndex": 291
@@ -95592,6 +95741,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 154,
       "text": "String",
       "line": 18,
+      "column": 52,
       "channel": 0,
       "startIndex": 292,
       "stopIndex": 297
@@ -95600,6 +95750,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 3,
       "text": ",",
       "line": 18,
+      "column": 58,
       "channel": 0,
       "startIndex": 298,
       "stopIndex": 298
@@ -95608,6 +95759,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": " ",
       "line": 18,
+      "column": 59,
       "channel": 1,
       "startIndex": 299,
       "stopIndex": 299
@@ -95616,6 +95768,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 154,
       "text": "Object",
       "line": 18,
+      "column": 60,
       "channel": 0,
       "startIndex": 300,
       "stopIndex": 305
@@ -95624,6 +95777,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 13,
       "text": ">",
       "line": 18,
+      "column": 66,
       "channel": 0,
       "startIndex": 306,
       "stopIndex": 306
@@ -95632,6 +95786,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 15,
       "text": ")",
       "line": 18,
+      "column": 67,
       "channel": 0,
       "startIndex": 307,
       "stopIndex": 307
@@ -95640,6 +95795,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": " ",
       "line": 18,
+      "column": 68,
       "channel": 1,
       "startIndex": 308,
       "stopIndex": 308
@@ -95648,6 +95804,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 4,
       "text": ":",
       "line": 18,
+      "column": 69,
       "channel": 0,
       "startIndex": 309,
       "stopIndex": 309
@@ -95656,6 +95813,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": " ",
       "line": 18,
+      "column": 70,
       "channel": 1,
       "startIndex": 310,
       "stopIndex": 310
@@ -95664,6 +95822,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 154,
       "text": "boolean",
       "line": 18,
+      "column": 71,
       "channel": 0,
       "startIndex": 311,
       "stopIndex": 317
@@ -95672,6 +95831,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": "\\n  \\n  ",
       "line": 18,
+      "column": 78,
       "channel": 1,
       "startIndex": 318,
       "stopIndex": 323
@@ -95680,6 +95840,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 161,
       "text": "/**\\n   * Status property\\n   */",
       "line": 20,
+      "column": 2,
       "channel": 1,
       "startIndex": 324,
       "stopIndex": 353,
@@ -95689,6 +95850,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": "\\n  ",
       "line": 22,
+      "column": 5,
       "channel": 1,
       "startIndex": 354,
       "stopIndex": 356
@@ -95697,6 +95859,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 96,
       "text": "property",
       "line": 23,
+      "column": 2,
       "channel": 0,
       "startIndex": 357,
       "stopIndex": 364
@@ -95705,6 +95868,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": " ",
       "line": 23,
+      "column": 10,
       "channel": 1,
       "startIndex": 365,
       "stopIndex": 365
@@ -95713,6 +95877,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 130,
       "text": "get",
       "line": 23,
+      "column": 11,
       "channel": 0,
       "startIndex": 366,
       "stopIndex": 368
@@ -95721,6 +95886,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": " ",
       "line": 23,
+      "column": 14,
       "channel": 1,
       "startIndex": 369,
       "stopIndex": 369
@@ -95729,6 +95895,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 154,
       "text": "Status",
       "line": 23,
+      "column": 15,
       "channel": 0,
       "startIndex": 370,
       "stopIndex": 375
@@ -95737,6 +95904,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 14,
       "text": "(",
       "line": 23,
+      "column": 21,
       "channel": 0,
       "startIndex": 376,
       "stopIndex": 376
@@ -95745,6 +95913,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 15,
       "text": ")",
       "line": 23,
+      "column": 22,
       "channel": 0,
       "startIndex": 377,
       "stopIndex": 377
@@ -95753,6 +95922,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": " ",
       "line": 23,
+      "column": 23,
       "channel": 1,
       "startIndex": 378,
       "stopIndex": 378
@@ -95761,6 +95931,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 4,
       "text": ":",
       "line": 23,
+      "column": 24,
       "channel": 0,
       "startIndex": 379,
       "stopIndex": 379
@@ -95769,6 +95940,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": " ",
       "line": 23,
+      "column": 25,
       "channel": 1,
       "startIndex": 380,
       "stopIndex": 380
@@ -95777,6 +95949,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 154,
       "text": "String",
       "line": 23,
+      "column": 26,
       "channel": 0,
       "startIndex": 381,
       "stopIndex": 386
@@ -95785,6 +95958,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": "\\n  ",
       "line": 23,
+      "column": 32,
       "channel": 1,
       "startIndex": 387,
       "stopIndex": 389
@@ -95793,6 +95967,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 96,
       "text": "property",
       "line": 24,
+      "column": 2,
       "channel": 0,
       "startIndex": 390,
       "stopIndex": 397
@@ -95801,6 +95976,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": " ",
       "line": 24,
+      "column": 10,
       "channel": 1,
       "startIndex": 398,
       "stopIndex": 398
@@ -95809,6 +95985,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 131,
       "text": "set",
       "line": 24,
+      "column": 11,
       "channel": 0,
       "startIndex": 399,
       "stopIndex": 401
@@ -95817,6 +95994,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": " ",
       "line": 24,
+      "column": 14,
       "channel": 1,
       "startIndex": 402,
       "stopIndex": 402
@@ -95825,6 +96003,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 154,
       "text": "Status",
       "line": 24,
+      "column": 15,
       "channel": 0,
       "startIndex": 403,
       "stopIndex": 408
@@ -95833,6 +96012,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 14,
       "text": "(",
       "line": 24,
+      "column": 21,
       "channel": 0,
       "startIndex": 409,
       "stopIndex": 409
@@ -95841,6 +96021,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 154,
       "text": "value",
       "line": 24,
+      "column": 22,
       "channel": 0,
       "startIndex": 410,
       "stopIndex": 414
@@ -95849,6 +96030,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": " ",
       "line": 24,
+      "column": 27,
       "channel": 1,
       "startIndex": 415,
       "stopIndex": 415
@@ -95857,6 +96039,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 4,
       "text": ":",
       "line": 24,
+      "column": 28,
       "channel": 0,
       "startIndex": 416,
       "stopIndex": 416
@@ -95865,6 +96048,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": " ",
       "line": 24,
+      "column": 29,
       "channel": 1,
       "startIndex": 417,
       "stopIndex": 417
@@ -95873,6 +96057,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 154,
       "text": "String",
       "line": 24,
+      "column": 30,
       "channel": 0,
       "startIndex": 418,
       "stopIndex": 423
@@ -95881,6 +96066,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 15,
       "text": ")",
       "line": 24,
+      "column": 36,
       "channel": 0,
       "startIndex": 424,
       "stopIndex": 424
@@ -95889,6 +96075,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 160,
       "text": "\\n",
       "line": 24,
+      "column": 37,
       "channel": 1,
       "startIndex": 425,
       "stopIndex": 425
@@ -95897,6 +96084,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": 8,
       "text": "}",
       "line": 25,
+      "column": 0,
       "channel": 0,
       "startIndex": 426,
       "stopIndex": 426
@@ -95905,6 +96093,7 @@ exports[`Parser Contract > produces a stable AST for an interface 1`] = `
       "type": -1,
       "text": "<EOF>",
       "line": 25,
+      "column": 1,
       "channel": 0,
       "startIndex": 427,
       "stopIndex": 426

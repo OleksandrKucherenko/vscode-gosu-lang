@@ -326,7 +326,7 @@ class FormattingTreeBuilder {
     return {
       start: {
         line: start?.line ?? 1,
-        column: start?.charPositionInLine ?? 0,
+        column: start?.column ?? 0,
       },
       end: {
         line: stop?.line ?? start?.line ?? 1,
