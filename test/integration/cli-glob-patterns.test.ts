@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { mkdirSync, writeFileSync, rmSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
+import { resolveFilePaths } from '../../modules/formatter/src/cli/glob.js';
 
 /**
  * Integration test for glob patterns (T015)
@@ -40,7 +41,7 @@ describe('CLI Glob Patterns Integration', () => {
 
     // When: Run with ** pattern
     const pattern = join(srcDir, '**/*.gs');
-    const result = await mockGlobFormat(pattern);
+    const result = await runGlobExpansion(pattern);
 
     // Then: All files found
     expect(result.filesFound).toBe(3);
@@ -58,7 +59,7 @@ describe('CLI Glob Patterns Integration', () => {
 
     // When: Run with * pattern
     const pattern = join(testDir, 'src/*.gs');
-    const result = await mockGlobFormat(pattern);
+    const result = await runGlobExpansion(pattern);
 
     // Then: Only .gs files matched
     expect(result.filesFound).toBe(2);
@@ -74,7 +75,7 @@ describe('CLI Glob Patterns Integration', () => {
 
     // When: Run with ? pattern
     const pattern = join(testDir, 'src/test?.gs');
-    const result = await mockGlobFormat(pattern);
+    const result = await runGlobExpansion(pattern);
 
     // Then: Only single-digit matches
     expect(result.filesFound).toBe(2);
@@ -93,7 +94,7 @@ describe('CLI Glob Patterns Integration', () => {
 
     // When: Run with [abc] pattern
     const pattern = join(testDir, 'src/[abc]test.gs');
-    const result = await mockGlobFormat(pattern);
+    const result = await runGlobExpansion(pattern);
 
     // Then: Only a, b, c matched
     expect(result.filesFound).toBe(3);
@@ -114,7 +115,7 @@ describe('CLI Glob Patterns Integration', () => {
 
     // When: Run with ** pattern
     const pattern = join(testDir, '**/*.gs');
-    const result = await mockGlobFormat(pattern);
+    const result = await runGlobExpansion(pattern);
 
     // Then: node_modules excluded
     expect(result.files).toContain(join(srcDir, 'test.gs'));
@@ -132,7 +133,7 @@ describe('CLI Glob Patterns Integration', () => {
 
     // When: Run with * pattern
     const pattern = join(testDir, 'src/*');
-    const result = await mockGlobFormat(pattern);
+    const result = await runGlobExpansion(pattern);
 
     // Then: Only Gosu files included
     expect(result.filesFound).toBe(4);
@@ -148,7 +149,7 @@ describe('CLI Glob Patterns Integration', () => {
 
     // When: Run with pattern
     const pattern = join(testDir, 'src/*.gs');
-    const result = await mockGlobFormat(pattern);
+    const result = await runGlobExpansion(pattern);
 
     // Then: Absolute paths returned
     for (const file of result.files) {
@@ -163,7 +164,7 @@ describe('CLI Glob Patterns Integration', () => {
 
     // When: Run with pattern
     const pattern = join(testDir, 'src/*.gs');
-    const result = await mockGlobFormat(pattern);
+    const result = await runGlobExpansion(pattern);
 
     // Then: Empty result
     expect(result.filesFound).toBe(0);
@@ -183,7 +184,7 @@ describe('CLI Glob Patterns Integration', () => {
       join(testDir, 'src/*.gs'),
       join(testDir, 'test/*.gs')
     ];
-    const result = await mockGlobFormat(patterns);
+    const result = await runGlobExpansion(patterns);
 
     // Then: All files from both patterns found
     expect(result.filesFound).toBe(2);
@@ -192,7 +193,15 @@ describe('CLI Glob Patterns Integration', () => {
   });
 });
 
-// Mock implementation - will be replaced with actual implementation
-async function mockGlobFormat(pattern: string | string[]): Promise<any> {
-  throw new Error('Glob expansion not implemented yet - this test should fail');
+// Helper function using real glob implementation
+async function runGlobExpansion(pattern: string | string[]): Promise<{
+  filesFound: number;
+  files: string[];
+}> {
+  const patterns = Array.isArray(pattern) ? pattern : [pattern];
+  const files = await resolveFilePaths(patterns, { cwd: process.cwd() });
+  return {
+    filesFound: files.length,
+    files
+  };
 }

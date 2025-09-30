@@ -335,7 +335,7 @@ class FormattingTreeBuilder {
     }
   }
 
-  private computeEndColumn(stopToken: any): number {
+  private computeEndColumn(stopToken: GosuToken | null): number {
     if (!stopToken) return 0
 
     // Try GosuToken properties first
@@ -346,11 +346,12 @@ class FormattingTreeBuilder {
       }
     }
 
-    // Fallback to antlr Token properties
-    if (stopToken.text && typeof stopToken.charPositionInLine === "number") {
-      return stopToken.charPositionInLine + stopToken.text.length
+    // Fallback to antlr Token properties (using type assertion for legacy compatibility)
+    const antlrToken = stopToken as unknown as { text?: string; charPositionInLine?: number }
+    if (antlrToken.text && typeof antlrToken.charPositionInLine === "number") {
+      return antlrToken.charPositionInLine + antlrToken.text.length
     }
 
-    return stopToken.charPositionInLine ?? stopToken.column ?? 0
+    return antlrToken.charPositionInLine ?? stopToken.column ?? 0
   }
 }

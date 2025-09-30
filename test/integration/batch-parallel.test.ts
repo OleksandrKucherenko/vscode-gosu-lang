@@ -3,6 +3,7 @@ import { mkdirSync, writeFileSync, rmSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { cpus } from 'node:os';
+import { BatchProcessor } from '../../modules/formatter/src/batch.js';
 
 /**
  * Integration test for parallel execution (T014)
@@ -37,7 +38,7 @@ describe('Batch Parallel Execution Integration', () => {
     }
 
     // When: Run batch format
-    const result = await mockBatchFormat(files);
+    const result = await runBatchFormat(files);
 
     // Then: Sequential execution used
     expect(result.executionMode).toBe('sequential');
@@ -53,7 +54,7 @@ describe('Batch Parallel Execution Integration', () => {
     }
 
     // When: Run batch format
-    const result = await mockBatchFormat(files);
+    const result = await runBatchFormat(files);
 
     // Then: Parallel execution used
     expect(result.executionMode).toBe('parallel');
@@ -69,7 +70,7 @@ describe('Batch Parallel Execution Integration', () => {
     }
 
     // When: Run batch format
-    const result = await mockBatchFormat(files);
+    const result = await runBatchFormat(files);
 
     // Then: Concurrency limited to CPU cores
     const maxConcurrency = cpus().length;
@@ -86,7 +87,7 @@ describe('Batch Parallel Execution Integration', () => {
     }
 
     // When: Run batch format
-    const result = await mockBatchFormat(files);
+    const result = await runBatchFormat(files);
 
     // Then: Parallel execution is faster
     // (This is a simplified check - actual test would compare timings)
@@ -105,7 +106,7 @@ describe('Batch Parallel Execution Integration', () => {
     }
 
     // When: Run batch format
-    const result = await mockBatchFormat(files);
+    const result = await runBatchFormat(files);
 
     // Then: Successful files processed, errors reported
     expect(result.summary.formatted + result.summary.unchanged).toBeGreaterThan(0);
@@ -143,7 +144,7 @@ describe('Batch Parallel Execution Integration', () => {
     }
 
     // When: Run batch format
-    const result = await mockBatchFormat(files);
+    const result = await runBatchFormat(files);
 
     // Then: Metrics include execution mode and concurrency
     expect(result.executionMode).toBeDefined();
@@ -154,7 +155,8 @@ describe('Batch Parallel Execution Integration', () => {
   });
 });
 
-// Mock implementation - will be replaced with actual implementation
-async function mockBatchFormat(files: string[]): Promise<any> {
-  throw new Error('BatchProcessor not implemented yet - this test should fail');
+// Helper using real implementation
+async function runBatchFormat(files: string[]) {
+  const processor = new BatchProcessor({ files, write: false });
+  return await processor.execute();
 }

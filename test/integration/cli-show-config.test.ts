@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { mkdirSync, writeFileSync, rmSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
+import { executeShowConfigCommand, type ShowConfigResult } from '../../modules/formatter/src/cli/show-config.js';
 
 /**
  * Integration test for CLI show-config (T011)
@@ -34,8 +35,8 @@ describe('CLI Show Config Integration', () => {
       maxLineLength: 120
     }, null, 2));
 
-    // When: Run show-config
-    const result = await mockShowConfig(testDir);
+    // When: Run show-config with real implementation
+    const result = await executeShowConfigCommand({ cwd: testDir });
 
     // Then: JSON output with config and sources
     expect(result.exitCode).toBe(0);
@@ -56,8 +57,8 @@ describe('CLI Show Config Integration', () => {
 
   it('should show default configuration when no config file exists', async () => {
     // Given: Directory with no config file
-    // When: Run show-config
-    const result = await mockShowConfig(testDir);
+    // When: Run show-config with real implementation
+    const result = await executeShowConfigCommand({ cwd: testDir });
 
     // Then: Default configuration displayed
     expect(result.exitCode).toBe(0);
@@ -72,8 +73,8 @@ describe('CLI Show Config Integration', () => {
     const configFile = join(testDir, '.gosuformatting.json');
     writeFileSync(configFile, JSON.stringify({ indentSize: 2 }));
 
-    // When: Run show-config
-    const result = await mockShowConfig(testDir);
+    // When: Run show-config with real implementation
+    const result = await executeShowConfigCommand({ cwd: testDir });
 
     // Then: Sources include metadata
     const config = JSON.parse(result.output);
@@ -94,8 +95,8 @@ describe('CLI Show Config Integration', () => {
       maxLineLength: 120,
     }`);
 
-    // When: Run show-config
-    const result = await mockShowConfig(testDir);
+    // When: Run show-config with real implementation
+    const result = await executeShowConfigCommand({ cwd: testDir });
 
     // Then: Config parsed correctly
     expect(result.exitCode).toBe(0);
@@ -104,11 +105,3 @@ describe('CLI Show Config Integration', () => {
   });
 });
 
-// Mock implementation - will be replaced with actual CLI execution
-async function mockShowConfig(directory: string): Promise<{
-  exitCode: number;
-  output: string;
-}> {
-  // This is a placeholder that will fail until the actual implementation exists
-  throw new Error('ShowConfigCommand not implemented yet - this test should fail');
-}
