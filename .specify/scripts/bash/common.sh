@@ -28,7 +28,9 @@ get_current_branch() {
 
     # For non-git repos, try to find the latest feature directory
     local repo_root=$(get_repo_root)
-    local specs_dir="$repo_root/specs"
+    # Use SPECIFY_SPECS_DIR environment variable if set, otherwise default to .specify/specs
+    local specs_base="${SPECIFY_SPECS_DIR:-.specify/specs}"
+    local specs_dir="$repo_root/$specs_base"
 
     if [[ -d "$specs_dir" ]]; then
         local latest_feature=""
@@ -81,7 +83,13 @@ check_feature_branch() {
     return 0
 }
 
-get_feature_dir() { echo "$1/specs/$2"; }
+get_feature_dir() {
+    local repo_root="$1"
+    local branch="$2"
+    # Use SPECIFY_SPECS_DIR environment variable if set, otherwise default to .specify/specs
+    local specs_base="${SPECIFY_SPECS_DIR:-.specify/specs}"
+    echo "$repo_root/$specs_base/$branch"
+}
 
 get_feature_paths() {
     local repo_root=$(get_repo_root)

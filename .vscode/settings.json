@@ -1,2 +1,22 @@
 {
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "terminal.integrated.profiles.linux": {
+    "bash": {
+      "path": "/bin/bash",
+      "args": ["--noprofile", "--norc"],
+      "icon": "terminal-bash"
+    },
+    "bash-with-profile": {
+      "path": "/bin/bash",
+      "icon": "terminal-bash"
+    },
+    "zsh": {
+      "path": "/bin/zsh",
+      "icon": "terminal-linux"
+    }
+  },
+  "terminal.integrated.automationProfile.linux": {
+    "path": "/bin/bash",
+    "args": ["--noprofile", "--norc"]
+  }
 }
