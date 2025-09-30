@@ -24,11 +24,17 @@
   "license": "MIT",
   "dependencies": {
     "json5": "^2.2.3",
-    "jsonc-parser": "^3.3.1"
+    "jsonc-parser": "^3.3.1",
+    "commander": "^11.0.0",
+    "fast-glob": "^3.3.0",
+    "chokidar": "^3.5.0",
+    "debug": "^4.4.3"
   },
   "devDependencies": {
     "rimraf": "^6.0.1",
     "typescript": "^5.9.2",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "@types/node": "^24.4.0",
+    "@types/debug": "^4.1.12"
   }
 }

@@ -28,11 +28,11 @@
 
 ## Phase 3.1: Setup
 
-- [ ] **T001** [P] Add commander ^11.0.0, fast-glob ^3.3.0, chokidar ^3.5.0 to modules/formatter/package.json dependencies
-- [ ] **T002** [P] Add @vscode-logging/logger ^2.0.0 to modules/server/package.json dependencies (VSCode extension logging)
-- [ ] **T003** [P] Verify debug ^4.4.3 is in dependencies (already exists, used for CLI/non-VSCode logging)
-- [ ] **T004** [P] Add @types/node to modules/formatter/package.json devDependencies
-- [ ] **T005** [P] Create directory structure: modules/formatter/src/cli/, modules/formatter/test/cli/, modules/formatter/test/logger/, modules/formatter/test/config-watcher/, modules/formatter/test/batch/
+- [X] **T001** [P] Add commander ^11.0.0, fast-glob ^3.3.0, chokidar ^3.5.0 to modules/formatter/package.json dependencies
+- [X] **T002** [P] Add @vscode-logging/logger ^2.0.0 to modules/server/package.json dependencies (VSCode extension logging)
+- [X] **T003** [P] Verify debug ^4.4.3 is in dependencies (already exists, used for CLI/non-VSCode logging)
+- [X] **T004** [P] Add @types/node to modules/formatter/package.json devDependencies
+- [X] **T005** [P] Create directory structure: modules/formatter/src/cli/, modules/formatter/test/cli/, modules/formatter/test/logger/, modules/formatter/test/config-watcher/, modules/formatter/test/batch/
 
 ---
 
@@ -42,58 +42,58 @@
 
 ### Contract Tests
 
-- [ ] **T006** [P] Contract test for CLIOptions in modules/formatter/test/cli/options.contract.test.ts
+- [X] **T006** [P] Contract test for CLIOptions in modules/formatter/test/cli/options.contract.test.ts
   - Valid: `{ files: ["test.gs"], write: true }`
   - Valid: `{ showConfig: true }`
   - Invalid: `{ check: true, write: true }` (mutually exclusive)
   - Invalid: `{ files: [] }` (no files without showConfig)
   - Invalid: `{ logLevel: "trace" }` (invalid level)
 
-- [ ] **T007** [P] Contract test for ConfigResolution in modules/formatter/test/config/resolution.contract.test.ts
+- [X] **T007** [P] Contract test for ConfigResolution in modules/formatter/test/config/resolution.contract.test.ts
   - Valid: cascade with project + defaults
   - Valid: explicit config file
   - Invalid: empty sources array
   - Invalid: missing required fields
 
-- [ ] **T008** [P] Contract test for LogEntry in modules/formatter/test/logger/entry.contract.test.ts
+- [X] **T008** [P] Contract test for LogEntry in modules/formatter/test/logger/entry.contract.test.ts
   - Valid: complete log entry with metadata
   - Valid: minimal log entry (no metadata)
   - Invalid: missing timestamp, invalid level, empty message
   - Verify formatted string pattern
 
-- [ ] **T009** [P] Contract test for FormatSummary in modules/formatter/test/batch/summary.contract.test.ts
+- [X] **T009** [P] Contract test for FormatSummary in modules/formatter/test/batch/summary.contract.test.ts
   - Valid: summary with all fields
   - Valid: totalFiles === sum of categories
   - Invalid: negative counts, totalFiles mismatch
 
 ### Integration Tests
 
-- [ ] **T010** [P] Integration test for CLI check mode in test/integration/cli-check-mode.test.ts
+- [X] **T010** [P] Integration test for CLI check mode in test/integration/cli-check-mode.test.ts
   - Given: Directory with 3 files (1 formatted, 2 unformatted)
   - When: Run `gosu-format --check src/`
   - Then: Exit code 1, lists 2 files needing formatting, no files modified
 
-- [ ] **T011** [P] Integration test for CLI show-config in test/integration/cli-show-config.test.ts
+- [X] **T011** [P] Integration test for CLI show-config in test/integration/cli-show-config.test.ts
   - Given: Project with `.gosuformatting.json`
   - When: Run `gosu-format --show-config`
   - Then: JSON output with config and sources array
 
-- [ ] **T012** [P] Integration test for config hot-reload in test/integration/config-hot-reload.test.ts
+- [X] **T012** [P] Integration test for config hot-reload in test/integration/config-hot-reload.test.ts
   - Given: VSCode with formatter active
   - When: Modify `.gosuformatting.json`
   - Then: Config reloaded within 500ms, log entry emitted
 
-- [ ] **T013** [P] Integration test for batch progress in test/integration/batch-progress.test.ts
+- [X] **T013** [P] Integration test for batch progress in test/integration/batch-progress.test.ts
   - Given: 10 files to format
   - When: Run batch format
   - Then: Progress updates emitted, summary logged
 
-- [ ] **T014** [P] Integration test for parallel execution in test/integration/batch-parallel.test.ts
+- [X] **T014** [P] Integration test for parallel execution in test/integration/batch-parallel.test.ts
   - Given: 10 files to format
   - When: Run batch format
   - Then: Files processed in parallel (≥5 files threshold)
 
-- [ ] **T015** [P] Integration test for glob patterns in test/integration/cli-glob-patterns.test.ts
+- [X] **T015** [P] Integration test for glob patterns in test/integration/cli-glob-patterns.test.ts
   - Given: Directory with nested .gs files
   - When: Run `gosu-format src/**/*.gs`
   - Then: All matching files found and formatted
@@ -104,20 +104,20 @@
 
 ### Logging Infrastructure
 
-- [ ] **T016** Implement debug-based logger in modules/formatter/src/logger.ts
+- [X] **T016** Implement debug-based logger in modules/formatter/src/logger.ts
   - Use debug package with namespaces: gosu:formatter, gosu:cli, gosu:config, gosu:batch
   - Create factory function: createLogger(namespace)
   - Export logger instances for each module
   - Enable via DEBUG=gosu:* environment variable
 
-- [ ] **T017** Implement @vscode-logging/logger adapter in modules/server/src/logger-adapter.ts
+- [X] **T017** Implement @vscode-logging/logger adapter in modules/server/src/logger-adapter.ts
   - Import and configure @vscode-logging/logger
   - Create logger with name "Gosu Language Server"
   - Configure log level from VSCode settings (gosu.logLevel)
   - Enable file logging with automatic rotation
   - Expose logger instance for server use
 
-- [ ] **T018** [P] Create logging utilities in modules/formatter/src/logger-utils.ts
+- [X] **T018** [P] Create logging utilities in modules/formatter/src/logger-utils.ts
   - ISO 8601 timestamp formatter
   - Performance timing helpers (start/end)
   - Log message formatters for common patterns
@@ -125,7 +125,7 @@
 
 ### CLI Command Handlers
 
-- [ ] **T019** [P] Implement CheckCommand in modules/formatter/src/cli/check.ts
+- [X] **T019** [P] Implement CheckCommand in modules/formatter/src/cli/check.ts
   - Format files in memory (no writes)
   - Compare formatted vs original
   - Collect unformatted files list
@@ -133,7 +133,7 @@
   - Output unformatted files to stderr
   - Use debug logger (gosu:cli)
 
-- [ ] **T020** [P] Implement ShowConfigCommand in modules/formatter/src/cli/show-config.ts
+- [X] **T020** [P] Implement ShowConfigCommand in modules/formatter/src/cli/show-config.ts
   - Load configuration using existing loader
   - Build ConfigResolution with sources
   - Track which settings from which source
@@ -141,7 +141,7 @@
   - Return exit code 0
   - Use debug logger (gosu:cli)
 
-- [ ] **T021** [P] Implement FormatCommand in modules/formatter/src/cli/format.ts
+- [X] **T021** [P] Implement FormatCommand in modules/formatter/src/cli/format.ts
   - Accept file list from glob expansion
   - Batch processing with progress tracking
   - Support --write mode (in-place) and stdout mode
@@ -151,7 +151,7 @@
 
 ### CLI Entry Point
 
-- [ ] **T022** Refactor CLI entry point in modules/formatter/src/cli.ts
+- [X] **T022** Refactor CLI entry point in modules/formatter/src/cli.ts
   - Replace manual parsing with commander
   - Define commands: format, check, show-config
   - Define options: --write, --check, --show-config, --config, --log-level
@@ -162,14 +162,14 @@
 
 ### Configuration Hot-Reload
 
-- [ ] **T023** Implement ConfigWatcher in modules/formatter/src/config-watcher.ts
+- [X] **T023** Implement ConfigWatcher in modules/formatter/src/config-watcher.ts
   - Use chokidar to watch `.gosuformatting.json{c,5}`
   - Implement 300ms debouncing
   - Implement reload() and validate() methods
   - Use debug logger (gosu:config)
   - Implement dispose() for cleanup
 
-- [ ] **T024** Integrate ConfigWatcher with LSP in modules/server/src/handlers/configuration.ts
+- [X] **T024** Integrate ConfigWatcher with LSP in modules/server/src/handlers/configuration.ts
   - Initialize ConfigWatcher on server start
   - Register callback for LSP `workspace/didChangeConfiguration`
   - Invalidate formatter cache on reload
@@ -177,7 +177,7 @@
 
 ### Batch Processing
 
-- [ ] **T025** Implement BatchProcessor in modules/formatter/src/batch.ts
+- [X] **T025** Implement BatchProcessor in modules/formatter/src/batch.ts
   - Accept file list and options
   - Concurrency detection: <5 sequential, ≥5 parallel
   - Parallel execution with os.cpus().length limit
@@ -187,7 +187,7 @@
   - Timeout protection (5x expected time)
   - Use debug logger (gosu:batch)
 
-- [ ] **T026** Implement ProgressTracker in modules/formatter/src/progress.ts
+- [X] **T026** Implement ProgressTracker in modules/formatter/src/progress.ts
   - Create ProgressState (operation, total, completed, failed, currentItem)
   - Implement update() to increment progress
   - Calculate percentage
@@ -195,13 +195,13 @@
   - Emit progress events
   - Use debug logger (gosu:batch)
 
-- [ ] **T027** Integrate ProgressTracker with CLI in modules/formatter/src/cli/format.ts
+- [X] **T027** Integrate ProgressTracker with CLI in modules/formatter/src/cli/format.ts
   - Create ProgressTracker for batch ops
   - Emit progress to stderr via debug logger
   - Display current file and percentage
   - Display summary on completion
 
-- [ ] **T028** Integrate ProgressTracker with LSP in modules/server/src/handlers/formatting.ts
+- [X] **T028** Integrate ProgressTracker with LSP in modules/server/src/handlers/formatting.ts
   - Create LSP progress token
   - Send `$/progress` notifications
   - Support cancellation via CancellationToken
@@ -210,7 +210,7 @@
 
 ### Glob Pattern Support
 
-- [ ] **T029** Implement glob expansion in modules/formatter/src/cli/glob.ts
+- [X] **T029** Implement glob expansion in modules/formatter/src/cli/glob.ts
   - Use fast-glob to expand patterns
   - Support *, **, ?, [abc] patterns
   - Respect .gitignore
@@ -218,7 +218,7 @@
   - Return absolute paths
   - Use debug logger (gosu:cli)
 
-- [ ] **T030** Integrate glob expansion in CLI commands
+- [X] **T030** Integrate glob expansion in CLI commands
   - Wire glob.ts into CheckCommand
   - Wire glob.ts into FormatCommand
   - Handle empty expansion (no matches)
@@ -227,26 +227,26 @@
 
 ## Phase 3.4: Integration
 
-- [ ] **T031** Wire @vscode-logging/logger to LSP server in modules/server/src/server.ts
+- [X] **T031** Wire @vscode-logging/logger to LSP server in modules/server/src/server.ts
   - Initialize @vscode-logging/logger on server start
   - Create logger with name "Gosu Language Server"
   - Configure from VSCode settings (gosu.logLevel)
   - Enable file logging with rotation
   - Ensure all formatter operations log through this logger
 
-- [ ] **T032** Add log level configuration to VSCode settings in package.json
+- [X] **T032** Add log level configuration to VSCode settings in package.json
   - Add `gosu.logLevel` setting (error, warning, info, debug, trace)
   - Default to "info"
   - Document setting in package.json description
   - Add `gosu.logFile` setting for log file location (optional)
 
-- [ ] **T033** Implement performance monitoring in formatter handlers
+- [X] **T033** Implement performance monitoring in formatter handlers
   - Track execution time for each format operation
   - Log WARN if >200ms, ERROR if >500ms
   - Include file path and duration in log metadata
   - Use @vscode-logging/logger in server, debug in CLI
 
-- [ ] **T034** Add error handling for file access issues
+- [X] **T034** Add error handling for file access issues
   - Catch EACCES (permission denied) errors
   - Catch ENOENT (file not found) errors
   - Log errors with file path and reason
@@ -263,7 +263,7 @@
   - Confirm hot-reload behavior
   - Test batch progress
 
-- [ ] **T036** [P] Update README.md with new CLI flags
+- [X] **T036** [P] Update README.md with new CLI flags
   - Document --check mode
   - Document --show-config flag
   - Document glob pattern support
@@ -271,7 +271,7 @@
   - Add batch operation examples
   - Document DEBUG environment variable usage
 
-- [ ] **T037** [P] Add JSDoc comments to public APIs
+- [X] **T037** [P] Add JSDoc comments to public APIs
   - Document debug logger factory functions
   - Document CLI command interfaces
   - Document BatchProcessor API

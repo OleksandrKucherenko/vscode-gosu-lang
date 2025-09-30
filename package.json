@@ -131,6 +131,17 @@
           "type": "boolean",
           "default": true,
           "description": "If true, the formatter will fail on syntax errors. If false, it will attempt to format around them."
+        },
+        "gosu.logLevel": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "debug", "trace"],
+          "default": "info",
+          "description": "Log level for the Gosu Language Server output channel."
+        },
+        "gosu.logFile": {
+          "type": "string",
+          "default": "",
+          "description": "Optional path to log file for persistent logging. Leave empty to disable file logging."
         }
       }
     }

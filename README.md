@@ -30,12 +30,64 @@ The formatter can also be configured using a `.gosuformatting.json` or `.gosufor
 A command-line interface is available for formatting files outside of VS Code. To use it, run the following command:
 
 ```bash
-npx @gosu-lsp/formatter [options] [files...]
+npx gosu-format [options] [files...]
 ```
 
 **Options:**
 
-- `--write`: Write the formatted output back to the file.
+- `-w, --write`: Modify files in-place
+- `-c, --check`: Verify formatting without modifications (exit 1 if changes needed)
+- `--show-config`: Display resolved configuration and exit
+- `--config <path>`: Path to custom configuration file
+- `--log-level <level>`: Log level (error, warning, info, debug)
+- `-h, --help`: Display help message
+- `-V, --version`: Display version number
+
+**Examples:**
+
+```bash
+# Format a single file to stdout
+npx gosu-format src/Main.gs
+
+# Format files in-place
+npx gosu-format --write src/**/*.gs
+
+# Check formatting (useful for CI)
+npx gosu-format --check src/**/*.gs
+
+# Show resolved configuration
+npx gosu-format --show-config
+
+# Format with custom config
+npx gosu-format --write --config .gosuformatting.json src/**/*.gs
+
+# Enable debug logging
+DEBUG=gosu:* npx gosu-format --write src/**/*.gs
+```
+
+**Exit Codes:**
+
+- `0`: Success (all files formatted or already formatted)
+- `1`: Files need formatting (in check mode)
+- `2`: Syntax errors or other failures
+
+**Glob Pattern Support:**
+
+The CLI supports glob patterns for matching multiple files:
+- `*` - Matches any characters except `/`
+- `**` - Matches any characters including `/` (recursive)
+- `?` - Matches a single character
+- `[abc]` - Matches any character in the set
+
+The CLI automatically filters for Gosu file extensions (`.gs`, `.gsx`, `.gst`, `.gsp`) and respects `.gitignore` patterns.
+
+**Batch Operations:**
+
+For large batches (≥5 files), the formatter automatically uses parallel execution for better performance. Progress is displayed during formatting:
+
+```
+Formatting files... [5/10] 50% - src/utils/Helper.gs
+```
 
 ## Supported File Extensions
 

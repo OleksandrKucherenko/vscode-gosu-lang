@@ -85,10 +85,10 @@ check_feature_branch() {
 
 get_feature_dir() {
     local repo_root="$1"
-    local branch="$2"
+    local feature_name="$2"
     # Use SPECIFY_SPECS_DIR environment variable if set, otherwise default to .specify/specs
     local specs_base="${SPECIFY_SPECS_DIR:-.specify/specs}"
-    echo "$repo_root/$specs_base/$branch"
+    echo "$repo_root/$specs_base/$feature_name"
 }
 
 get_feature_paths() {
@@ -100,12 +100,16 @@ get_feature_paths() {
         has_git_repo="true"
     fi
 
-    local feature_dir=$(get_feature_dir "$repo_root" "$current_branch")
+    local specs_base="${SPECIFY_SPECS_DIR:-.specify/specs}"
+    local feature_dir_name="${SPECIFY_FEATURE_DIR:-$current_branch}"
+    local feature_dir=$(get_feature_dir "$repo_root" "$feature_dir_name")
 
     cat <<EOF
 REPO_ROOT='$repo_root'
 CURRENT_BRANCH='$current_branch'
 HAS_GIT='$has_git_repo'
+SPECS_BASE='$specs_base'
+FEATURE_DIR_NAME='$feature_dir_name'
 FEATURE_DIR='$feature_dir'
 FEATURE_SPEC='$feature_dir/spec.md'
 IMPL_PLAN='$feature_dir/plan.md'

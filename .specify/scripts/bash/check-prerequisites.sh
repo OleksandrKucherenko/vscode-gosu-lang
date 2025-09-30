@@ -86,11 +86,12 @@ check_feature_branch "$CURRENT_BRANCH" "$HAS_GIT" || exit 1
 if $PATHS_ONLY; then
     if $JSON_MODE; then
         # Minimal JSON paths payload (no validation performed)
-        printf '{"REPO_ROOT":"%s","BRANCH":"%s","FEATURE_DIR":"%s","FEATURE_SPEC":"%s","IMPL_PLAN":"%s","TASKS":"%s"}\n' \
-            "$REPO_ROOT" "$CURRENT_BRANCH" "$FEATURE_DIR" "$FEATURE_SPEC" "$IMPL_PLAN" "$TASKS"
+        printf '{"REPO_ROOT":"%s","BRANCH":"%s","FEATURE_DIR_NAME":"%s","FEATURE_DIR":"%s","FEATURE_SPEC":"%s","IMPL_PLAN":"%s","TASKS":"%s"}\n' \
+            "$REPO_ROOT" "$CURRENT_BRANCH" "$FEATURE_DIR_NAME" "$FEATURE_DIR" "$FEATURE_SPEC" "$IMPL_PLAN" "$TASKS"
     else
         echo "REPO_ROOT: $REPO_ROOT"
         echo "BRANCH: $CURRENT_BRANCH"
+        echo "FEATURE_DIR_NAME: $FEATURE_DIR_NAME"
         echo "FEATURE_DIR: $FEATURE_DIR"
         echo "FEATURE_SPEC: $FEATURE_SPEC"
         echo "IMPL_PLAN: $IMPL_PLAN"
@@ -99,10 +100,60 @@ if $PATHS_ONLY; then
     exit 0
 fi
 
+# Utility helpers for mismatch diagnostics
+to_slug() {
+    echo "$1" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-//' | sed 's/-$//'
+}
+
+suggest_branch_fix() {
+    local desired_name="$1"
+    if [[ -z "$desired_name" ]]; then
+        return
+    fi
+
+    echo "Suggested fix: rename your branch to match the spec directory:" >&2
+    echo "  git branch -m '$CURRENT_BRANCH' '$desired_name'" >&2
+    echo "  git push --set-upstream origin '$desired_name'" >&2
+    echo "  git push origin --delete '$CURRENT_BRANCH'  # optional cleanup" >&2
+}
+
 # Validate required directories and files
 if [[ ! -d "$FEATURE_DIR" ]]; then
     echo "ERROR: Feature directory not found: $FEATURE_DIR" >&2
-    echo "Run /specify first to create the feature structure." >&2
+
+    if [[ -n "${SPECIFY_FEATURE_DIR:-}" ]]; then
+        echo "SPECIFY_FEATURE_DIR is set to '$SPECIFY_FEATURE_DIR', but that directory does not exist." >&2
+        echo "Verify the path under '$SPECS_BASE/' or adjust SPECIFY_FEATURE_DIR accordingly." >&2
+    else
+        specs_root="$REPO_ROOT/$SPECS_BASE"
+        if [[ -d "$specs_root" ]]; then
+            echo "Scanned available specs under '$specs_root':" >&2
+            ls -1 "$specs_root" >&2 || true
+
+            branch_slug=$(to_slug "$CURRENT_BRANCH")
+            detected_match=""
+            while IFS= read -r candidate; do
+                [[ -z "$candidate" ]] && continue
+                local_slug=$(to_slug "$candidate")
+                if [[ "$local_slug" == "$branch_slug" ]]; then
+                    detected_match="$candidate"
+                    break
+                fi
+            done < <(ls -1 "$specs_root" 2>/dev/null)
+
+            if [[ -n "$detected_match" ]]; then
+                echo "Detected matching spec directory '$detected_match' that differs from the current branch name." >&2
+                suggest_branch_fix "$detected_match"
+            else
+                echo "Hint: Set SPECIFY_FEATURE or SPECIFY_FEATURE_DIR to the correct feature folder name." >&2
+                echo "Example:" >&2
+                echo "  export SPECIFY_FEATURE_DIR='existing-feature-folder'" >&2
+            fi
+        else
+            echo "No specs directory found at '$specs_root'. Run /specify to create a feature." >&2
+        fi
+    fi
+
     exit 1
 fi
 
