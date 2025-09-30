@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://gosu-lang.org/schemas/config-resolution.json",
+  "title": "Configuration Resolution",
+  "description": "Result of configuration cascade resolution",
+  "type": "object",
+  "required": ["config", "sources", "resolution"],
+  "properties": {
+    "config": {
+      "$ref": "#/definitions/FormattingConfiguration",
+      "description": "Resolved configuration object"
+    },
+    "sources": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/ConfigSource" },
+      "minItems": 1,
+      "description": "Ordered list of configuration sources (highest precedence first)"
+    },
+    "resolution": {
+      "enum": ["cascade", "explicit", "default"],
+      "description": "How configuration was determined"
+    },
+    "errors": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/ValidationError" },
+      "description": "Non-fatal validation warnings"
+    }
+  },
+  "definitions": {
+    "ConfigSource": {
+      "type": "object",
+      "required": ["path", "type", "loadedAt", "values"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "File path or '<defaults>' or '<user-settings>'"
+        },
+        "type": {
+          "enum": ["default", "user", "workspace", "project"],
+          "description": "Configuration layer"
+        },
+        "loadedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when loaded"
+        },
+        "values": {
+          "type": "object",
+          "description": "Values contributed by this source"
+        }
+      }
+    },
+    "FormattingConfiguration": {
+      "type": "object",
+      "properties": {
+        "indentSize": { "type": "integer", "minimum": 1, "maximum": 8 },
+        "indentStyle": { "enum": ["spaces", "tabs"] },
+        "maxLineLength": { "type": "integer", "minimum": 40, "maximum": 200 },
+        "braceStyle": { "enum": ["attached", "broken", "same-line"] },
+        "strictMode": { "type": "boolean" }
+      }
+    },
+    "ValidationError": {
+      "type": "object",
+      "required": ["message", "severity"],
+      "properties": {
+        "message": { "type": "string" },
+        "severity": { "enum": ["error", "warning"] },
+        "line": { "type": "integer" },
+        "column": { "type": "integer" }
+      }
+    }
+  }
+}

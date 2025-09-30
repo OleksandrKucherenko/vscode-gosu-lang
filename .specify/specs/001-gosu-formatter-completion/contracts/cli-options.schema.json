@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://gosu-lang.org/schemas/cli-options.json",
+  "title": "CLI Options",
+  "description": "Parsed and validated command-line arguments for Gosu formatter",
+  "type": "object",
+  "properties": {
+    "files": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 0,
+      "description": "File paths or glob patterns to format"
+    },
+    "write": {
+      "type": "boolean",
+      "default": false,
+      "description": "Modify files in-place"
+    },
+    "check": {
+      "type": "boolean",
+      "default": false,
+      "description": "Verify formatting without modifications"
+    },
+    "showConfig": {
+      "type": "boolean",
+      "default": false,
+      "description": "Display resolved configuration and exit"
+    },
+    "config": {
+      "type": "string",
+      "description": "Path to custom configuration file"
+    },
+    "help": {
+      "type": "boolean",
+      "default": false,
+      "description": "Display help message"
+    },
+    "version": {
+      "type": "boolean",
+      "default": false,
+      "description": "Display version number"
+    },
+    "logLevel": {
+      "enum": ["error", "warning", "info", "debug"],
+      "description": "Override log level for this run"
+    }
+  },
+  "oneOf": [
+    {
+      "description": "Show config mode",
+      "required": ["showConfig"],
+      "properties": { "showConfig": { "const": true } }
+    },
+    {
+      "description": "Help mode",
+      "required": ["help"],
+      "properties": { "help": { "const": true } }
+    },
+    {
+      "description": "Version mode",
+      "required": ["version"],
+      "properties": { "version": { "const": true } }
+    },
+    {
+      "description": "Format mode",
+      "required": ["files"],
+      "properties": { "files": { "minItems": 1 } }
+    }
+  ],
+  "not": {
+    "description": "check and write are mutually exclusive",
+    "allOf": [
+      { "properties": { "check": { "const": true } } },
+      { "properties": { "write": { "const": true } } }
+    ]
+  }
+}
