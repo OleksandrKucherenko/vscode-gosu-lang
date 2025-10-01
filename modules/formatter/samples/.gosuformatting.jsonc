@@ -1,0 +1,11 @@
+// Example Gosu formatter configuration
+// Copy this file to your workspace root and adjust settings as needed.
+{
+  // Indentation style and widths
+  "indentStyle": "space",
+  "indentSize": 4,
+  "continuationIndentSize": 8,
+
+  // Line wrapping rules
+  "maxLineLength": 120,
+}

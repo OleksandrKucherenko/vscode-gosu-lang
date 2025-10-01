@@ -1,17 +1,23 @@
+import path from "node:path"
 import { beforeEach, describe, expect, it } from "vitest"
 import { GosuJavaSymbolResolver } from "../java-symbol-resolver"
 
+// Classification: Unit
 describe("GosuJavaSymbolResolver", () => {
   let resolver: GosuJavaSymbolResolver
+  const fixtureSourcePath = path.resolve(__dirname, "../../../../test/fixtures/java")
+  const altFixtureSourcePath = path.resolve(__dirname, "../../../../test/fixtures/java-alt")
 
   beforeEach(() => {
     resolver = new GosuJavaSymbolResolver({
-      sourcePaths: ["src/test/java"],
-      classpath: ["lib/java-stdlib.jar"],
+      sourcePaths: [fixtureSourcePath],
+      classpath: [],
     })
   })
 
+  // Classification: Business Value
   describe("Given a Java symbol resolver instance", () => {
+    // Classification: Unit
     describe("When creating the resolver", () => {
       it("Then it should be instantiated successfully", () => {
         expect(resolver).toBeDefined()
@@ -19,7 +25,9 @@ describe("GosuJavaSymbolResolver", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When resolving standard Java types", () => {
+      // Classification: Unit
       it("Then it should resolve java.lang.String", async () => {
         const result = await resolver.resolveJavaType("java.lang.String")
 
@@ -30,6 +38,7 @@ describe("GosuJavaSymbolResolver", () => {
         expect(result?.isJavaStandardLibrary).toBe(true)
       })
 
+      // Classification: Unit
       it("And it should resolve java.util.List", async () => {
         const result = await resolver.resolveJavaType("java.util.List")
 
@@ -41,6 +50,7 @@ describe("GosuJavaSymbolResolver", () => {
         expect(result?.isJavaStandardLibrary).toBe(true)
       })
 
+      // Classification: Unit
       it("And it should resolve java.util.Map", async () => {
         const result = await resolver.resolveJavaType("java.util.Map")
 
@@ -51,14 +61,29 @@ describe("GosuJavaSymbolResolver", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When resolving custom Java types", () => {
-      it("Then it should attempt to resolve from source paths", async () => {
-        const result = await resolver.resolveJavaType("com.example.CustomClass")
+      // Classification: Unit
+      it("Then it should resolve from configured source paths", async () => {
+        const result = await resolver.resolveJavaType("com.example.CustomFixture")
 
-        // Should return null if not found, but not throw an error
+        expect(result).toBeDefined()
+        expect(result?.fullyQualifiedName).toBe("com.example.CustomFixture")
+        expect(result?.className).toBe("CustomFixture")
+        expect(result?.packageName).toBe("com.example")
+        expect(result?.isInterface).toBe(false)
+        expect(result?.sourceFilePath?.replace(/\\/g, "/")).toContain("CustomFixture.java")
+        expect(result?.isJavaStandardLibrary).toBe(false)
+      })
+
+      // Classification: Unit
+      it("And it should return null when source is missing", async () => {
+        const result = await resolver.resolveJavaType("com.example.DoesNotExist")
+
         expect(result).toBeNull()
       })
 
+      // Classification: Unit
       it("And it should handle nested classes", async () => {
         const result = await resolver.resolveJavaType("com.example.OuterClass$InnerClass")
 
@@ -66,7 +91,9 @@ describe("GosuJavaSymbolResolver", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When analyzing classpath", () => {
+      // Classification: Unit
       it("Then it should find available Java packages", async () => {
         const packages = await resolver.getAvailablePackages()
 
@@ -77,6 +104,7 @@ describe("GosuJavaSymbolResolver", () => {
         expect(packages).toContain("java.io")
       })
 
+      // Classification: Unit
       it("And it should find classes in a package", async () => {
         const classes = await resolver.getClassesInPackage("java.util")
 
@@ -89,7 +117,9 @@ describe("GosuJavaSymbolResolver", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When handling import resolution", () => {
+      // Classification: Unit
       it("Then it should resolve short name from import", async () => {
         const result = await resolver.resolveImportedType("List", ["java.util.List"])
 
@@ -97,6 +127,7 @@ describe("GosuJavaSymbolResolver", () => {
         expect(result?.fullyQualifiedName).toBe("java.util.List")
       })
 
+      // Classification: Unit
       it("And it should handle wildcard imports", async () => {
         const result = await resolver.resolveImportedType("Map", ["java.util.*"])
 
@@ -104,6 +135,7 @@ describe("GosuJavaSymbolResolver", () => {
         expect(result?.fullyQualifiedName).toBe("java.util.Map")
       })
 
+      // Classification: Unit
       it("And it should prioritize specific imports over wildcards", async () => {
         const result = await resolver.resolveImportedType("List", ["java.awt.*", "java.util.List", "java.util.*"])
 
@@ -112,7 +144,9 @@ describe("GosuJavaSymbolResolver", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When handling generic types", () => {
+      // Classification: Unit
       it("Then it should parse generic type information", async () => {
         const result = await resolver.resolveJavaType("java.util.List")
 
@@ -122,6 +156,7 @@ describe("GosuJavaSymbolResolver", () => {
         expect(result?.genericParameters?.length).toBeGreaterThan(0)
       })
 
+      // Classification: Unit
       it("And it should handle parameterized types", async () => {
         const result = await resolver.parseParameterizedType("List<String>")
 
@@ -130,6 +165,7 @@ describe("GosuJavaSymbolResolver", () => {
         expect(result?.typeParameters).toEqual(["String"])
       })
 
+      // Classification: Unit
       it("And it should handle nested generic types", async () => {
         const result = await resolver.parseParameterizedType("Map<String, List<Integer>>")
 
@@ -139,47 +175,56 @@ describe("GosuJavaSymbolResolver", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When caching resolved types", () => {
+      // Classification: Unit
       it("Then it should cache frequently accessed types", async () => {
-        const startTime1 = Date.now()
         const result1 = await resolver.resolveJavaType("java.lang.String")
-        const duration1 = Date.now() - startTime1
-
-        const startTime2 = Date.now()
         const result2 = await resolver.resolveJavaType("java.lang.String")
-        const duration2 = Date.now() - startTime2
 
         expect(result1).toEqual(result2)
-        expect(duration2).toBeLessThanOrEqual(duration1) // Cache should be faster
+
+        const cache = (resolver as any).cache as Map<string, unknown>
+        expect(cache.has("java.lang.String")).toBe(true)
+        expect(cache.get("java.lang.String")).toBe(result1)
+        expect(result2).toBe(result1)
       })
 
+      // Classification: Unit
       it("And it should invalidate cache when configuration changes", async () => {
         await resolver.resolveJavaType("java.lang.String")
 
+        const missingBeforeUpdate = await resolver.resolveJavaType("com.example.ConfigUpdateFixture")
+        expect(missingBeforeUpdate).toBeNull()
+
         resolver.updateConfiguration({
-          sourcePaths: ["src/main/java"],
-          classpath: ["lib/updated.jar"],
+          sourcePaths: [altFixtureSourcePath],
+          classpath: [],
         })
 
-        // Should work without errors after config update
-        const result = await resolver.resolveJavaType("java.lang.String")
-        expect(result).toBeDefined()
+        const afterUpdate = await resolver.resolveJavaType("com.example.ConfigUpdateFixture")
+        expect(afterUpdate).toBeDefined()
+        expect(afterUpdate?.sourceFilePath?.replace(/\\/g, "/")).toContain("ConfigUpdateFixture.java")
       })
     })
 
+    // Classification: Business Value
     describe("When handling error cases", () => {
+      // Classification: Unit
       it("Then it should handle non-existent types gracefully", async () => {
         const result = await resolver.resolveJavaType("com.nonexistent.FakeClass")
 
         expect(result).toBeNull()
       })
 
+      // Classification: Unit
       it("And it should handle malformed type names", async () => {
         const result = await resolver.resolveJavaType("invalid..type..name")
 
         expect(result).toBeNull()
       })
 
+      // Classification: Unit
       it("And it should handle empty classpath gracefully", async () => {
         const emptyResolver = new GosuJavaSymbolResolver({
           sourcePaths: [],

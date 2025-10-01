@@ -8,6 +8,7 @@ import type { GosuJavaSymbolResolver } from "../java-symbol-resolver"
 
 const debug = Debug("gosu:lsp:test")
 
+// Classification: Unit
 describe("GosuASTCompletionProvider", () => {
   let provider: GosuASTCompletionProvider
 
@@ -48,11 +49,14 @@ describe("GosuASTCompletionProvider", () => {
     provider = new GosuASTCompletionProvider(mockJavaResolver)
   })
 
+  // Classification: Business Value
   describe("Basic functionality", () => {
+    // Classification: Unit
     test("should create provider instance", () => {
       expect(provider).toBeDefined()
     })
 
+    // Classification: Unit
     test("should handle empty document", async () => {
       const document = TextDocument.create("file:///test.gs", "gosu", 1, "")
       const position: Position = { line: 0, character: 0 }
@@ -61,6 +65,7 @@ describe("GosuASTCompletionProvider", () => {
       expect(Array.isArray(completions)).toBe(true)
     })
 
+    // Classification: Unit
     test("should handle simple document with package", async () => {
       const content = readFixture("ast-completion/SimpleFunction.gs")
       const document = TextDocument.create("file:///test.gs", "gosu", 1, content)
@@ -70,6 +75,7 @@ describe("GosuASTCompletionProvider", () => {
       expect(Array.isArray(completions)).toBe(true)
     })
 
+    // Classification: Unit
     test("should handle member access completions", async () => {
       const content = readFixture("ast-completion/MemberAccess.gs")
       const document = TextDocument.create("file:///test.gs", "gosu", 1, content)
@@ -86,6 +92,7 @@ describe("GosuASTCompletionProvider", () => {
       }
     })
 
+    // Classification: Unit
     test("should handle import completions", async () => {
       const content = readFixture("ast-completion/ImportedTypes.gs")
       const document = TextDocument.create("file:///test.gs", "gosu", 1, content)
@@ -95,6 +102,7 @@ describe("GosuASTCompletionProvider", () => {
       expect(Array.isArray(completions)).toBe(true)
     })
 
+    // Classification: Unit
     test("should handle type reference completions", async () => {
       const content = readFixture("ast-completion/TypeReference.gs")
       const document = TextDocument.create("file:///test.gs", "gosu", 1, content)
@@ -110,6 +118,7 @@ describe("GosuASTCompletionProvider", () => {
       }
     })
 
+    // Classification: Unit
     test("should clear document cache", () => {
       const uri = "file:///test.gs"
       provider.clearDocumentCache(uri)
@@ -117,6 +126,7 @@ describe("GosuASTCompletionProvider", () => {
       expect(true).toBe(true)
     })
 
+    // Classification: Unit
     test("should clear all caches", () => {
       provider.clearAllCaches()
       // Should not throw
@@ -124,7 +134,9 @@ describe("GosuASTCompletionProvider", () => {
     })
   })
 
+  // Classification: Business Value
   describe("Error handling", () => {
+    // Classification: Unit
     test("should handle malformed document gracefully", async () => {
       const content = readFixture("ast-completion/MalformedCode.gs")
       const document = TextDocument.create("file:///invalid.gs", "gosu", 1, content)
@@ -134,6 +146,7 @@ describe("GosuASTCompletionProvider", () => {
       expect(Array.isArray(completions)).toBe(true)
     })
 
+    // Classification: Unit
     test("should handle parser errors in getOrUpdateSymbolTable", async () => {
       const content = readFixture("ast-completion/MalformedCode.gs")
       const document = TextDocument.create("file:///error.gs", "gosu", 1, content)
@@ -144,7 +157,9 @@ describe("GosuASTCompletionProvider", () => {
     })
   })
 
+  // Classification: Business Value
   describe("Import completions coverage", () => {
+    // Classification: Unit
     test("should provide filtered import completions with specific prefix", async () => {
       const content = "uses java.ut"
       const document = TextDocument.create("file:///imports.gs", "gosu", 1, content)
@@ -174,6 +189,7 @@ describe("GosuASTCompletionProvider", () => {
       expect(mapType.sortText).toBe("5010_Map")
     })
 
+    // Classification: Unit
     test("should handle import prefix filtering edge cases", async () => {
       const content = "uses java.io.F"
       const document = TextDocument.create("file:///io-imports.gs", "gosu", 1, content)
@@ -190,6 +206,7 @@ describe("GosuASTCompletionProvider", () => {
       })
     })
 
+    // Classification: Unit
     test("should provide all imports when prefix is empty", async () => {
       const content = "uses "
       const document = TextDocument.create("file:///all-imports.gs", "gosu", 1, content)
@@ -204,7 +221,9 @@ describe("GosuASTCompletionProvider", () => {
     })
   })
 
+  // Classification: Business Value
   describe("General completions deduplication coverage", () => {
+    // Classification: Unit
     test("should avoid duplicate class symbols in completions", async () => {
       const content = readFixture("ast-completion/DuplicateClassSymbol.gs")
       const document = TextDocument.create("file:///dedup.gs", "gosu", 1, content)
@@ -222,6 +241,7 @@ describe("GosuASTCompletionProvider", () => {
       expect(labels.length).toBe(uniqueLabels.length)
     })
 
+    // Classification: Unit
     test("should handle symbol deduplication across different symbol collections", async () => {
       const content = readFixture("ast-completion/SymbolDeduplication.gs")
       const document = TextDocument.create("file:///symbol-dedup.gs", "gosu", 1, content)
@@ -250,7 +270,9 @@ describe("GosuASTCompletionProvider", () => {
     })
   })
 
+  // Classification: Business Value
   describe("Function signature coverage", () => {
+    // Classification: Unit
     test("should create completions with function signatures", async () => {
       const content = readFixture("ast-completion/ComplexFunctionSignature.gs")
       const document = TextDocument.create("file:///functions.gs", "gosu", 1, content)
@@ -276,6 +298,7 @@ describe("GosuASTCompletionProvider", () => {
       }
     })
 
+    // Classification: Unit
     test("should handle functions without parameters", async () => {
       const content = readFixture("ast-completion/SimpleFunction.gs")
       const document = TextDocument.create("file:///simple-functions.gs", "gosu", 1, content)
@@ -291,7 +314,9 @@ describe("GosuASTCompletionProvider", () => {
     })
   })
 
+  // Classification: Business Value
   describe("Type completion edge cases", () => {
+    // Classification: Unit
     test("should handle imported types in type completions", async () => {
       // This test targets lines 213-222 in getTypeCompletions
       const content = readFixture("ast-completion/ImportedTypes.gs")
@@ -312,6 +337,7 @@ describe("GosuASTCompletionProvider", () => {
       expect(completions.length).toBeGreaterThan(0)
     })
 
+    // Classification: Unit
     test("should handle declared class types in completions", async () => {
       // This targets the typeSymbols filtering and completion creation (lines 225-237)
       const content = readFixture("ast-completion/CustomClassType.gs")
@@ -333,7 +359,9 @@ describe("GosuASTCompletionProvider", () => {
     })
   })
 
+  // Classification: Business Value
   describe("Completion context edge cases", () => {
+    // Classification: Unit
     test("should handle member access without duplicates check", async () => {
       // This should test the specific duplicate prevention logic in lines 322-325
       const content = readFixture("ast-completion/MemberAccessNoDupes.gs")
@@ -354,6 +382,7 @@ describe("GosuASTCompletionProvider", () => {
       }
     })
 
+    // Classification: Unit
     test("should ensure no duplicate class completions in edge cases", async () => {
       // This specifically targets lines 322-325 duplicate prevention
       const content = readFixture("ast-completion/NoDuplicateClassCompletions.gs")

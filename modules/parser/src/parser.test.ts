@@ -7,10 +7,13 @@ const debug = Debug("gosu:lsp:test:parser")
 const log = Debug("gosu:lsp:test")
 
 describe("GosuParser", () => {
+  // Classification: Integration
   describe("Given a GosuParser instance", () => {
     const parser = new GosuParser()
 
+    // Classification: Business Value
     describe("When parsing valid Gosu syntax", () => {
+      // Classification: Unit
       test("Then it should parse a simple class without errors", () => {
         debug("Testing valid class syntax parsing")
 
@@ -24,6 +27,7 @@ describe("GosuParser", () => {
         expect(result.filePath).toBe("SimpleClass.gs")
       })
 
+      // Classification: Unit
       test("And it should parse enhancement syntax without errors", () => {
         debug("Testing valid enhancement syntax parsing")
 
@@ -36,6 +40,54 @@ describe("GosuParser", () => {
         expect(result.ast).toBeDefined()
       })
 
+      // Classification: Unit
+      test("And it should capture tokens and comments for formatting", () => {
+        const parser = new GosuParser()
+        const code = readFixture("parser/ClassWithComments.gs")
+
+        const result = parser.parseText(code, "ClassWithComments.gs")
+
+        expect(result.isValid).toBe(true)
+        expect(result.tokens).toBeDefined()
+        expect(result.tokens?.length ?? 0).toBeGreaterThan(0)
+
+        const comments = result.comments ?? []
+        const texts = comments.map((comment) => comment.text.trim())
+
+        expect(texts).toContain("// Leading class comment")
+        expect(texts).toContain("// This line says hello")
+        expect(texts).toContain("/* Block comment */")
+
+        const helloComment = comments.find((comment) => comment.text.includes("hello"))
+        expect(helloComment?.commentType).toBe("line")
+
+        const docComment = comments.find((comment) => comment.commentType === "doc")
+        expect(docComment).toBeDefined()
+        if (docComment) {
+          const slice = code.slice(docComment.startIndex, docComment.stopIndex + 1)
+          expect(slice).toBe(docComment.text)
+        }
+
+        const firstToken = result.tokens?.[0]
+        if (firstToken) {
+          const slice = code.slice(firstToken.startIndex, firstToken.stopIndex + 1)
+          expect(slice).toBe(firstToken.text)
+        }
+      })
+
+      // Classification: Integration
+      test("And it should build an AST for complex integration fixtures", () => {
+        const parser = new GosuParser()
+        const integrationCode = readFixture("semantic-highlighting/ASTIntegrationClass.gs")
+
+        const result = parser.parseText(integrationCode, "ASTIntegrationClass.gs")
+
+        expect(result.isValid).toBe(true)
+        expect(result.ast).toBeDefined()
+        expect(result.tokens?.length ?? 0).toBeGreaterThan(0)
+      })
+
+      // Classification: Unit
       test("And it should parse template syntax without errors", () => {
         debug("Testing valid template syntax parsing")
 
@@ -56,7 +108,9 @@ describe("GosuParser", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When parsing invalid Gosu syntax", () => {
+      // Classification: Unit
       test("Then it should report syntax errors for missing braces", () => {
         debug("Testing invalid syntax - missing braces")
 
@@ -81,6 +135,7 @@ describe("GosuParser", () => {
         expect(error.severity).toBe("error")
       })
 
+      // Classification: Unit
       test("And it should report errors for invalid keywords", () => {
         debug("Testing invalid syntax - invalid keywords")
 
@@ -95,6 +150,7 @@ describe("GosuParser", () => {
         expect(error.message).toContain("invalidkeyword")
       })
 
+      // Classification: Unit
       test("And it should handle multiple syntax errors", () => {
         debug("Testing multiple syntax errors")
 
@@ -112,7 +168,35 @@ describe("GosuParser", () => {
       })
     })
 
+    // Classification: Business Value
+    describe("When validating syntax without AST", () => {
+      // Classification: Unit
+      test("Then it should preserve parser configuration", () => {
+        const parser = new GosuParser()
+        const initialConfig = parser.getConfig()
+
+        const errors = parser.validateSyntax("function Broken() {", "Broken.gs")
+
+        expect(errors.length).toBeGreaterThan(0)
+        expect(parser.getConfig()).toEqual(initialConfig)
+      })
+
+      // Classification: Unit
+      test("And it should populate tokens when AST building is disabled", () => {
+        const parser = new GosuParser({ buildAst: false })
+        const source = readFixture("parser/SimpleClass.gs")
+
+        const result = parser.parseText(source, "SimpleClass.gs")
+
+        expect(result.ast).toBeUndefined()
+        expect(result.tokens).toBeDefined()
+        expect(result.tokens?.length ?? 0).toBeGreaterThan(0)
+      })
+    })
+
+    // Classification: Business Value
     describe("When parsing with different file types", () => {
+      // Classification: Unit
       test("Then it should detect .gs files as regular classes", () => {
         debug("Testing .gs file type detection")
 
@@ -122,6 +206,7 @@ describe("GosuParser", () => {
         expect(result.filePath).toBe("Test.gs")
       })
 
+      // Classification: Unit
       test("And it should detect .gsx files as enhancements", () => {
         debug("Testing .gsx file type detection")
 
@@ -130,6 +215,7 @@ describe("GosuParser", () => {
         expect(result.fileType).toBe("enhancement")
       })
 
+      // Classification: Unit
       test("And it should detect .gst files as templates", () => {
         debug("Testing .gst file type detection")
 
@@ -138,6 +224,7 @@ describe("GosuParser", () => {
         expect(result.fileType).toBe("template")
       })
 
+      // Classification: Unit
       test("And it should detect .gsp files as programs", () => {
         debug("Testing .gsp file type detection")
 

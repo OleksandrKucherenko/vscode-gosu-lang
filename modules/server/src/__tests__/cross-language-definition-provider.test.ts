@@ -1,21 +1,28 @@
+import path from "node:path"
+import { pathToFileURL } from "node:url"
 import { readFixtureAsync } from "@gosu-lsp/shared"
 import { beforeEach, describe, expect, it } from "vitest"
 import type { Position } from "vscode-languageserver/node"
 import { TextDocument } from "vscode-languageserver-textdocument"
 import { GosuCrossLanguageDefinitionProvider } from "../cross-language-definition-provider"
 
+// Classification: Integration
 describe("GosuCrossLanguageDefinitionProvider", () => {
   let provider: GosuCrossLanguageDefinitionProvider
+  const javaFixturePath = path.resolve(__dirname, "../../../../test/fixtures/java")
 
   beforeEach(() => {
     provider = new GosuCrossLanguageDefinitionProvider({
-      sourcePaths: ["src/test/java"],
-      classpath: ["lib/java-stdlib.jar"],
+      sourcePaths: [javaFixturePath],
+      classpath: [],
     })
   })
 
+  // Classification: Business Value
   describe("Given a cross-language definition provider instance", () => {
+    // Classification: Business Value
     describe("When navigating to Java standard library types", () => {
+      // Classification: Unit
       it("Then it should resolve java.lang.String from Gosu imports", async () => {
         const document = TextDocument.create(
           "file:///test.gs",
@@ -34,6 +41,7 @@ describe("GosuCrossLanguageDefinitionProvider", () => {
         expect(loc?.range).toBeDefined()
       })
 
+      // Classification: Unit
       it("And it should resolve java.util.List from Gosu imports", async () => {
         const document = TextDocument.create(
           "file:///test.gs",
@@ -51,6 +59,7 @@ describe("GosuCrossLanguageDefinitionProvider", () => {
         expect(loc?.uri).toBe("java:///java/util/List.java")
       })
 
+      // Classification: Unit
       it("And it should resolve java.util.Map from wildcard imports", async () => {
         const document = TextDocument.create(
           "file:///test.gs",
@@ -69,7 +78,9 @@ describe("GosuCrossLanguageDefinitionProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When navigating to Java methods", () => {
+      // Classification: Unit
       it("Then it should resolve String.length() method", async () => {
         const document = TextDocument.create(
           "file:///test.gs",
@@ -88,6 +99,7 @@ describe("GosuCrossLanguageDefinitionProvider", () => {
         // Should point to the method definition within String
       })
 
+      // Classification: Unit
       it("And it should resolve List.add() method", async () => {
         const document = TextDocument.create(
           "file:///test.gs",
@@ -106,7 +118,30 @@ describe("GosuCrossLanguageDefinitionProvider", () => {
       })
     })
 
+    // Classification: Business Value
+    describe("When navigating to custom Java sources", () => {
+      // Classification: Unit
+      it("Then it should resolve types from configured source paths", async () => {
+        const document = TextDocument.create(
+          "file:///test.gs",
+          "gosu",
+          1,
+          await readFixtureAsync("cross-language/java/custom/CustomFixtureImport.gs"),
+        )
+
+        const position: Position = { line: 5, character: 24 }
+        const definition = await provider.getDefinition(document, position)
+
+        expect(definition).toBeDefined()
+        const loc = Array.isArray(definition) ? definition[0] : definition
+        const expectedUri = pathToFileURL(path.join(javaFixturePath, "com/example/CustomFixture.java")).href
+        expect(loc?.uri).toBe(expectedUri)
+      })
+    })
+
+    // Classification: Business Value
     describe("When handling fallback to Gosu-only navigation", () => {
+      // Classification: Unit
       it("Then it should handle Gosu-only symbols normally", async () => {
         const document = TextDocument.create(
           "file:///test.gs",
@@ -125,6 +160,7 @@ describe("GosuCrossLanguageDefinitionProvider", () => {
         expect(loc?.range.start.line).toBe(3) // Field definition line
       })
 
+      // Classification: Unit
       it("And it should handle function definitions within Gosu", async () => {
         const document = TextDocument.create(
           "file:///test.gs",
@@ -144,7 +180,9 @@ describe("GosuCrossLanguageDefinitionProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When handling import resolution priority", () => {
+      // Classification: Unit
       it("Then it should prioritize specific imports over wildcards", async () => {
         const document = TextDocument.create(
           "file:///test.gs",
@@ -162,6 +200,7 @@ describe("GosuCrossLanguageDefinitionProvider", () => {
         expect(loc?.uri).toBe("java:///java/util/List.java")
       })
 
+      // Classification: Unit
       it("And it should handle implicit java.lang imports", async () => {
         const document = TextDocument.create(
           "file:///test.gs",
@@ -180,7 +219,9 @@ describe("GosuCrossLanguageDefinitionProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When handling parameterized types", () => {
+      // Classification: Unit
       it("Then it should resolve generic type parameters", async () => {
         const document = TextDocument.create(
           "file:///test.gs",
@@ -198,6 +239,7 @@ describe("GosuCrossLanguageDefinitionProvider", () => {
         expect(loc?.uri).toBe("java:///java/util/Map.java")
       })
 
+      // Classification: Unit
       it("And it should handle nested generics", async () => {
         const document = TextDocument.create(
           "file:///test.gs",
@@ -216,7 +258,9 @@ describe("GosuCrossLanguageDefinitionProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When handling error cases", () => {
+      // Classification: Unit
       it("Then it should handle unresolvable Java types gracefully", async () => {
         const document = TextDocument.create(
           "file:///test.gs",
@@ -232,6 +276,7 @@ describe("GosuCrossLanguageDefinitionProvider", () => {
         expect(definition).toBeNull()
       })
 
+      // Classification: Unit
       it("And it should handle malformed Gosu code", async () => {
         const document = TextDocument.create(
           "file:///malformed.gs",
@@ -247,6 +292,7 @@ describe("GosuCrossLanguageDefinitionProvider", () => {
         expect(true).toBe(true)
       })
 
+      // Classification: Unit
       it("And it should handle invalid positions", async () => {
         const document = TextDocument.create("file:///test.gs", "gosu", 1, "class TestClass {}")
 
@@ -258,7 +304,9 @@ describe("GosuCrossLanguageDefinitionProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When caching cross-language definitions", () => {
+      // Classification: Unit
       it("Then it should cache Java type resolutions", async () => {
         const document = TextDocument.create(
           "file:///test.gs",
@@ -286,6 +334,7 @@ describe("GosuCrossLanguageDefinitionProvider", () => {
         expect(duration2).toBeLessThanOrEqual(duration1 + 10) // Cache should be faster
       })
 
+      // Classification: Unit
       it("And it should clear cache on configuration changes", async () => {
         const document = TextDocument.create(
           "file:///test.gs",

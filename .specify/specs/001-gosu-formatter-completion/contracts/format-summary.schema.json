@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://gosu-lang.org/schemas/format-summary.json",
+  "title": "Format Summary",
+  "description": "Aggregated results from batch formatting operations",
+  "type": "object",
+  "required": ["totalFiles", "formatted", "unchanged", "failed", "skipped", "duration", "fileResults"],
+  "properties": {
+    "totalFiles": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total files processed"
+    },
+    "formatted": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Files that were modified"
+    },
+    "unchanged": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Files already correctly formatted"
+    },
+    "failed": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Files that could not be formatted (syntax errors)"
+    },
+    "skipped": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Files skipped due to configuration or errors"
+    },
+    "duration": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Total operation time in milliseconds"
+    },
+    "fileResults": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/FormatFileResult" },
+      "description": "Individual file results"
+    }
+  },
+  "definitions": {
+    "FormatFileResult": {
+      "type": "object",
+      "required": ["file", "status", "duration"],
+      "properties": {
+        "file": {
+          "type": "string",
+          "description": "File path"
+        },
+        "status": {
+          "enum": ["formatted", "unchanged", "failed", "skipped"],
+          "description": "Result status"
+        },
+        "duration": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Time spent formatting this file (ms)"
+        },
+        "error": {
+          "type": "string",
+          "description": "Error message if status === 'failed'"
+        }
+      }
+    }
+  }
+}

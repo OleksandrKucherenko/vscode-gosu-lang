@@ -292,9 +292,7 @@ export class GosuASTCompletionProvider {
     const completions: CompletionItem[] = []
 
     // 1. Add completions from defined imports in the current document
-    debug("symbolTable:", JSON.stringify(symbolTable, null, 2))
     for (const imp of symbolTable.imports) {
-      console.log("Checking import:", imp.name, prefix)
       if (imp.name.toLowerCase().startsWith(prefix.toLowerCase())) {
         completions.push({
           label: imp.name,

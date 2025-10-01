@@ -6,6 +6,7 @@ import { MarkupKind, type Position } from "vscode-languageserver/node"
 import { TextDocument } from "vscode-languageserver-textdocument"
 import { GosuHoverProvider } from "../hover-provider"
 
+// Classification: Integration
 describe("GosuHoverProvider", () => {
   let provider: GosuHoverProvider
 
@@ -13,7 +14,9 @@ describe("GosuHoverProvider", () => {
     provider = new GosuHoverProvider()
   })
 
+  // Classification: Business Value
   describe("Given a hover provider instance", () => {
+    // Classification: Unit
     describe("When creating the provider", () => {
       it("Then it should be instantiated successfully", () => {
         expect(provider).toBeDefined()
@@ -21,7 +24,9 @@ describe("GosuHoverProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When requesting hover for a simple class", () => {
+      // Classification: Unit
       it("Then it should provide class information", async () => {
         const document = TextDocument.create(
           "file:///test.gs",
@@ -45,6 +50,7 @@ describe("GosuHoverProvider", () => {
         }
       })
 
+      // Classification: Unit
       it("And it should provide function hover information", async () => {
         const document = TextDocument.create(
           "file:///test.gs",
@@ -68,7 +74,9 @@ describe("GosuHoverProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When requesting hover for variables", () => {
+      // Classification: Unit
       it("Then it should provide variable type information", async () => {
         const document = TextDocument.create(
           "file:///test.gs",
@@ -90,6 +98,7 @@ describe("GosuHoverProvider", () => {
         }
       })
 
+      // Classification: Unit
       it("And it should provide field information", async () => {
         const document = TextDocument.create(
           "file:///test.gs",
@@ -112,7 +121,9 @@ describe("GosuHoverProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When handling function parameters", () => {
+      // Classification: Unit
       it("Then it should show parameter information in hover", async () => {
         const document = TextDocument.create(
           "file:///test.gs",
@@ -136,6 +147,7 @@ describe("GosuHoverProvider", () => {
         }
       })
 
+      // Classification: Unit
       it("And it should show parameter information when hovering on parameter usage", async () => {
         const document = TextDocument.create(
           "file:///test.gs",
@@ -158,7 +170,9 @@ describe("GosuHoverProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When handling imports", () => {
+      // Classification: Unit
       it("Then it should provide import information", async () => {
         const document = TextDocument.create(
           "file:///test.gs",
@@ -181,7 +195,9 @@ describe("GosuHoverProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When handling different Gosu constructs", () => {
+      // Classification: Unit
       it("Then it should work with enhancements", async () => {
         const document = TextDocument.create(
           "file:///enhancement.gsx",
@@ -203,6 +219,7 @@ describe("GosuHoverProvider", () => {
         }
       })
 
+      // Classification: Unit
       it("And it should work with interfaces", async () => {
         const document = TextDocument.create(
           "file:///interface.gs",
@@ -223,6 +240,7 @@ describe("GosuHoverProvider", () => {
         }
       })
 
+      // Classification: Unit
       it("And it should show function signatures with modifiers", async () => {
         const document = TextDocument.create(
           "file:///modifiers.gs",
@@ -245,7 +263,9 @@ describe("GosuHoverProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When handling edge cases", () => {
+      // Classification: Unit
       it("Then it should handle empty documents", async () => {
         const document = TextDocument.create("file:///empty.gs", "gosu", 1, "")
 
@@ -255,6 +275,7 @@ describe("GosuHoverProvider", () => {
         expect(hover).toBeNull()
       })
 
+      // Classification: Unit
       it("And it should handle invalid positions", async () => {
         const document = TextDocument.create("file:///test.gs", "gosu", 1, "class TestClass { }")
 
@@ -265,6 +286,7 @@ describe("GosuHoverProvider", () => {
         expect(hover).toBeNull()
       })
 
+      // Classification: Unit
       it("And it should handle positions with no symbols", async () => {
         const document = TextDocument.create(
           "file:///test.gs",
@@ -285,6 +307,7 @@ describe("GosuHoverProvider", () => {
         expect(hover).toBeNull()
       })
 
+      // Classification: Unit
       it("And it should handle malformed Gosu code gracefully", async () => {
         const document = TextDocument.create(
           "file:///malformed.gs",
@@ -302,7 +325,9 @@ describe("GosuHoverProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When testing hover range accuracy", () => {
+      // Classification: Unit
       it("Then it should provide accurate hover ranges", async () => {
         const document = TextDocument.create(
           "file:///ranges.gs",
@@ -328,7 +353,9 @@ describe("GosuHoverProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When testing caching functionality", () => {
+      // Classification: Unit
       it("Then it should cache symbol tables", async () => {
         const document = TextDocument.create(
           "file:///cached.gs",
@@ -355,6 +382,7 @@ describe("GosuHoverProvider", () => {
         expect(duration2).toBeLessThanOrEqual(duration1 + 50)
       })
 
+      // Classification: Unit
       it("And it should clear cache when document changes", async () => {
         const document1 = TextDocument.create("file:///changing.gs", "gosu", 1, "class OriginalClass { }")
 
@@ -376,6 +404,7 @@ describe("GosuHoverProvider", () => {
         // Both should work despite cache invalidation
       })
 
+      // Classification: Unit
       it("And it should clear all caches", async () => {
         const document = TextDocument.create("file:///test.gs", "gosu", 1, "class TestClass { }")
 
@@ -390,7 +419,9 @@ describe("GosuHoverProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When testing LSP protocol compliance", () => {
+      // Classification: Unit
       it("Then hover content should follow markdown format", async () => {
         const document = TextDocument.create(
           "file:///protocol.gs",
@@ -417,6 +448,7 @@ describe("GosuHoverProvider", () => {
         }
       })
 
+      // Classification: Unit
       it("And hover should include valid range information", async () => {
         const document = TextDocument.create(
           "file:///ranges.gs",
@@ -446,7 +478,9 @@ describe("GosuHoverProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When testing comprehensive symbol information", () => {
+      // Classification: Unit
       it("Then it should show complete function information", async () => {
         const document = TextDocument.create(
           "file:///complete.gs",
@@ -478,6 +512,7 @@ describe("GosuHoverProvider", () => {
         }
       })
 
+      // Classification: Unit
       it("And it should handle constructors specially", async () => {
         const document = TextDocument.create(
           "file:///constructor.gs",
@@ -498,7 +533,9 @@ describe("GosuHoverProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When testing error handling coverage", () => {
+      // Classification: Unit
       it("should handle null AST from parser gracefully", async () => {
         const document = TextDocument.create("file:///test.gs", "gosu", 1, "class TestClass {}")
         const position: Position = { line: 0, character: 6 }
@@ -521,6 +558,7 @@ describe("GosuHoverProvider", () => {
         vi.restoreAllMocks()
       })
 
+      // Classification: Unit
       it("should handle parser throwing exception gracefully", async () => {
         const document = TextDocument.create("file:///test.gs", "gosu", 1, "class TestClass {}")
         const position: Position = { line: 0, character: 6 }

@@ -34,9 +34,49 @@
     "workspaceContains:**/*.gs",
     "workspaceContains:**/*.gsx",
     "workspaceContains:**/*.gst",
-    "workspaceContains:**/*.gsp"
+    "workspaceContains:**/*.gsp",
+    "onCommand:gosu.restartLanguageServer",
+    "onCommand:gosu.showLanguageServerOutput",
+    "onCommand:gosu.showLanguageServerStatus"
   ],
   "contributes": {
+    "commands": [
+      {
+        "command": "gosu.restartLanguageServer",
+        "title": "Gosu: Restart Language Server",
+        "category": "Gosu"
+      },
+      {
+        "command": "gosu.showLanguageServerOutput",
+        "title": "Gosu: Show Language Server Output",
+        "category": "Gosu"
+      },
+      {
+        "command": "gosu.showLanguageServerStatus",
+        "title": "Gosu: Show Language Server Status",
+        "category": "Gosu"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "gosu.restartLanguageServer",
+        "key": "ctrl+alt+r",
+        "mac": "cmd+alt+r",
+        "when": "editorTextFocus && editorLangId == 'gosu'"
+      },
+      {
+        "command": "gosu.showLanguageServerOutput",
+        "key": "ctrl+alt+o",
+        "mac": "cmd+alt+o",
+        "when": "editorTextFocus && editorLangId == 'gosu'"
+      },
+      {
+        "command": "gosu.showLanguageServerStatus",
+        "key": "ctrl+alt+s",
+        "mac": "cmd+alt+s",
+        "when": "editorTextFocus && editorLangId == 'gosu'"
+      }
+    ],
     "languages": [
       {
         "id": "gosu",
@@ -78,7 +118,33 @@
         "scopeName": "source.gosu",
         "path": "./syntaxes/gosu.tmLanguage.full.json"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Gosu",
+      "properties": {
+        "gosu.format.indentSize": {
+          "type": "number",
+          "default": 2,
+          "description": "The number of spaces to use for indentation."
+        },
+        "gosu.format.strictMode": {
+          "type": "boolean",
+          "default": true,
+          "description": "If true, the formatter will fail on syntax errors. If false, it will attempt to format around them."
+        },
+        "gosu.logLevel": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "debug", "trace"],
+          "default": "info",
+          "description": "Log level for the Gosu Language Server output channel."
+        },
+        "gosu.logFile": {
+          "type": "string",
+          "default": "",
+          "description": "Optional path to log file for persistent logging. Leave empty to disable file logging."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run build:release",
@@ -126,7 +192,7 @@
     "oniguruma": "^7.2.3",
     "rimraf": "^6.0.1",
     "tsx": "^4.20.5",
-    "turbo": "^2.5.6",
+    "turbo": "^2.5.8",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4",
     "vscode-textmate": "^9.2.0"

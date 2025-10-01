@@ -11,6 +11,7 @@ const debug = Debug("gosu:lsp:test:file-integration")
 const filePathValid = resolve(__dirname, "../../../test/valid.gs")
 const filePathInvalid = resolve(__dirname, "../../../test/invalid.gs")
 
+// Classification: Integration
 describe("LSP Server File Integration", () => {
   let diagnosticsProvider: GosuDiagnosticsProvider
 
@@ -18,7 +19,9 @@ describe("LSP Server File Integration", () => {
     diagnosticsProvider = new GosuDiagnosticsProvider()
   })
 
+  // Classification: Business Value
   describe("Given valid Gosu files from test directory", () => {
+    // Classification: Unit
     test("Then valid.gs should produce no diagnostics", () => {
       debug("Testing valid.gs file integration")
 
@@ -33,6 +36,7 @@ describe("LSP Server File Integration", () => {
       expect(diagnostics).toHaveLength(0)
     })
 
+    // Classification: Unit
     test("And invalid.gs should produce syntax error diagnostics", () => {
       debug("Testing invalid.gs file integration")
 
@@ -66,7 +70,9 @@ describe("LSP Server File Integration", () => {
     })
   })
 
+  // Classification: Business Value
   describe("When testing document caching", () => {
+    // Classification: Unit
     test("Then repeated validation should use cache", () => {
       debug("Testing document caching behavior")
 
@@ -92,6 +98,7 @@ describe("LSP Server File Integration", () => {
       expect(duration2).toBeLessThanOrEqual(duration1)
     })
 
+    // Classification: Unit
     test("And cache should clear when requested", () => {
       debug("Testing cache clearing")
 
@@ -109,7 +116,9 @@ describe("LSP Server File Integration", () => {
     })
   })
 
+  // Classification: Business Value
   describe("When testing file type detection", () => {
+    // Classification: Unit
     test("Then .gs files should be detected as class files", () => {
       debug("Testing .gs file type detection in integration")
 

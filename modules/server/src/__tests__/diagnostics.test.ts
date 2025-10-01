@@ -7,6 +7,7 @@ import { createDiagnosticsProvider } from "../diagnostics"
 
 const debug = Debug("gosu:lsp:test:diagnostics")
 
+// Classification: Unit
 describe("GosuDiagnosticsProvider", () => {
   let diagnosticsProvider: ReturnType<typeof createDiagnosticsProvider>
 
@@ -15,8 +16,11 @@ describe("GosuDiagnosticsProvider", () => {
     diagnosticsProvider = createDiagnosticsProvider()
   })
 
+  // Classification: Business Value
   describe("Given a diagnostics provider", () => {
+    // Classification: Business Value
     describe("When analyzing valid Gosu code", () => {
+      // Classification: Unit
       test("Then it should return no diagnostics for valid class", () => {
         debug("Testing valid Gosu class")
 
@@ -28,6 +32,7 @@ describe("GosuDiagnosticsProvider", () => {
         expect(diagnostics).toHaveLength(0)
       })
 
+      // Classification: Unit
       test("And it should return no diagnostics for valid enhancement", () => {
         debug("Testing valid Gosu enhancement")
 
@@ -40,7 +45,9 @@ describe("GosuDiagnosticsProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When analyzing invalid Gosu code", () => {
+      // Classification: Unit
       test("Then it should return syntax error diagnostics for missing braces", () => {
         debug("Testing invalid Gosu syntax - missing braces")
 
@@ -60,6 +67,7 @@ describe("GosuDiagnosticsProvider", () => {
         expect(diagnostic.source).toBe("gosu")
       })
 
+      // Classification: Unit
       test("And it should return diagnostics for invalid keywords", () => {
         debug("Testing invalid Gosu syntax - invalid keywords")
 
@@ -76,6 +84,7 @@ describe("GosuDiagnosticsProvider", () => {
         expect(diagnostic.source).toBe("gosu")
       })
 
+      // Classification: Unit
       test("And it should handle multiple syntax errors", () => {
         debug("Testing multiple syntax errors")
 
@@ -102,7 +111,9 @@ describe("GosuDiagnosticsProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When analyzing different file types", () => {
+      // Classification: Unit
       test("Then it should handle .gs files correctly", () => {
         debug("Testing .gs file diagnostics")
 
@@ -113,6 +124,7 @@ describe("GosuDiagnosticsProvider", () => {
         expect(diagnostics[0].source).toBe("gosu")
       })
 
+      // Classification: Unit
       test("And it should handle .gsx files correctly", () => {
         debug("Testing .gsx file diagnostics")
 
@@ -123,6 +135,7 @@ describe("GosuDiagnosticsProvider", () => {
         expect(diagnostics[0].source).toBe("gosu")
       })
 
+      // Classification: Unit
       test("And it should handle .gst files correctly", () => {
         debug("Testing .gst file diagnostics")
 
@@ -133,6 +146,7 @@ describe("GosuDiagnosticsProvider", () => {
         expect(diagnostics[0].source).toBe("gosu")
       })
 
+      // Classification: Unit
       test("And it should handle .gsp files correctly", () => {
         debug("Testing .gsp file diagnostics")
 
@@ -144,7 +158,9 @@ describe("GosuDiagnosticsProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When caching is enabled", () => {
+      // Classification: Unit
       test("Then it should cache results for unchanged documents", () => {
         debug("Testing diagnostics caching")
 
@@ -161,6 +177,7 @@ describe("GosuDiagnosticsProvider", () => {
         expect(firstResult.length).toBeGreaterThan(0)
       })
 
+      // Classification: Unit
       test("And it should invalidate cache when document changes", () => {
         debug("Testing cache invalidation")
 

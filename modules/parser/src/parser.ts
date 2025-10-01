@@ -4,7 +4,14 @@ import Debug from "debug"
 import { GosuErrorListener } from "./error-listener"
 import { GosuLexer } from "./GosuLexer"
 import { GosuParser as AntlrGosuParser } from "./GosuParser"
-import type { GosuParseResult, GosuParserConfig, GosuSyntaxError } from "./types"
+import type {
+  GosuCommentTrivia,
+  GosuCommentType,
+  GosuParseResult,
+  GosuParserConfig,
+  GosuSyntaxError,
+  GosuToken,
+} from "./types"
 
 const debug = Debug("gosu:lsp:parser")
 
@@ -32,6 +39,9 @@ export class GosuParser {
 
     const fileType = getGosuFileType(filePath) || "class"
     const errorListener = new GosuErrorListener(this.config.maxErrors)
+    let tokenStream: CommonTokenStream | null = null
+    let tokens: GosuToken[] = []
+    let comments: GosuCommentTrivia[] = []
 
     try {
       // Create ANTLR input stream
@@ -43,7 +53,7 @@ export class GosuParser {
       lexer.addErrorListener(errorListener)
 
       // Create token stream
-      const tokenStream = new CommonTokenStream(lexer)
+      tokenStream = new CommonTokenStream(lexer)
 
       // Create parser
       const parser = new AntlrGosuParser(tokenStream)
@@ -59,6 +69,10 @@ export class GosuParser {
         this.parseByFileType(parser, fileType)
       }
 
+      if (tokenStream) {
+        ;({ tokens, comments } = collectTokens(tokenStream))
+      }
+
       const syntaxErrors = errorListener.getErrors()
       const isValid = syntaxErrors.length === 0
 
@@ -68,6 +82,8 @@ export class GosuParser {
         isValid,
         syntaxErrors,
         ast,
+        tokens,
+        comments,
         filePath,
         fileType,
         sourceText,
@@ -86,6 +102,8 @@ export class GosuParser {
       return {
         isValid: false,
         syntaxErrors: [syntaxError],
+        tokens,
+        comments,
         filePath,
         fileType,
         sourceText,
@@ -120,10 +138,20 @@ export class GosuParser {
    * Validate syntax without building AST (faster for quick validation)
    */
   validateSyntax(sourceText: string, filePath: string): GosuSyntaxError[] {
-    const config = { ...this.config, buildAst: false }
-    const tempParser = new GosuParser(config)
-    const result = tempParser.parseText(sourceText, filePath)
-    return result.syntaxErrors
+    const previousBuildAst = this.config.buildAst
+
+    if (previousBuildAst === false) {
+      return this.parseText(sourceText, filePath).syntaxErrors
+    }
+
+    this.config = { ...this.config, buildAst: false }
+
+    try {
+      const result = this.parseText(sourceText, filePath)
+      return result.syntaxErrors
+    } finally {
+      this.config = { ...this.config, buildAst: previousBuildAst }
+    }
   }
 
   /**
@@ -140,4 +168,41 @@ export class GosuParser {
   getConfig(): Required<GosuParserConfig> {
     return { ...this.config }
   }
+}
+
+function collectTokens(tokenStream: CommonTokenStream): { tokens: GosuToken[]; comments: GosuCommentTrivia[] } {
+  tokenStream.fill()
+  const antlrTokens = tokenStream.getTokens()
+  const tokens: GosuToken[] = []
+  const comments: GosuCommentTrivia[] = []
+
+  for (const token of antlrTokens) {
+    const gosuTokenBase: GosuToken = {
+      type: token.type,
+      text: token.text ?? "",
+      line: token.line,
+      column: token.column,
+      channel: token.channel,
+      startIndex: token.start ?? 0,
+      stopIndex: token.stop ?? token.start ?? 0,
+    }
+
+    if (token.type === GosuLexer.LINE_COMMENT || token.type === GosuLexer.COMMENT) {
+      const commentType: GosuCommentType =
+        token.type === GosuLexer.LINE_COMMENT ? "line" : gosuTokenBase.text.startsWith("/**") ? "doc" : "block"
+
+      const commentToken: GosuCommentTrivia = {
+        ...gosuTokenBase,
+        commentType,
+      }
+
+      tokens.push(commentToken)
+      comments.push(commentToken)
+      continue
+    }
+
+    tokens.push(gosuTokenBase)
+  }
+
+  return { tokens, comments }
 }

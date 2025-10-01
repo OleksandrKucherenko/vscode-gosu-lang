@@ -2,8 +2,11 @@ import { describe, expect, it } from "vitest"
 import { TextDocument } from "vscode-languageserver-textdocument"
 import { createDiagnosticsProvider } from "../diagnostics"
 
+// Classification: Unit
 describe("GosuDiagnosticsProvider LRU Cache Coverage", () => {
+  // Classification: Unit
   describe("LRU cache behavior", () => {
+    // Classification: Unit
     it("should evict oldest entry when cache size exceeds limit", () => {
       // Given: a diagnostics provider with small cache size
       const provider = createDiagnosticsProvider({ cacheSize: 2 })
@@ -30,6 +33,7 @@ describe("GosuDiagnosticsProvider LRU Cache Coverage", () => {
       expect(stats.maxSize).toBe(2)
     })
 
+    // Classification: Unit
     it("should handle multiple cache evictions", () => {
       // Given: a diagnostics provider with cache size of 1
       const provider = createDiagnosticsProvider({ cacheSize: 1 })
@@ -40,7 +44,9 @@ describe("GosuDiagnosticsProvider LRU Cache Coverage", () => {
       )
 
       // When: validating multiple documents to trigger multiple evictions
-      docs.forEach((doc) => provider.validateDocument(doc))
+      docs.forEach((doc) => {
+        provider.validateDocument(doc)
+      })
 
       // Then: cache should only contain the last document
       const stats = provider.getCacheStats()
@@ -49,7 +55,9 @@ describe("GosuDiagnosticsProvider LRU Cache Coverage", () => {
     })
   })
 
+  // Classification: Unit
   describe("Clear entire cache coverage", () => {
+    // Classification: Unit
     it("should clear entire cache when no URI specified", () => {
       // Given: a diagnostics provider with cached documents
       const provider = createDiagnosticsProvider()
@@ -73,6 +81,7 @@ describe("GosuDiagnosticsProvider LRU Cache Coverage", () => {
       expect(stats.size).toBe(0)
     })
 
+    // Classification: Unit
     it("should clear entire cache with undefined parameter", () => {
       // Given: a diagnostics provider with cached documents
       const provider = createDiagnosticsProvider()

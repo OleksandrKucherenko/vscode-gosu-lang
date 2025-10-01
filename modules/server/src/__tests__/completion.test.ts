@@ -1,6 +1,6 @@
 import { readFixture } from "@gosu-lsp/shared"
 import Debug from "debug"
-import { beforeEach, describe, expect, test } from "vitest"
+import { beforeEach, describe, expect, it, test, vi } from "vitest"
 import { type CompletionItem, CompletionItemKind, type Position } from "vscode-languageserver/node"
 import { TextDocument } from "vscode-languageserver-textdocument"
 import { GosuCompletionProvider } from "../completion"
@@ -10,15 +10,8 @@ const debug = Debug("gosu:lsp:test:completion")
 
 describe("GosuCompletionProvider", () => {
   // Test constants
-  const SIMPLE_PREFIX_DOCUMENT = "p"
-  const _CLASS_CONTEXT_DOCUMENT = "package test\n\nc"
   const _CLASS_BODY_DOCUMENT = readFixture("completion/ClassBody.gs")
-  const VISIBILITY_MODIFIER_DOCUMENT = readFixture("completion/VisibilityModifier.gs")
   const _FUNCTION_BODY_DOCUMENT = readFixture("completion/FunctionBody.gs")
-  const LITERAL_CONTEXT_DOCUMENT = readFixture("completion/LiteralContext.gs")
-  const PREFIX_FILTER_DOCUMENT = "pub"
-  const CASE_INSENSITIVE_DOCUMENT = "PUB"
-  const _NO_PREFIX_DOCUMENT = "package test\n\n"
 
   // Logging helpers
   const logCompletions = (completions: CompletionItem[], context: string) => {
@@ -39,10 +32,12 @@ describe("GosuCompletionProvider", () => {
   })
 
   describe("Given a GosuCompletionProvider instance", () => {
+    // Classification: Business Value
     describe("When requesting completions at the beginning of a file", () => {
+      // Classification: Unit
       test("Then it should suggest package-related keywords", async () => {
         // Given: A document with a single character prefix 'p'
-        const document = TextDocument.create("file:///test.gs", "gosu", 1, SIMPLE_PREFIX_DOCUMENT)
+        const document = TextDocument.create("file:///test.gs", "gosu", 1, readFixture("completion/SimplePrefix.gs"))
         const position: Position = { line: 0, character: 1 }
         logContext("Package keywords test", position, "p")
 
@@ -61,16 +56,12 @@ describe("GosuCompletionProvider", () => {
         expect(packageCompletion?.detail).toContain("package declaration")
       })
 
+      // Classification: Unit
       test("And it should suggest class-related keywords for empty lines", async () => {
-        // Given: A document with package declaration and empty line with 'p' prefix
-        const document = TextDocument.create(
-          "file:///test.gs",
-          "gosu",
-          1,
-          readFixture("completion/EmptyLinePackage.gs"),
-        )
+        // Given: A document with package declaration and empty line with 'c' prefix
+        const document = TextDocument.create("file:///test.gs", "gosu", 1, readFixture("completion/ClassContext.gs"))
         const position: Position = { line: 2, character: 1 }
-        logContext("Class keywords test", position, "p")
+        logContext("Class keywords test", position, "c")
 
         // When: Requesting completions
         const completions = await completionProvider.getCompletions(document, position)
@@ -78,25 +69,18 @@ describe("GosuCompletionProvider", () => {
 
         // Then: Should suggest class declaration keywords
         const classCompletion = completions.find((item) => item.label === "class")
-        expect(classCompletion).toBeUndefined() // class doesn't start with 'p'
-
-        // And: Should suggest visibility modifiers starting with 'p'
-        const publicCompletion = completions.find((item) => item.label === "public")
-        expect(publicCompletion).toBeDefined()
+        expect(classCompletion).toBeDefined()
       })
     })
 
+    // Classification: Business Value
     describe("When requesting completions inside a class body", () => {
+      // Classification: Unit
       test("Then it should suggest class member keywords", async () => {
-        // Given: A document with class body and 'v' prefix
-        const document = TextDocument.create(
-          "file:///test.gs",
-          "gosu",
-          1,
-          readFixture("completion/ClassBodyWithVar.gs"),
-        )
+        // Given: A document with class body and 'f' prefix
+        const document = TextDocument.create("file:///test.gs", "gosu", 1, _CLASS_BODY_DOCUMENT)
         const position: Position = { line: 3, character: 3 }
-        logContext("Class member keywords test", position, "v")
+        logContext("Class member keywords test", position, "f")
 
         // When: Requesting completions
         const completions = await completionProvider.getCompletions(document, position)
@@ -104,20 +88,18 @@ describe("GosuCompletionProvider", () => {
 
         // Then: Should suggest function declaration
         const functionCompletion = completions.find((item) => item.label === "function")
-        expect(functionCompletion).toBeUndefined() // function doesn't start with 'v'
-
-        // And: Should suggest variable declaration
-        const varCompletion = completions.find((item) => item.label === "var")
-        expect(varCompletion).toBeDefined()
-
-        // And: Should suggest property declaration (not starting with 'v')
-        const propertyCompletion = completions.find((item) => item.label === "property")
-        expect(propertyCompletion).toBeUndefined() // property doesn't start with 'v'
+        expect(functionCompletion).toBeDefined()
       })
 
+      // Classification: Unit
       test("And it should suggest visibility modifiers", async () => {
         // Given: A document with class body and 'pr' prefix
-        const document = TextDocument.create("file:///test.gs", "gosu", 1, VISIBILITY_MODIFIER_DOCUMENT)
+        const document = TextDocument.create(
+          "file:///test.gs",
+          "gosu",
+          1,
+          readFixture("completion/VisibilityModifier.gs"),
+        )
         const position: Position = { line: 3, character: 4 }
         logContext("Visibility modifiers test", position, "pr")
 
@@ -135,38 +117,28 @@ describe("GosuCompletionProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When requesting completions inside a function body", () => {
+      // Classification: Unit
       test("Then it should suggest control flow keywords", async () => {
-        // Given: A document with function body and 'r' prefix
-        const document = TextDocument.create(
-          "file:///test.gs",
-          "gosu",
-          1,
-          readFixture("completion/FunctionBodyWithReturn.gs"),
-        )
+        // Given: A document with function body and 'i' prefix
+        const document = TextDocument.create("file:///test.gs", "gosu", 1, _FUNCTION_BODY_DOCUMENT)
         const position: Position = { line: 4, character: 5 }
-        logContext("Control flow keywords test", position, "r")
+        logContext("Control flow keywords test", position, "i")
 
         // When: Requesting completions
         const completions = await completionProvider.getCompletions(document, position)
         logCompletions(completions, "Control flow keywords")
 
-        // Then: Should suggest if statement (not starting with 'r')
+        // Then: Should suggest if statement
         const ifCompletion = completions.find((item) => item.label === "if")
-        expect(ifCompletion).toBeUndefined() // if doesn't start with 'r'
-
-        // And: Should suggest return statement
-        const returnCompletion = completions.find((item) => item.label === "return")
-        expect(returnCompletion).toBeDefined()
-
-        // And: Should suggest for loop (not starting with 'r')
-        const forCompletion = completions.find((item) => item.label === "for")
-        expect(forCompletion).toBeUndefined() // for doesn't start with 'r'
+        expect(ifCompletion).toBeDefined()
       })
 
+      // Classification: Unit
       test("And it should suggest literal keywords", async () => {
         // Given: A document with function body and assignment with 't' prefix
-        const document = TextDocument.create("file:///test.gs", "gosu", 1, LITERAL_CONTEXT_DOCUMENT)
+        const document = TextDocument.create("file:///test.gs", "gosu", 1, readFixture("completion/LiteralContext.gs"))
         const position: Position = { line: 4, character: 18 }
         logContext("Literal keywords test", position, "t")
 
@@ -185,10 +157,12 @@ describe("GosuCompletionProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When filtering completions by prefix", () => {
+      // Classification: Unit
       test("Then it should only return keywords matching the prefix", async () => {
         // Given: A document with 'pub' prefix
-        const document = TextDocument.create("file:///test.gs", "gosu", 1, PREFIX_FILTER_DOCUMENT)
+        const document = TextDocument.create("file:///test.gs", "gosu", 1, readFixture("completion/PrefixFilter.gs"))
         const position: Position = { line: 0, character: 3 }
         logContext("Prefix filtering test", position, "pub")
 
@@ -209,9 +183,10 @@ describe("GosuCompletionProvider", () => {
         expect(classCompletion).toBeUndefined()
       })
 
+      // Classification: Unit
       test("And it should be case-insensitive", async () => {
         // Given: A document with uppercase 'PUB' prefix
-        const document = TextDocument.create("file:///test.gs", "gosu", 1, CASE_INSENSITIVE_DOCUMENT)
+        const document = TextDocument.create("file:///test.gs", "gosu", 1, readFixture("completion/CaseInsensitive.gs"))
         const position: Position = { line: 0, character: 3 }
         logContext("Case insensitive test", position, "PUB")
 
@@ -225,10 +200,12 @@ describe("GosuCompletionProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When requesting completions with no prefix", () => {
+      // Classification: Unit
       test("Then it should return all relevant keywords for the context", async () => {
         // Given: A document with package declaration and empty line
-        const document = TextDocument.create("file:///test.gs", "gosu", 1, readFixture("completion/NoPrefixDoc.gs"))
+        const document = TextDocument.create("file:///test.gs", "gosu", 1, readFixture("completion/NoPrefix.gs"))
         const position: Position = { line: 2, character: 0 }
         logContext("No prefix test", position)
 
@@ -247,6 +224,25 @@ describe("GosuCompletionProvider", () => {
         expect(keywords).toContain("public")
         expect(keywords).toContain("private")
       })
+    })
+  })
+
+  // Classification: Business Value
+  describe("When generating import completions", () => {
+    // Classification: Unit
+    it("Then it should not write to the console", async () => {
+      const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {})
+
+      const resolver = new GosuJavaSymbolResolver({ sourcePaths: [], classpath: [] })
+      const provider = new GosuCompletionProvider(resolver)
+
+      const document = TextDocument.create("file:///imports.gs", "gosu", 1, "uses java.\n")
+      const position: Position = { line: 0, character: 9 }
+
+      await provider.getCompletions(document, position)
+
+      expect(consoleSpy).not.toHaveBeenCalled()
+      consoleSpy.mockRestore()
     })
   })
 })

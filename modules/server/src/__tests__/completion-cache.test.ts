@@ -4,8 +4,11 @@ import { TextDocument } from "vscode-languageserver-textdocument"
 import { GosuCompletionProvider } from "../completion"
 import { GosuJavaSymbolResolver } from "../java-symbol-resolver"
 
+// Classification: Unit
 describe("GosuCompletionProvider Cache Methods", () => {
+  // Classification: Unit
   describe("Document change handling", () => {
+    // Classification: Unit
     it("should clear AST cache when document changes", () => {
       // Given: a completion provider
       const resolver = new GosuJavaSymbolResolver({ sourcePaths: [], classpath: [] })
@@ -25,7 +28,9 @@ describe("GosuCompletionProvider Cache Methods", () => {
     })
   })
 
+  // Classification: Unit
   describe("Clear all caches", () => {
+    // Classification: Unit
     it("should clear all AST caches", () => {
       // Given: a completion provider
       const resolver = new GosuJavaSymbolResolver({ sourcePaths: [], classpath: [] })
@@ -42,7 +47,9 @@ describe("GosuCompletionProvider Cache Methods", () => {
     })
   })
 
+  // Classification: Unit
   describe("Trigger characters coverage", () => {
+    // Classification: Unit
     it("should return correct trigger characters", () => {
       // Given: a completion provider
       const resolver = new GosuJavaSymbolResolver({ sourcePaths: [], classpath: [] })

@@ -1,16 +1,25 @@
 import * as path from "node:path"
 import Debug from "debug"
 import * as vscode from "vscode"
+import type { Message } from "vscode-jsonrpc"
 import type { LanguageClientOptions, ServerOptions } from "vscode-languageclient/node"
-import { LanguageClient, TransportKind } from "vscode-languageclient/node"
 
 // Create debug logger for client
 const debugClient = Debug("gosu:lsp:client")
 
-let client: LanguageClient
+type LanguageClientType = import("vscode-languageclient/node").LanguageClient
 
-export function activate(context: vscode.ExtensionContext) {
+let client: LanguageClientType | undefined
+
+export enum ClientErrorAction {
+  Continue = 1,
+  Shutdown = 2,
+}
+
+export async function activate(context: vscode.ExtensionContext) {
   debugClient("Activating Gosu Language Server extension...")
+
+  const { LanguageClient, TransportKind, CloseAction, ErrorAction } = await import("vscode-languageclient/node")
 
   // The server is implemented in node
   const serverModule = context.asAbsolutePath(path.join("out", "server.js"))
@@ -28,9 +37,13 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {
-    // Register the server for Gosu documents
+    // Register the server for Gosu documents, including untitled and remote buffers
     documentSelector: [
-      { scheme: "file", language: "gosu" },
+      { language: "gosu" },
+      { scheme: "untitled", language: "gosu" },
+      { scheme: "vscode-remote", language: "gosu" },
+      { scheme: "vscode-vfs", language: "gosu" },
+      { scheme: "vscode-userdata", language: "gosu" },
       { scheme: "file", pattern: "**/*.gs" },
       { scheme: "file", pattern: "**/*.gsx" },
       { scheme: "file", pattern: "**/*.gst" },
@@ -56,6 +69,24 @@ export function activate(context: vscode.ExtensionContext) {
       enableJavaInterop: true,
       logLevel: "info",
     },
+
+    errorHandler: {
+      error: (error, message, count) => {
+        const action = handleClientError(error, message, count)
+        return {
+          action: action === ClientErrorAction.Continue ? ErrorAction.Continue : ErrorAction.Shutdown,
+          handled: action === ClientErrorAction.Shutdown,
+        }
+      },
+      closed: () => {
+        debugClient("Gosu Language Server connection closed — scheduling restart")
+        vscode.window.showWarningMessage("Gosu Language Server connection closed. Attempting restart...")
+        return {
+          action: CloseAction.Restart,
+          handled: true,
+        }
+      },
+    },
   }
 
   // Create the language client and start the client
@@ -75,7 +106,7 @@ export function activate(context: vscode.ExtensionContext) {
   debugClient("Gosu Language Server extension activated")
 }
 
-function registerCommands(context: vscode.ExtensionContext) {
+export function registerCommands(context: vscode.ExtensionContext) {
   // Command to restart the language server
   const restartCommand = vscode.commands.registerCommand("gosu.restartLanguageServer", async () => {
     debugClient("Restarting Gosu Language Server...")
@@ -84,9 +115,11 @@ function registerCommands(context: vscode.ExtensionContext) {
     if (client) {
       await client.stop()
       await client.start()
+      vscode.window.showInformationMessage("Gosu Language Server restarted")
+      return
     }
 
-    vscode.window.showInformationMessage("Gosu Language Server restarted")
+    vscode.window.showWarningMessage("Gosu Language Server is not initialized; activate a Gosu file to start it.")
   })
 
   // Command to show server output
@@ -129,14 +162,18 @@ export function deactivate(): Thenable<void> | undefined {
 }
 
 // Error handling for client
-export function handleClientError(error: Error, message: string, count: number): boolean {
-  debugClient(`Client error (${count}): ${message}`, error)
+export function handleClientError(error: Error, message: Message | undefined, count: number | undefined): ClientErrorAction {
+  const attempt = count ?? 0
+  const humanMessage = typeof message === "object" && message ? JSON.stringify(message) : String(message ?? "unknown")
+  debugClient(`Client error (${attempt}): ${humanMessage}`, error)
 
-  if (count < 5) {
-    return true // Continue trying
+  if (attempt < 5) {
+    return ClientErrorAction.Continue
   }
 
-  vscode.window.showErrorMessage(`Gosu Language Server failed to start after ${count} attempts. Please check the logs.`)
+  vscode.window.showErrorMessage(
+    `Gosu Language Server failed after ${attempt} attempts. See the Gosu Language Server output for details.`,
+  )
 
-  return false // Stop trying
+  return ClientErrorAction.Shutdown
 }

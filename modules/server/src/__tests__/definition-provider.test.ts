@@ -4,6 +4,7 @@ import type { Position } from "vscode-languageserver/node"
 import { TextDocument } from "vscode-languageserver-textdocument"
 import { GosuDefinitionProvider } from "../definition-provider"
 
+// Classification: Unit
 describe("GosuDefinitionProvider", () => {
   let provider: GosuDefinitionProvider
 
@@ -11,8 +12,11 @@ describe("GosuDefinitionProvider", () => {
     provider = new GosuDefinitionProvider()
   })
 
+  // Classification: Business Value
   describe("Given a definition provider instance", () => {
+    // Classification: Business Value
     describe("When requesting definition for a simple class", () => {
+      // Classification: Unit
       it("Then it should find class definition", async () => {
         const document = TextDocument.create(
           "file:///test.gs",
@@ -35,6 +39,7 @@ describe("GosuDefinitionProvider", () => {
         }
       })
 
+      // Classification: Unit
       it("And it should find function definition", async () => {
         const document = TextDocument.create(
           "file:///test.gs",
@@ -57,7 +62,9 @@ describe("GosuDefinitionProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When requesting definition for variables", () => {
+      // Classification: Unit
       it("Then it should find variable definition", async () => {
         const document = TextDocument.create(
           "file:///test.gs",
@@ -79,6 +86,7 @@ describe("GosuDefinitionProvider", () => {
         }
       })
 
+      // Classification: Unit
       it("And it should find field definition", async () => {
         const document = TextDocument.create(
           "file:///test.gs",
@@ -101,7 +109,9 @@ describe("GosuDefinitionProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When handling imports", () => {
+      // Classification: Unit
       it("Then it should find import definition", async () => {
         const document = TextDocument.create(
           "file:///test.gs",
@@ -124,7 +134,9 @@ describe("GosuDefinitionProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When handling edge cases", () => {
+      // Classification: Unit
       it("Then it should handle empty documents", async () => {
         const document = TextDocument.create("file:///empty.gs", "gosu", 1, "")
 
@@ -134,6 +146,7 @@ describe("GosuDefinitionProvider", () => {
         expect(definition).toBeNull()
       })
 
+      // Classification: Unit
       it("And it should handle invalid positions", async () => {
         const document = TextDocument.create("file:///test.gs", "gosu", 1, "class TestClass { }")
 
@@ -144,6 +157,7 @@ describe("GosuDefinitionProvider", () => {
         expect(definition).toBeNull()
       })
 
+      // Classification: Unit
       it("And it should handle positions with no symbols", async () => {
         const document = TextDocument.create(
           "file:///test.gs",
@@ -164,6 +178,7 @@ describe("GosuDefinitionProvider", () => {
         expect(definition).toBeNull()
       })
 
+      // Classification: Unit
       it("And it should handle malformed Gosu code gracefully", async () => {
         const document = TextDocument.create(
           "file:///malformed.gs",
@@ -180,7 +195,9 @@ describe("GosuDefinitionProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When working with function parameters", () => {
+      // Classification: Unit
       it("Then it should find parameter definition", async () => {
         const document = TextDocument.create(
           "file:///test.gs",
@@ -203,7 +220,9 @@ describe("GosuDefinitionProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When testing caching functionality", () => {
+      // Classification: Unit
       it("Then it should cache symbol tables", async () => {
         const document = TextDocument.create(
           "file:///cached.gs",
@@ -230,6 +249,7 @@ describe("GosuDefinitionProvider", () => {
         expect(duration2).toBeLessThanOrEqual(duration1 + 50)
       })
 
+      // Classification: Unit
       it("And it should clear cache when document changes", async () => {
         const document1 = TextDocument.create("file:///changing.gs", "gosu", 1, "class OriginalClass { }")
 
@@ -251,6 +271,7 @@ describe("GosuDefinitionProvider", () => {
         // Should work with updated document
       })
 
+      // Classification: Unit
       it("And it should clear all caches", async () => {
         const document = TextDocument.create("file:///test.gs", "gosu", 1, "class TestClass { }")
 
@@ -265,7 +286,9 @@ describe("GosuDefinitionProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When testing word boundary detection", () => {
+      // Classification: Unit
       it("Then it should correctly identify words at cursor position", async () => {
         const document = TextDocument.create(
           "file:///boundaries.gs",
@@ -293,7 +316,9 @@ describe("GosuDefinitionProvider", () => {
       })
     })
 
+    // Classification: Business Value
     describe("When handling different Gosu constructs", () => {
+      // Classification: Unit
       it("Then it should work with enhancements", async () => {
         const document = TextDocument.create(
           "file:///enhancement.gsx",
@@ -315,6 +340,7 @@ describe("GosuDefinitionProvider", () => {
         }
       })
 
+      // Classification: Unit
       it("And it should work with interfaces", async () => {
         const document = TextDocument.create(
           "file:///interface.gs",

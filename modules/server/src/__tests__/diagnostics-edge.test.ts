@@ -4,8 +4,11 @@ import { DiagnosticSeverity } from "vscode-languageserver"
 import { TextDocument } from "vscode-languageserver-textdocument"
 import { GosuDiagnosticsProvider } from "../diagnostics"
 
+// Classification: Unit
 describe("GosuDiagnosticsProvider Edge Cases", () => {
+  // Classification: Unit
   describe("Severity mapping edge cases", () => {
+    // Classification: Unit
     it("should handle unknown severity types by defaulting to error", () => {
       // Given: a diagnostics provider
       const provider = new GosuDiagnosticsProvider()
@@ -37,6 +40,7 @@ describe("GosuDiagnosticsProvider Edge Cases", () => {
       expect(diagnostic.source).toBe("gosu")
     })
 
+    // Classification: Unit
     it("should handle error severity correctly", () => {
       // Given: a diagnostics provider
       const provider = new GosuDiagnosticsProvider()
@@ -61,6 +65,7 @@ describe("GosuDiagnosticsProvider Edge Cases", () => {
       expect(diagnostic.severity).toBe(DiagnosticSeverity.Error)
     })
 
+    // Classification: Unit
     it("should handle warning severity correctly", () => {
       // Given: a diagnostics provider
       const provider = new GosuDiagnosticsProvider()
