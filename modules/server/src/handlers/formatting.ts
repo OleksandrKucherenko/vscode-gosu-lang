@@ -1,6 +1,18 @@
 /**
  * Formatting handler for LSP server
  * Provides document formatting with progress tracking
+ *
+ * @deprecated This handler is not currently integrated into the server.
+ * Formatting is handled directly in server.ts using @gosu-lsp/formatter.
+ *
+ * WARNING: This class is NOT imported or used anywhere in the codebase.
+ * - No imports found in any .ts, .js, .json files
+ * - No dynamic imports or require() calls reference it
+ * - Not listed in package.json or extension configuration
+ * - Formatting is already working via server.ts direct integration
+ *
+ * Status: CANDIDATE FOR REMOVAL - functionality exists elsewhere.
+ * If this provides different/additional behavior, document it with TODO.
  */
 
 import type { CancellationToken, Connection, DocumentFormattingParams, TextEdit } from "vscode-languageserver"
@@ -8,6 +20,7 @@ import { logger } from "../logger-adapter.js"
 
 /**
  * Formatting handler with progress tracking
+ * @deprecated Not currently integrated - see file header
  */
 export class FormattingHandler {
   private connection: Connection

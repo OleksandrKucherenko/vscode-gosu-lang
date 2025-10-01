@@ -1,6 +1,17 @@
 /**
  * Configuration handler for LSP server
  * Manages configuration hot-reload and workspace settings
+ *
+ * @deprecated This handler is not currently integrated into the server.
+ * It was part of a planned feature that hasn't been implemented yet.
+ *
+ * WARNING: This class is NOT imported or used anywhere in the codebase.
+ * - No imports found in any .ts, .js, .json files
+ * - No dynamic imports or require() calls reference it
+ * - Not listed in package.json or extension configuration
+ *
+ * Status: CANDIDATE FOR REMOVAL if no integration is planned.
+ * If this is intended for future use, add a TODO with timeline.
  */
 
 import type { Connection } from "vscode-languageserver"
@@ -8,6 +19,7 @@ import { logger } from "../logger-adapter.js"
 
 /**
  * Configuration change handler
+ * @deprecated Not currently integrated - see file header
  */
 export class ConfigurationHandler {
   private connection: Connection

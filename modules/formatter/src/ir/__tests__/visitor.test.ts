@@ -1136,6 +1136,417 @@ describe("AST Visitor - Return Statements", () => {
   })
 })
 
+describe("AST Visitor - Abstract Classes and Methods", () => {
+  it("should format abstract class", () => {
+    // Given: Abstract class (inheritance pattern)
+    const code = `abstract class Shape {
+  abstract function area(): double
+  
+  function describe(): String {
+    return "This is a shape"
+  }
+}`
+
+    // When: Visitor processes abstract class
+    const parseResult = parseCode(code)
+    const tree = buildFormattingTree(parseResult)
+
+    // Then: Abstract class formatted
+    expect(tree).toBeDefined()
+
+    const classNode = tree.find((node) => node.kind === "class")
+    expect(classNode).toBeDefined()
+    expect(classNode?.name).toBe("Shape")
+  })
+
+  it("should format abstract function", () => {
+    // Given: Abstract method (contract definition)
+    const code = `abstract class Vehicle {
+  abstract function start(): void
+  abstract function stop(): void
+  abstract function getSpeed(): int
+}`
+
+    // When: Visitor processes abstract methods
+    const parseResult = parseCode(code)
+    const tree = buildFormattingTree(parseResult)
+
+    // Then: Abstract methods formatted
+    expect(tree).toBeDefined()
+
+    const classNode = tree.find((node) => node.kind === "class")
+    expect(classNode?.children.length).toBeGreaterThan(0)
+  })
+})
+
+describe("AST Visitor - Annotations and Metadata", () => {
+  it("should format class with annotations", () => {
+    // Given: Annotated class (metadata pattern)
+    const code = `@Deprecated
+class OldAPI {
+  function oldMethod(): void {
+    print("deprecated")
+  }
+}`
+
+    // When: Visitor processes annotated class
+    const parseResult = parseCode(code)
+    const tree = buildFormattingTree(parseResult)
+
+    // Then: Class with annotations handled
+    expect(tree).toBeDefined()
+    expect(Array.isArray(tree)).toBe(true)
+  })
+
+  it("should format function with annotations", () => {
+    // Given: Annotated method
+    const code = `class TestClass {
+  @Override
+  function toString(): String {
+    return "TestClass"
+  }
+}`
+
+    // When: Visitor processes annotated function
+    const parseResult = parseCode(code)
+    const tree = buildFormattingTree(parseResult)
+
+    // Then: Annotated function formatted
+    expect(tree).toBeDefined()
+
+    const classNode = tree.find((node) => node.kind === "class")
+    expect(classNode).toBeDefined()
+  })
+})
+
+describe("AST Visitor - Block Expressions and Closures", () => {
+  it("should format block expression", () => {
+    // Given: Block/closure (functional pattern)
+    const code = `class TestClass {
+  function processItems(items: List<String>): void {
+    items.each(\\ item -> print(item))
+  }
+}`
+
+    // When: Visitor processes block expression
+    const parseResult = parseCode(code)
+    const tree = buildFormattingTree(parseResult)
+
+    // Then: Block expression handled
+    expect(tree).toBeDefined()
+
+    const classNode = tree.find((node) => node.kind === "class")
+    const functionNode = classNode?.children.find((child) => child.kind === "function")
+
+    expect(functionNode).toBeDefined()
+  })
+
+  it("should format map with block", () => {
+    // Given: Map operation with closure
+    const code = `class TestClass {
+  function doubleValues(numbers: List<int>): List<int> {
+    return numbers.map(\\ n -> n * 2)
+  }
+}`
+
+    // When: Visitor processes map with closure
+    const parseResult = parseCode(code)
+    const tree = buildFormattingTree(parseResult)
+
+    // Then: Map operation formatted
+    expect(tree).toBeDefined()
+
+    const classNode = tree.find((node) => node.kind === "class")
+    const functionNode = classNode?.children.find((child) => child.kind === "function")
+
+    expect(functionNode).toBeDefined()
+    expect(functionNode?.name).toBe("doubleValues")
+  })
+
+  it("should format filter with block", () => {
+    // Given: Filter operation with predicate
+    const code = `class TestClass {
+  function getPositive(numbers: List<int>): List<int> {
+    return numbers.where(\\ n -> n > 0)
+  }
+}`
+
+    // When: Visitor processes filter operation
+    const parseResult = parseCode(code)
+    const tree = buildFormattingTree(parseResult)
+
+    // Then: Filter operation formatted
+    expect(tree).toBeDefined()
+
+    const classNode = tree.find((node) => node.kind === "class")
+    const functionNode = classNode?.children.find((child) => child.kind === "function")
+
+    expect(functionNode).toBeDefined()
+  })
+})
+
+describe("AST Visitor - Null Safety and Optional Chaining", () => {
+  it("should format null-safe navigation", () => {
+    // Given: Null-safe operator (defensive coding)
+    const code = `class TestClass {
+  function getLength(str: String): int {
+    return str?.length ?: 0
+  }
+}`
+
+    // When: Visitor processes null-safe operator
+    const parseResult = parseCode(code)
+    const tree = buildFormattingTree(parseResult)
+
+    // Then: Null-safe navigation handled
+    expect(tree).toBeDefined()
+
+    const classNode = tree.find((node) => node.kind === "class")
+    const functionNode = classNode?.children.find((child) => child.kind === "function")
+
+    expect(functionNode).toBeDefined()
+  })
+
+  it("should format elvis operator", () => {
+    // Given: Elvis operator (default value pattern)
+    const code = `class TestClass {
+  function getOrDefault(value: String): String {
+    return value ?: "default"
+  }
+}`
+
+    // When: Visitor processes elvis operator
+    const parseResult = parseCode(code)
+    const tree = buildFormattingTree(parseResult)
+
+    // Then: Elvis operator handled
+    expect(tree).toBeDefined()
+
+    const classNode = tree.find((node) => node.kind === "class")
+    const functionNode = classNode?.children.find((child) => child.kind === "function")
+
+    expect(functionNode).toBeDefined()
+  })
+})
+
+describe("AST Visitor - Ternary and Complex Expressions", () => {
+  it("should format ternary expression", () => {
+    // Given: Ternary operator (conditional expression)
+    const code = `class TestClass {
+  function getSign(x: int): String {
+    return x > 0 ? "positive" : "non-positive"
+  }
+}`
+
+    // When: Visitor processes ternary
+    const parseResult = parseCode(code)
+    const tree = buildFormattingTree(parseResult)
+
+    // Then: Ternary expression formatted
+    expect(tree).toBeDefined()
+
+    const classNode = tree.find((node) => node.kind === "class")
+    const functionNode = classNode?.children.find((child) => child.kind === "function")
+
+    expect(functionNode).toBeDefined()
+  })
+
+  it("should format nested ternary", () => {
+    // Given: Nested ternary (complex conditional)
+    const code = `class TestClass {
+  function classify(x: int): String {
+    return x > 0 ? (x > 100 ? "large" : "small") : "negative"
+  }
+}`
+
+    // When: Visitor processes nested ternary
+    const parseResult = parseCode(code)
+    const tree = buildFormattingTree(parseResult)
+
+    // Then: Nested ternary handled
+    expect(tree).toBeDefined()
+
+    const classNode = tree.find((node) => node.kind === "class")
+    const functionNode = classNode?.children.find((child) => child.kind === "function")
+
+    expect(functionNode).toBeDefined()
+  })
+
+  it("should format complex boolean expression", () => {
+    // Given: Complex boolean logic
+    const code = `class TestClass {
+  function isValid(x: int, y: int): boolean {
+    return (x > 0 && y > 0) || (x < 0 && y < 0)
+  }
+}`
+
+    // When: Visitor processes complex boolean
+    const parseResult = parseCode(code)
+    const tree = buildFormattingTree(parseResult)
+
+    // Then: Boolean expression formatted
+    expect(tree).toBeDefined()
+
+    const classNode = tree.find((node) => node.kind === "class")
+    const functionNode = classNode?.children.find((child) => child.kind === "function")
+
+    expect(functionNode).toBeDefined()
+  })
+})
+
+describe("AST Visitor - Array and Collection Initialization", () => {
+  it("should format array initialization", () => {
+    // Given: Array literal (data structure)
+    const code = `class TestClass {
+  function getNumbers(): int[] {
+    return {1, 2, 3, 4, 5}
+  }
+}`
+
+    // When: Visitor processes array literal
+    const parseResult = parseCode(code)
+    const tree = buildFormattingTree(parseResult)
+
+    // Then: Array initialization formatted
+    expect(tree).toBeDefined()
+
+    const classNode = tree.find((node) => node.kind === "class")
+    const functionNode = classNode?.children.find((child) => child.kind === "function")
+
+    expect(functionNode).toBeDefined()
+  })
+
+  it("should format list initialization", () => {
+    // Given: List creation
+    const code = `class TestClass {
+  function getItems(): List<String> {
+    return {"apple", "banana", "cherry"}
+  }
+}`
+
+    // When: Visitor processes list initialization
+    const parseResult = parseCode(code)
+    const tree = buildFormattingTree(parseResult)
+
+    // Then: List initialization formatted
+    expect(tree).toBeDefined()
+
+    const classNode = tree.find((node) => node.kind === "class")
+    const functionNode = classNode?.children.find((child) => child.kind === "function")
+
+    expect(functionNode).toBeDefined()
+  })
+
+  it("should format map initialization", () => {
+    // Given: Map literal (key-value pairs)
+    const code = `class TestClass {
+  function getConfig(): Map<String, int> {
+    return {"timeout" -> 30, "retries" -> 3}
+  }
+}`
+
+    // When: Visitor processes map initialization
+    const parseResult = parseCode(code)
+    const tree = buildFormattingTree(parseResult)
+
+    // Then: Map initialization formatted
+    expect(tree).toBeDefined()
+
+    const classNode = tree.find((node) => node.kind === "class")
+    const functionNode = classNode?.children.find((child) => child.kind === "function")
+
+    expect(functionNode).toBeDefined()
+  })
+})
+
+describe("AST Visitor - String Interpolation and Templates", () => {
+  it("should format string interpolation", () => {
+    // Given: String interpolation (common pattern)
+    const code = `class TestClass {
+  function greet(name: String): String {
+    return "Hello, \${name}!"
+  }
+}`
+
+    // When: Visitor processes string interpolation
+    const parseResult = parseCode(code)
+    const tree = buildFormattingTree(parseResult)
+
+    // Then: Interpolation handled
+    expect(tree).toBeDefined()
+
+    const classNode = tree.find((node) => node.kind === "class")
+    const functionNode = classNode?.children.find((child) => child.kind === "function")
+
+    expect(functionNode).toBeDefined()
+  })
+
+  it("should format multiline string", () => {
+    // Given: Multiline string literal
+    const code = `class TestClass {
+  function getDescription(): String {
+    return "Line 1\\nLine 2\\nLine 3"
+  }
+}`
+
+    // When: Visitor processes multiline string
+    const parseResult = parseCode(code)
+    const tree = buildFormattingTree(parseResult)
+
+    // Then: Multiline string formatted
+    expect(tree).toBeDefined()
+
+    const classNode = tree.find((node) => node.kind === "class")
+    const functionNode = classNode?.children.find((child) => child.kind === "function")
+
+    expect(functionNode).toBeDefined()
+  })
+})
+
+describe("AST Visitor - Type Casting and Conversions", () => {
+  it("should format type cast", () => {
+    // Given: Type casting (type safety)
+    const code = `class TestClass {
+  function convertToString(obj: Object): String {
+    return obj as String
+  }
+}`
+
+    // When: Visitor processes type cast
+    const parseResult = parseCode(code)
+    const tree = buildFormattingTree(parseResult)
+
+    // Then: Cast expression formatted
+    expect(tree).toBeDefined()
+
+    const classNode = tree.find((node) => node.kind === "class")
+    const functionNode = classNode?.children.find((child) => child.kind === "function")
+
+    expect(functionNode).toBeDefined()
+  })
+
+  it("should format instanceof check", () => {
+    // Given: Type checking (runtime safety)
+    const code = `class TestClass {
+  function isString(obj: Object): boolean {
+    return obj typeis String
+  }
+}`
+
+    // When: Visitor processes instanceof
+    const parseResult = parseCode(code)
+    const tree = buildFormattingTree(parseResult)
+
+    // Then: Type check formatted
+    expect(tree).toBeDefined()
+
+    const classNode = tree.find((node) => node.kind === "class")
+    const functionNode = classNode?.children.find((child) => child.kind === "function")
+
+    expect(functionNode).toBeDefined()
+  })
+})
+
 describe("AST Visitor - Package and Uses Statements", () => {
   it("should format package declaration", () => {
     // Given: File with package statement (organization)

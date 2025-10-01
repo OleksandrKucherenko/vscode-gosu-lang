@@ -36,7 +36,52 @@ export default defineConfig({
       }
     ],
 
-    // No coverage at root level to avoid duplicates - modules handle their own coverage
+    // Coverage configuration for monorepo
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'text-summary', 'html', 'json-summary', 'lcov'],
+      reportOnFailure: true,
+      exclude: [
+        // Auto-generated coverage reports
+        '**/coverage/**',
+        '**/lcov-report/**',
+        
+        // Build outputs and dependencies
+        'node_modules/**',
+        'out/**',
+        'dist/**',
+        '**/*.d.ts',
+        
+        // Generated parser files
+        '**/GosuLexer.ts',
+        '**/GosuParser.ts',
+        '**/GosuListener.ts',
+        '**/GosuVisitor.ts',
+        '**/*.g4',
+        
+        // Build and tooling scripts
+        'scripts/**',
+        '**/build-*.js',
+        '**/check-coverage.js',
+        '**/test-*.js',
+        
+        // Test files and configuration
+        '**/*.{test,spec}.{js,ts}',
+        '**/__tests__/**',
+        '**/test/**',
+        '**/vitest.config.ts',
+        '**/vitest.*.config.ts',
+        
+        // Type definition files
+        '**/types.ts',
+        '**/nodes.ts',
+        
+        // Root entry points (thin wrappers)
+        'index.js',
+        'src/extension.ts',
+        'src/server.ts'
+      ]
+    },
     
     // Test execution settings
     testTimeout: 10000,

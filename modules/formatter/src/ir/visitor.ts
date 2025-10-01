@@ -13,6 +13,8 @@ export function buildFormattingTree(parseResult: GosuParseResult): FormattingNod
 }
 
 class FormattingTreeBuilder {
+  private tokens: GosuToken[]
+
   constructor(tokens: GosuToken[]) {
     this.tokens = tokens
   }
