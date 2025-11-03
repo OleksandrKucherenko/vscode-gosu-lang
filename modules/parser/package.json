@@ -20,7 +20,7 @@
   "devDependencies": {
     "@types/debug": "^4.1.12",
     "typescript": "^5.9.2",
-    "vitest": "^3.2.4",
+    "vitest": "^4.0.6",
     "rimraf": "^6.0.0"
   }
 }
